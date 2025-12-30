@@ -1,0 +1,8 @@
+{
+  "name": "@toran/shared",
+  "version": "1.0.0",
+  "description": "Shared types and utilities for Toran",
+  "private": true,
+  "main": "types.ts",
+  "types": "types.ts"
+}

@@ -1,0 +1,26 @@
+{
+  "name": "toran",
+  "version": "1.0.0",
+  "description": "High-performance reverse proxy on Cloudflare with admin dashboard",
+  "private": true,
+  "workspaces": [
+    "worker",
+    "webapp",
+    "shared"
+  ],
+  "scripts": {
+    "dev:worker": "npm run dev --workspace=worker",
+    "dev:webapp": "npm run dev --workspace=webapp",
+    "deploy:worker": "npm run deploy --workspace=worker",
+    "deploy:webapp": "npm run deploy --workspace=webapp",
+    "deploy:all": "npm run deploy:worker && npm run deploy:webapp",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
