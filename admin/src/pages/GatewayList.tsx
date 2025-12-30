@@ -4,7 +4,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Plus, Settings, Trash2, Power } from 'lucide-react';
+import { Plus, Settings, Power } from 'lucide-react';
 import { apiClient } from '../lib/api-client';
 import type { Gateway } from '../../../shared/src/types';
 

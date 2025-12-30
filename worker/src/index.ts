@@ -21,8 +21,6 @@ import type { Env } from '../../shared/src/types';
 import { GatewayLoader } from './core/gateway-loader';
 import { Router } from './core/router';
 import { ContextBuilder } from './core/context-builder';
-import { Logger } from './logging/logger';
-import { MongoDBClient } from './database/mongodb-client';
 import { MutationEngine } from './mutations/engine';
 import { CacheManager } from './cache/cache-manager';
 import { CacheKeyGenerator } from './cache/key-generator';
@@ -35,8 +33,8 @@ export default {
       // ========================================================================
       // 1. Validate Configuration
       // ========================================================================
-      if (!env.MONGODB_API_URL || !env.MONGODB_API_KEY || !env.MONGODB_DATABASE) {
-        return errorResponse('CONFIGURATION_ERROR', 'MongoDB configuration missing', 500);
+      if (!env.ADMIN_API_URL) {
+        return errorResponse('CONFIGURATION_ERROR', 'Admin API URL not configured', 500);
       }
 
       // ========================================================================
@@ -69,29 +67,8 @@ export default {
         // Build context for logging (no route match)
         const context = await ContextBuilder.build(request, gateway, env, {});
 
-        // Log no-match request
-        const db = new MongoDBClient(env);
-        ctx.waitUntil(
-          Logger.logRequest(
-            context,
-            new Response('No route matched', { status: 404 }),
-            {
-              routeId: null,
-              routeMatched: false,
-              cacheHit: false,
-              mutationsApplied: { pre: 0, post: 0 },
-              timing: {
-                completedAt: new Date(),
-                duration: performance.now() - startTime,
-                breakdown: {
-                  routing: routingEnd - routingStart,
-                  proxy: 0,
-                },
-              },
-            },
-            db
-          )
-        );
+        // TODO: Log no-match request via Admin API
+        // MongoDB logging removed - Worker no longer has direct DB access
 
         return errorResponse('NO_ROUTE_MATCH', 'No route matched for this request', 404);
       }
@@ -123,34 +100,8 @@ export default {
           cacheHit = true;
           const cachedResponse = CacheManager.toResponse(cached);
 
-          // Log cache hit
-          const db = new MongoDBClient(env);
-          ctx.waitUntil(db.updateGatewayStats(gateway.id));
-          ctx.waitUntil(db.updateRouteStats(route._id!, { cacheHit: true, duration: 0 }));
-
-          ctx.waitUntil(
-            Logger.logRequest(
-              context,
-              cachedResponse,
-              {
-                routeId: route._id!,
-                routeName: route.name,
-                routeMatched: true,
-                cacheHit: true,
-                mutationsApplied: { pre: 0, post: 0 },
-                timing: {
-                  completedAt: new Date(),
-                  duration: performance.now() - startTime,
-                  breakdown: {
-                    routing: routingEnd - routingStart,
-                    proxy: 0,
-                    caching: cachingEnd - cachingStart,
-                  },
-                },
-              },
-              db
-            )
-          );
+          // TODO: Log cache hit via Admin API
+          // MongoDB logging removed - Worker no longer has direct DB access
 
           return cachedResponse;
         }
@@ -206,41 +157,8 @@ export default {
       // ========================================================================
       // 11. Update Stats Asynchronously
       // ========================================================================
-      const db = new MongoDBClient(env);
-      ctx.waitUntil(db.updateGatewayStats(gateway.id));
-      ctx.waitUntil(db.updateRouteStats(route._id!, { cacheHit: false, duration: proxyEnd - proxyStart }));
-
-      // ========================================================================
-      // 12. Log Request/Response Asynchronously
-      // ========================================================================
-      const endTime = performance.now();
-      ctx.waitUntil(
-        Logger.logRequest(
-          context,
-          response,
-          {
-            routeId: route._id!,
-            routeName: route.name,
-            routeMatched: true,
-            cacheHit: false,
-            mutationsApplied: {
-              pre: mutatedRequest.mutationsApplied,
-              post: mutatedResponse.mutationsApplied,
-            },
-            timing: {
-              completedAt: new Date(),
-              duration: endTime - startTime,
-              breakdown: {
-                routing: routingEnd - routingStart,
-                preMutations: preMutationsEnd - preMutationsStart,
-                proxy: proxyEnd - proxyStart,
-                postMutations: postMutationsEnd - postMutationsStart,
-              },
-            },
-          },
-          db
-        )
-      );
+      // TODO: Update stats and log via Admin API
+      // MongoDB logging removed - Worker no longer has direct DB access
 
       return response;
     } catch (error) {
@@ -261,12 +179,12 @@ export default {
  * Returns subdomain or null if invalid
  */
 function extractSubdomain(request: Request): string | null {
-  const hostname = new URL(request.url).hostname;
+  const url = new URL(request.url);
+  const hostname = url.hostname;
 
-  // Handle localhost for development
-  if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
-    // For local dev, use query param: ?subdomain=test
-    const url = new URL(request.url);
+  // Handle localhost and *.workers.dev for development/testing
+  if (hostname === 'localhost' || hostname.startsWith('127.0.0.1') || hostname.includes('.workers.dev')) {
+    // For local dev/testing, use query param: ?subdomain=test
     return url.searchParams.get('subdomain') || 'test';
   }
 

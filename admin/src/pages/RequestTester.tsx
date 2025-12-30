@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Play, AlertCircle } from 'lucide-react';
 import { apiClient } from '../lib/api-client';
-import type { Gateway } from '../../../shared/src/types';
 
 export function RequestTester() {
   const [gatewayId, setGatewayId] = useState('');

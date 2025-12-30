@@ -8,13 +8,22 @@ export * from './route';
 export * from './log';
 
 /**
+ * KVNamespace type (from @cloudflare/workers-types)
+ */
+export interface KVNamespace {
+  get(key: string, options?: { type: 'text' | 'json' | 'arrayBuffer' | 'stream' }): Promise<any>;
+  put(key: string, value: string | ArrayBuffer | ReadableStream, options?: { expirationTtl?: number; expiration?: number; metadata?: any }): Promise<void>;
+  delete(key: string): Promise<void>;
+  list(options?: { prefix?: string; limit?: number; cursor?: string }): Promise<any>;
+}
+
+/**
  * Cloudflare Worker environment bindings
  */
 export interface Env {
-  // MongoDB configuration
-  MONGODB_API_URL: string;
-  MONGODB_API_KEY: string;
-  MONGODB_DATABASE: string;
+  // Admin API URL - Worker fetches gateway configs from Admin backend
+  // Admin backend uses MongoDB drivers to query the database
+  ADMIN_API_URL: string;
 
   // Optional KV cache for configs and responses
   CACHE?: KVNamespace;

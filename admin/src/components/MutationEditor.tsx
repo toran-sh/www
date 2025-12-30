@@ -70,14 +70,18 @@ function VisualMutationEditor({
   value,
   onChange,
 }: MutationEditorProps) {
+  // Mark as used - full implementation coming soon
+  void type;
+  void value;
+  void onChange;
+
   return (
     <div className="space-y-4">
       <div className="text-sm text-gray-600">
-        Use the visual editor to configure mutations. Header mutations, query
-        parameter mutations, and body transformations can be configured here.
+        Visual editor coming soon. Use Code mode to configure mutations.
       </div>
 
-      {/* Header Mutations */}
+      {/* Header Mutations - Coming Soon */}
       <div>
         <h4 className="font-medium text-gray-900 mb-2">Header Mutations</h4>
         <div className="text-sm text-gray-500">

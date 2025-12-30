@@ -6,18 +6,16 @@ compatibility_date = "2024-12-01"
 [vars]
 ENVIRONMENT = "production"
 
-# Secrets (set via: wrangler secret put SECRET_NAME)
-# MONGODB_API_URL - MongoDB Data API endpoint
-# MONGODB_API_KEY - API key for MongoDB Data API
-# MONGODB_DATABASE - Database name (e.g., "toran")
+# Admin API URL - Worker fetches gateway configs from here
+# Production: Set via wrangler secret put ADMIN_API_URL
+# Local dev: http://localhost:5173
+# ADMIN_API_URL will be set as a secret in production
 
 # KV namespace for caching (REQUIRED for Phase 3 caching features)
-# Create KV namespace: wrangler kv:namespace create CACHE
-# Then update the id below with the output
 [[kv_namespaces]]
 binding = "CACHE"
-id = "YOUR_KV_NAMESPACE_ID_HERE"
-preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID_HERE"
+id = "915c6dae07f94d2faf888513af25520a"
+preview_id = "9a8e25216f7342c683194d6aebb02adf"
 
 # Routes - Handle all subdomains of toran.dev
 # Configure after domain is added to Cloudflare
@@ -26,8 +24,8 @@ preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID_HERE"
 # ]
 
 # Resource limits
-[limits]
-cpu_ms = 50
+# [limits]
+# cpu_ms = 50  # Only available on paid plans
 
 # Development environment
 [env.dev]
