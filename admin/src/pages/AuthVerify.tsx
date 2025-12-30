@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import './AuthVerify.css';
 
 export default function AuthVerify() {
   const [searchParams] = useSearchParams();
@@ -48,12 +49,10 @@ export default function AuthVerify() {
 
   if (status === 'verifying') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Verifying your login...
-          </h2>
+      <div className="verify-container">
+        <div className="verify-content">
+          <div className="verify-spinner"></div>
+          <h2 className="verify-title">Verifying your login...</h2>
         </div>
       </div>
     );
@@ -61,15 +60,10 @@ export default function AuthVerify() {
 
   if (status === 'success') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-            <svg
-              className="h-8 w-8 text-green-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+      <div className="verify-container">
+        <div className="verify-content">
+          <div className="verify-icon success">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -78,25 +72,18 @@ export default function AuthVerify() {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Login successful!
-          </h2>
-          <p className="text-gray-600">Redirecting to dashboard...</p>
+          <h2 className="verify-title">Login successful!</h2>
+          <p className="verify-message">Redirecting to dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full text-center">
-        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-          <svg
-            className="h-8 w-8 text-red-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+    <div className="verify-container">
+      <div className="verify-content">
+        <div className="verify-icon error">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -105,13 +92,11 @@ export default function AuthVerify() {
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Verification failed
-        </h2>
-        <p className="text-gray-600 mb-6">{error}</p>
+        <h2 className="verify-title">Verification failed</h2>
+        <p className="verify-message">{error}</p>
         <button
           onClick={() => navigate('/login')}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="verify-button"
         >
           Request a new login link
         </button>

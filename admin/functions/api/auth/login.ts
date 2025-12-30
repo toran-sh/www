@@ -92,6 +92,17 @@ async function sendMagicLinkEmail(email: string, magicLink: string, apiKey: stri
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
+    // Check if required environment variables are set
+    if (!context.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured');
+      return new Response(
+        JSON.stringify({
+          error: 'Email service not configured. Please contact administrator.'
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const body = await context.request.json() as { email: string };
 
     if (!body.email || typeof body.email !== 'string') {
