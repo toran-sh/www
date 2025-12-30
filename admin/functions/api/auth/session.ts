@@ -94,8 +94,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     console.error('Session check error:', error);
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        authenticated: false,
+        error: 'An error occurred while checking your session.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
