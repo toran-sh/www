@@ -163,7 +163,7 @@ export interface MutationCondition {
  * Flattened route for runtime (with compiled regex)
  */
 export interface FlattenedRoute extends Route {
-  pathRegex: RegExp;              // Compiled path pattern
+  pathRegex: string;              // Compiled path pattern as string (RegExp not JSON serializable)
   extractedParams?: Record<string, string>; // Extracted params during matching
 }
 

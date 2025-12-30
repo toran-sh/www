@@ -39,6 +39,8 @@ export interface Gateway {
   };
 }
 
+import type { FlattenedRoute } from './route';
+
 /**
  * Flattened gateway config for runtime (cached in KV)
  */
@@ -48,7 +50,7 @@ export interface FlattenedGateway {
   active: boolean;
   variables: Record<string, string>;
   defaults: Gateway['defaults'];
-  routes: any[]; // Will be FlattenedRoute[] from route.ts
+  routes: FlattenedRoute[];
   version: string; // Config hash for cache invalidation
 }
 
