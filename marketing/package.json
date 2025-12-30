@@ -1,0 +1,25 @@
+{
+  "name": "toran-marketing",
+  "version": "1.0.0",
+  "description": "Marketing and documentation site for Toran API Gateway",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "npm run build && wrangler pages deploy .next --project-name=toran-marketing"
+  },
+  "dependencies": {
+    "next": "^14.0.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.90.0"
+  }
+}

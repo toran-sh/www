@@ -1,7 +1,7 @@
 {
-  "name": "toran-webapp",
+  "name": "toran-admin",
   "version": "1.0.0",
-  "description": "Admin dashboard for Toran reverse proxy",
+  "description": "Admin dashboard for Toran API Gateway",
   "private": true,
   "type": "module",
   "scripts": {
