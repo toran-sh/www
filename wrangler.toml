@@ -1,0 +1,34 @@
+name = "toran-proxy"
+main = "worker/src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Environment variables (use wrangler secret for sensitive data)
+[vars]
+ENVIRONMENT = "production"
+
+# Secrets (set via: wrangler secret put SECRET_NAME)
+# MONGODB_API_URL - MongoDB Data API endpoint
+# MONGODB_API_KEY - API key for MongoDB Data API
+# MONGODB_DATABASE - Database name (e.g., "toran")
+
+# KV namespace for caching mappings (optional, improves performance)
+# Uncomment and configure after creating KV namespace
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Routes - Handle all subdomains of toran.dev
+# Configure after domain is added to Cloudflare
+# routes = [
+#   { pattern = "*.toran.dev/*", zone_name = "toran.dev" }
+# ]
+
+# Resource limits
+[limits]
+cpu_ms = 50
+
+# Development environment
+[env.dev]
+name = "toran-proxy-dev"
+routes = []
