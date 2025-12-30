@@ -169,8 +169,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     console.error('Error fetching gateway config:', error);
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        error: 'An error occurred while fetching gateway configuration.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );

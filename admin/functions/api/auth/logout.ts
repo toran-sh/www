@@ -66,8 +66,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     console.error('Logout error:', error);
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        error: 'An error occurred while logging out. Please try again.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );

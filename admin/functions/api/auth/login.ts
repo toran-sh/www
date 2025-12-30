@@ -170,8 +170,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     console.error('Login error:', error);
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        error: 'An error occurred while processing your request. Please try again.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
