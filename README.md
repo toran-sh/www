@@ -1,36 +1,72 @@
-# Toran - High-Performance Reverse Proxy
+# Toran API Gateway
 
-A high-performance reverse proxy service built on Cloudflare Workers with a React admin dashboard. Map subdomains under `*.toran.dev` to any destination server with full request/response logging.
+**API Gateway as a Service** built on Cloudflare Workers with MongoDB, offering powerful request/response mutations, intelligent caching, and full observability.
 
 ## Features
 
-- **Reverse Proxy**: Forward requests from `*.toran.dev` subdomains to any destination
-- **Full Transparency**: All headers, query params, and request bodies are forwarded
-- **Request/Response Logging**: Complete logging of all proxied requests
-- **Admin Dashboard**: React webapp for managing subdomain mappings and viewing logs
-- **High Performance**: Cloudflare Workers edge computing with optional KV caching
-- **MongoDB Storage**: Flexible storage for mappings and logs
+### 🔄 Request/Response Mutations
+- **Header Mutations**: Add, set, remove, rename headers
+- **Query Parameter Mutations**: Transform URL parameters
+- **Body Mutations**: 4 transformation strategies
+  - JSON Mapping: Simple field renaming
+  - JSONPath: Complex data extraction
+  - Templates: String templates with variables
+  - JavaScript Functions: Custom transformation logic
+- **Conditional Mutations**: Apply based on headers, query params, path, method, or status
+
+### ⚡ Intelligent Caching
+- Flexible vary-by configuration (path, method, headers, query, body)
+- Automatic TTL expiration via Cloudflare KV
+- Cache hit/miss tracking
+- Conditional caching (status codes, body size)
+- Pattern-based invalidation
+
+### 🛤️ Advanced Routing
+- Path parameters (`/users/:id`)
+- Wildcard routes (`/api/*`)
+- Priority-based matching
+- Method-specific routes
+- Config flattening with KV caching (1-hour TTL)
+
+### 🔑 Gateway Variables
+- Store API keys, base URLs, secrets
+- Reference in mutations with `${variables.API_KEY}`
+- Secret masking in UI and logs
+
+### 📊 Full Observability
+- Detailed request/response logs
+- Execution timing breakdown
+- Mutation counts tracking
+- Cache hit/miss analytics
+- 30-day log retention with auto-deletion
 
 ## Architecture
 
 ```
-Client Request → *.toran.dev
-                     ↓
-            Cloudflare Worker
-                     ↓
-         Parse subdomain → Query MongoDB → Forward to destination
-                     ↓                           ↓
-         Log request/response (async)     Return response to client
+Client → subdomain.toran.dev
+            ↓
+    Cloudflare Worker Pipeline:
+    1. Parse subdomain
+    2. Load gateway (KV cached)
+    3. Match route (regex)
+    4. Check cache → return on hit
+    5. Apply pre-mutations
+    6. Proxy request
+    7. Apply post-mutations
+    8. Store in cache
+    9. Log execution
+    10. Return response
 ```
 
 ## Project Structure
 
 ```
 toran/
-├── worker/          # Cloudflare Worker (TypeScript)
-├── webapp/          # Admin dashboard (React + TypeScript)
+├── worker/          # Cloudflare Worker (gateway engine)
+├── admin/           # Admin UI (Cloudflare Pages)
+├── marketing/       # Marketing site (Next.js)
 ├── shared/          # Shared TypeScript types
-└── README.md
+└── docs/            # Documentation
 ```
 
 ## Prerequisites
