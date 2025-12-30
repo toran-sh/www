@@ -7,13 +7,14 @@
  * 3. Load gateway config (flattened, cached in KV)
  * 4. Match route using compiled regex
  * 5. Build request context (params, variables, etc.)
- * 6. Apply pre-request mutations (headers, query, body)
- * 7. Proxy request to destination
- * 8. Apply post-response mutations (headers, body, status)
- * 9. [Phase 3] Cache response (if enabled)
- * 10. Update stats asynchronously
- * 11. Log request/response with execution breakdown
- * 12. Return response to client
+ * 6. Check cache - return immediately on cache hit
+ * 7. Apply pre-request mutations (headers, query, body)
+ * 8. Proxy request to destination
+ * 9. Apply post-response mutations (headers, body, status)
+ * 10. Store response in cache (if enabled and conditions met)
+ * 11. Update stats asynchronously
+ * 12. Log request/response with execution breakdown
+ * 13. Return response to client
  */
 
 import type { Env } from '../../shared/src/types';
@@ -23,6 +24,8 @@ import { ContextBuilder } from './core/context-builder';
 import { Logger } from './logging/logger';
 import { MongoDBClient } from './database/mongodb-client';
 import { MutationEngine } from './mutations/engine';
+import { CacheManager } from './cache/cache-manager';
+import { CacheKeyGenerator } from './cache/key-generator';
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -104,14 +107,64 @@ export default {
       const context = await ContextBuilder.build(request, gateway, env, namedParams || pathParams);
 
       // ========================================================================
-      // 6. Apply Pre-Request Mutations
+      // 6. Check Cache (if enabled)
+      // ========================================================================
+      let cacheHit = false;
+      let cacheKey: string | null = null;
+
+      if (route.cache?.enabled) {
+        const cachingStart = performance.now();
+        cacheKey = CacheKeyGenerator.generate(route, context);
+        const cached = await CacheManager.get(cacheKey, env.CACHE);
+        const cachingEnd = performance.now();
+
+        if (cached) {
+          // Cache hit! Return cached response immediately
+          cacheHit = true;
+          const cachedResponse = CacheManager.toResponse(cached);
+
+          // Log cache hit
+          const db = new MongoDBClient(env);
+          ctx.waitUntil(db.updateGatewayStats(gateway.id));
+          ctx.waitUntil(db.updateRouteStats(route._id!, { cacheHit: true, duration: 0 }));
+
+          ctx.waitUntil(
+            Logger.logRequest(
+              context,
+              cachedResponse,
+              {
+                routeId: route._id!,
+                routeName: route.name,
+                routeMatched: true,
+                cacheHit: true,
+                mutationsApplied: { pre: 0, post: 0 },
+                timing: {
+                  completedAt: new Date(),
+                  duration: performance.now() - startTime,
+                  breakdown: {
+                    routing: routingEnd - routingStart,
+                    proxy: 0,
+                    caching: cachingEnd - cachingStart,
+                  },
+                },
+              },
+              db
+            )
+          );
+
+          return cachedResponse;
+        }
+      }
+
+      // ========================================================================
+      // 7. Apply Pre-Request Mutations
       // ========================================================================
       const preMutationsStart = performance.now();
       const mutatedRequest = await MutationEngine.applyPreMutations(request, route, context);
       const preMutationsEnd = performance.now();
 
       // ========================================================================
-      // 7. Proxy Request to Destination
+      // 8. Proxy Request to Destination
       // ========================================================================
       const proxyStart = performance.now();
       const destinationUrl = buildDestinationUrl(route, context);
@@ -126,7 +179,7 @@ export default {
       const proxyEnd = performance.now();
 
       // ========================================================================
-      // 8. Apply Post-Response Mutations
+      // 9. Apply Post-Response Mutations
       // ========================================================================
       const postMutationsStart = performance.now();
       const mutatedResponse = await MutationEngine.applyPostMutations(proxyResponse, route, context);
@@ -138,16 +191,27 @@ export default {
       const response = mutatedResponse.response;
       response.headers.set('X-Toran-Gateway', subdomain);
       response.headers.set('X-Toran-Route', route.name);
+      response.headers.set('X-Toran-Cache', 'MISS'); // Indicate cache miss
 
       // ========================================================================
-      // 10. Update Stats Asynchronously
+      // 10. Store Response in Cache (if enabled and conditions met)
+      // ========================================================================
+      if (route.cache?.enabled && cacheKey && CacheKeyGenerator.shouldCache(response, route.cache)) {
+        const cachingStart = performance.now();
+        ctx.waitUntil(
+          CacheManager.set(cacheKey, response, route.cache.ttl, route._id!, env.CACHE)
+        );
+      }
+
+      // ========================================================================
+      // 11. Update Stats Asynchronously
       // ========================================================================
       const db = new MongoDBClient(env);
       ctx.waitUntil(db.updateGatewayStats(gateway.id));
       ctx.waitUntil(db.updateRouteStats(route._id!, { cacheHit: false, duration: proxyEnd - proxyStart }));
 
       // ========================================================================
-      // 11. Log Request/Response Asynchronously
+      // 12. Log Request/Response Asynchronously
       // ========================================================================
       const endTime = performance.now();
       ctx.waitUntil(
