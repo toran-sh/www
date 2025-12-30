@@ -56,11 +56,19 @@ export default {
         return errorResponse('GATEWAY_NOT_FOUND', `Gateway '${subdomain}' not found or inactive`, 404);
       }
 
+      // Debug: Check if routes are loaded
+      console.log('Gateway loaded:', gateway.subdomain, 'Routes:', gateway.routes.length);
+      console.log('Matching path:', new URL(request.url).pathname, 'Method:', request.method);
+
       // ========================================================================
       // 4. Match Route
       // ========================================================================
       const url = new URL(request.url);
       const routeMatch = Router.match(url.pathname, request.method, gateway.routes);
+
+      if (!routeMatch) {
+        console.log('No route matched. Available routes:', gateway.routes.map(r => r.path));
+      }
       const routingEnd = performance.now();
 
       if (!routeMatch) {
@@ -70,7 +78,23 @@ export default {
         // TODO: Log no-match request via Admin API
         // MongoDB logging removed - Worker no longer has direct DB access
 
-        return errorResponse('NO_ROUTE_MATCH', 'No route matched for this request', 404);
+        // Debug response with route info
+        return new Response(
+          JSON.stringify({
+            error: 'NO_ROUTE_MATCH',
+            message: 'No route matched for this request',
+            debug: {
+              path: url.pathname,
+              method: request.method,
+              routesCount: gateway.routes.length,
+              routes: gateway.routes.map(r => ({ path: r.path, method: r.method, regex: r.pathRegex }))
+            }
+          }),
+          {
+            status: 404,
+            headers: { 'Content-Type': 'application/json', 'X-Toran-Error': 'NO_ROUTE_MATCH' }
+          }
+        );
       }
 
       const { route, pathParams } = routeMatch;

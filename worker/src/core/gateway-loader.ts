@@ -86,8 +86,12 @@ export class GatewayLoader {
     if (!cache) return null;
 
     try {
-      const cached = await cache.get(key, 'json');
-      return cached as FlattenedGateway | null;
+      // Temporarily bypass cache to force fresh load
+      // TODO: Remove this after cache expires or implement proper invalidation
+      return null;
+
+      // const cached = await cache.get(key, 'json');
+      // return cached as FlattenedGateway | null;
     } catch (error) {
       console.error('Cache get error:', error);
       return null;
