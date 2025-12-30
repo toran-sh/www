@@ -17,7 +17,10 @@
     "deploy:admin": "npm run deploy --workspace=admin",
     "deploy:marketing": "npm run deploy --workspace=marketing",
     "deploy:all": "npm run deploy:worker && npm run deploy:admin && npm run deploy:marketing",
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "setup:mongodb": "node scripts/setup-mongodb.js",
+    "seed:data": "node scripts/seed-data.js",
+    "setup:all": "npm run setup:mongodb && npm run seed:data"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

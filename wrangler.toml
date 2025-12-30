@@ -11,12 +11,13 @@ ENVIRONMENT = "production"
 # MONGODB_API_KEY - API key for MongoDB Data API
 # MONGODB_DATABASE - Database name (e.g., "toran")
 
-# KV namespace for caching mappings (optional, improves performance)
-# Uncomment and configure after creating KV namespace
-# [[kv_namespaces]]
-# binding = "CACHE"
-# id = "your-kv-namespace-id"
-# preview_id = "your-preview-kv-namespace-id"
+# KV namespace for caching (REQUIRED for Phase 3 caching features)
+# Create KV namespace: wrangler kv:namespace create CACHE
+# Then update the id below with the output
+[[kv_namespaces]]
+binding = "CACHE"
+id = "YOUR_KV_NAMESPACE_ID_HERE"
+preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID_HERE"
 
 # Routes - Handle all subdomains of toran.dev
 # Configure after domain is added to Cloudflare
