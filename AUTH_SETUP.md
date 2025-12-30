@@ -26,7 +26,7 @@ wrangler pages secret put RESEND_API_KEY --project-name=toran-admin
 
 # Set App URL (production URL of admin panel)
 wrangler pages secret put APP_URL --project-name=toran-admin
-# Enter: https://toran-admin.pages.dev
+# Enter: https://admin.toran.dev
 ```
 
 ### Via Cloudflare Dashboard:
@@ -35,7 +35,7 @@ wrangler pages secret put APP_URL --project-name=toran-admin
 2. Navigate to **Pages** → **toran-admin** → **Settings** → **Environment variables**
 3. Add the following variables for **Production**:
    - `RESEND_API_KEY`: Your Resend API key
-   - `APP_URL`: `https://toran-admin.pages.dev`
+   - `APP_URL`: `https://admin.toran.dev`
 
 ## 3. Configure Resend Domain (Optional but Recommended)
 
@@ -84,7 +84,7 @@ The following collections were automatically created in your MongoDB database:
 
 Once environment variables are set:
 
-1. Visit: `https://toran-admin.pages.dev/login`
+1. Visit: `https://admin.toran.dev/login`
 2. Enter your email address
 3. Check your email for the magic link
 4. Click the link to log in
@@ -102,8 +102,8 @@ The following auth endpoints are available:
 
 ## 8. Deployment URLs
 
-- **Admin Panel**: https://toran-admin.pages.dev
-- **Latest deployment**: https://d3694a96.toran-admin.pages.dev
+- **Admin Panel**: https://admin.toran.dev (production)
+- **Pages Direct URL**: https://toran-admin.pages.dev
 
 ## Troubleshooting
 

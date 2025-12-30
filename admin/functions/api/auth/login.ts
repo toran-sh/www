@@ -138,7 +138,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
 
     // Build magic link URL
-    const appUrl = context.env.APP_URL || 'https://toran-admin.pages.dev';
+    const appUrl = context.env.APP_URL || 'https://admin.toran.dev';
     const magicLink = `${appUrl}/auth/verify?token=${token}`;
 
     // Send email
