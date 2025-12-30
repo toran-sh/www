@@ -3,22 +3,23 @@
  *
  * Implements a two-tier caching strategy:
  * 1. KV Cache (1 hour TTL) - Flattened config for ultra-fast access
- * 2. MongoDB - Source of truth
+ * 2. Admin API - Fetches from backend which queries MongoDB
  *
- * Flattened config includes:
- * - Gateway settings and variables
- * - All routes sorted by priority with compiled regex
+ * Architecture:
+ * Worker → KV Cache → Admin API → MongoDB
+ *
+ * This avoids MongoDB Data API (deprecated) and uses standard MongoDB drivers
+ * in the Admin backend (Cloudflare Pages Functions).
  */
 
-import type { Env, Gateway, Route, FlattenedGateway } from '../../../shared/src/types';
-import { MongoDBClient } from '../database/mongodb-client';
+import type { Env, FlattenedGateway } from '../../../shared/src/types';
 
 const CACHE_KEY_PREFIX = 'gateway:flattened:';
 const CACHE_TTL = 3600; // 1 hour in seconds
 
 export class GatewayLoader {
   /**
-   * Load gateway with flattened config from KV cache or MongoDB
+   * Load gateway with flattened config from KV cache or Admin API
    */
   static async load(subdomain: string, env: Env): Promise<FlattenedGateway | null> {
     // Try KV cache first
@@ -28,17 +29,11 @@ export class GatewayLoader {
       return cached;
     }
 
-    // Load from MongoDB
-    const db = new MongoDBClient(env);
-    const gateway = await db.findGatewayBySubdomain(subdomain);
-    if (!gateway || !gateway.active) {
+    // Fetch from Admin API
+    const flattened = await this.fetchFromAdminAPI(subdomain, env);
+    if (!flattened) {
       return null;
     }
-
-    const routes = await db.findRoutesByGateway(gateway._id!, { active: true });
-
-    // Flatten config for runtime
-    const flattened = this.flatten(gateway, routes);
 
     // Cache for 1 hour
     await this.putInCache(cacheKey, flattened, env.CACHE);
@@ -47,77 +42,39 @@ export class GatewayLoader {
   }
 
   /**
-   * Flatten gateway and routes for runtime
-   *
-   * - Extracts only runtime-needed fields
-   * - Compiles path patterns to regex
-   * - Sorts routes by priority
-   * - Flattens variables to simple key-value map
+   * Fetch gateway config from Admin API
+   * The Admin API handles MongoDB queries using standard drivers
    */
-  private static flatten(gateway: Gateway, routes: Route[]): FlattenedGateway {
-    // Extract variable values (strip metadata)
-    const variables: Record<string, string> = {};
-    for (const [key, config] of Object.entries(gateway.variables || {})) {
-      variables[key] = config.value;
+  private static async fetchFromAdminAPI(
+    subdomain: string,
+    env: Env
+  ): Promise<FlattenedGateway | null> {
+    const adminApiUrl = env.ADMIN_API_URL || 'http://localhost:5173';
+    const url = `${adminApiUrl}/api/gateway-config/${subdomain}`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null; // Gateway not found
+        }
+        throw new Error(`Admin API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as FlattenedGateway;
+
+    } catch (error) {
+      console.error('Failed to fetch gateway from Admin API:', error);
+      return null;
     }
-
-    // Process routes: compile regex, sort by priority
-    const flattenedRoutes = routes
-      .map((route) => ({
-        ...route,
-        pathRegex: this.compilePath(route.path),
-      }))
-      .sort((a, b) => b.priority - a.priority); // Higher priority first
-
-    // Generate version hash for cache invalidation
-    const version = this.generateVersion(gateway, routes);
-
-    return {
-      id: gateway._id!,
-      subdomain: gateway.subdomain,
-      active: gateway.active,
-      variables,
-      defaults: gateway.defaults,
-      routes: flattenedRoutes,
-      version,
-    };
   }
 
-  /**
-   * Compile path pattern to regex
-   *
-   * Converts route paths like:
-   * - "/users/:id" → /^\/users\/([^\/]+)$/
-   * - "/api/*" → /^\/api\/(.*)$/
-   * - "/posts/:id/comments/:commentId" → /^\/posts\/([^\/]+)\/comments\/([^\/]+)$/
-   */
-  private static compilePath(path: string): string {
-    // Escape special regex characters except : and *
-    let pattern = path.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-
-    // Replace :param with named capture group
-    // Store param names for later extraction
-    pattern = pattern.replace(/:([a-zA-Z0-9_]+)/g, '([^/]+)');
-
-    // Replace * with wildcard
-    pattern = pattern.replace(/\*/g, '(.*)');
-
-    // Anchor to start and end
-    pattern = `^${pattern}$`;
-
-    return pattern;
-  }
-
-  /**
-   * Generate version hash for cache invalidation
-   * Simple implementation: just use last updated timestamp
-   */
-  private static generateVersion(gateway: Gateway, routes: Route[]): string {
-    const gatewayTime = gateway.updatedAt ? new Date(gateway.updatedAt).getTime() : 0;
-    const routeTimes = routes.map((r) => (r.updatedAt ? new Date(r.updatedAt).getTime() : 0));
-    const maxTime = Math.max(gatewayTime, ...routeTimes);
-    return `v${maxTime}`;
-  }
 
   /**
    * Get flattened config from KV cache

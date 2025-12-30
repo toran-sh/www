@@ -23,6 +23,7 @@
     "setup:all": "npm run setup:mongodb && npm run seed:data"
   },
   "devDependencies": {
+    "mongodb": "^7.0.0",
     "typescript": "^5.3.3"
   },
   "engines": {
