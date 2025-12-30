@@ -37,9 +37,9 @@ wrangler pages secret put APP_URL --project-name=toran-admin
    - `RESEND_API_KEY`: Your Resend API key
    - `APP_URL`: `https://admin.toran.dev`
 
-## 3. Configure Resend Domain (Optional but Recommended)
+## 3. Configure Resend Domain (Required)
 
-By default, emails will be sent from `noreply@toran.dev`. To use your own domain:
+Emails are sent from `noreply@admin.toran.dev`. You need to verify this domain in Resend:
 
 1. In Resend dashboard, go to **Domains**
 2. Add your domain and verify DNS records
