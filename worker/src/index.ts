@@ -1,17 +1,19 @@
 /**
  * Toran API Gateway - Cloudflare Worker Entry Point
  *
- * New Pipeline Flow:
- * 1. Parse subdomain from request
- * 2. Load gateway config (flattened, cached in KV)
- * 3. Match route using compiled regex
- * 4. Build request context (params, variables, etc.)
- * 5. [Phase 2] Apply pre-request mutations
- * 6. Proxy request to destination
- * 7. [Phase 2] Apply post-response mutations
- * 8. [Phase 3] Cache response (if enabled)
- * 9. Log request/response asynchronously
- * 10. Return response to client
+ * Pipeline Flow:
+ * 1. Validate configuration
+ * 2. Parse subdomain from request
+ * 3. Load gateway config (flattened, cached in KV)
+ * 4. Match route using compiled regex
+ * 5. Build request context (params, variables, etc.)
+ * 6. Apply pre-request mutations (headers, query, body)
+ * 7. Proxy request to destination
+ * 8. Apply post-response mutations (headers, body, status)
+ * 9. [Phase 3] Cache response (if enabled)
+ * 10. Update stats asynchronously
+ * 11. Log request/response with execution breakdown
+ * 12. Return response to client
  */
 
 import type { Env } from '../../shared/src/types';
@@ -20,6 +22,7 @@ import { Router } from './core/router';
 import { ContextBuilder } from './core/context-builder';
 import { Logger } from './logging/logger';
 import { MongoDBClient } from './database/mongodb-client';
+import { MutationEngine } from './mutations/engine';
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -101,36 +104,50 @@ export default {
       const context = await ContextBuilder.build(request, gateway, env, namedParams || pathParams);
 
       // ========================================================================
-      // 6. Proxy Request to Destination
+      // 6. Apply Pre-Request Mutations
+      // ========================================================================
+      const preMutationsStart = performance.now();
+      const mutatedRequest = await MutationEngine.applyPreMutations(request, route, context);
+      const preMutationsEnd = performance.now();
+
+      // ========================================================================
+      // 7. Proxy Request to Destination
       // ========================================================================
       const proxyStart = performance.now();
       const destinationUrl = buildDestinationUrl(route, context);
 
-      // Simple proxy for Phase 1 (no mutations yet)
+      // Proxy with mutated request
       const proxyResponse = await fetch(destinationUrl, {
-        method: request.method,
-        headers: request.headers,
-        body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : undefined,
+        method: mutatedRequest.method,
+        headers: mutatedRequest.headers,
+        body: mutatedRequest.body,
       });
 
       const proxyEnd = performance.now();
 
       // ========================================================================
-      // 7. Add Response Headers
+      // 8. Apply Post-Response Mutations
       // ========================================================================
-      const response = new Response(proxyResponse.body, proxyResponse);
+      const postMutationsStart = performance.now();
+      const mutatedResponse = await MutationEngine.applyPostMutations(proxyResponse, route, context);
+      const postMutationsEnd = performance.now();
+
+      // ========================================================================
+      // 9. Add Response Headers
+      // ========================================================================
+      const response = mutatedResponse.response;
       response.headers.set('X-Toran-Gateway', subdomain);
       response.headers.set('X-Toran-Route', route.name);
 
       // ========================================================================
-      // 8. Update Stats Asynchronously
+      // 10. Update Stats Asynchronously
       // ========================================================================
       const db = new MongoDBClient(env);
       ctx.waitUntil(db.updateGatewayStats(gateway.id));
       ctx.waitUntil(db.updateRouteStats(route._id!, { cacheHit: false, duration: proxyEnd - proxyStart }));
 
       // ========================================================================
-      // 9. Log Request/Response Asynchronously
+      // 11. Log Request/Response Asynchronously
       // ========================================================================
       const endTime = performance.now();
       ctx.waitUntil(
@@ -142,13 +159,18 @@ export default {
             routeName: route.name,
             routeMatched: true,
             cacheHit: false,
-            mutationsApplied: { pre: 0, post: 0 }, // Phase 2: will track mutations
+            mutationsApplied: {
+              pre: mutatedRequest.mutationsApplied,
+              post: mutatedResponse.mutationsApplied,
+            },
             timing: {
               completedAt: new Date(),
               duration: endTime - startTime,
               breakdown: {
                 routing: routingEnd - routingStart,
+                preMutations: preMutationsEnd - preMutationsStart,
                 proxy: proxyEnd - proxyStart,
+                postMutations: postMutationsEnd - postMutationsStart,
               },
             },
           },
