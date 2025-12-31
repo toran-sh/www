@@ -47,3 +47,5 @@ lerna-debug.log*
 
 # Build info
 .tsbuildinfo
+.vercel
+.env*.local
