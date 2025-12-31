@@ -3,7 +3,7 @@
  * Handles magic link verification
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import './AuthVerify.css';
 
@@ -12,6 +12,7 @@ export default function AuthVerify() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [error, setError] = useState('');
+  const hasVerified = useRef(false);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -22,6 +23,10 @@ export default function AuthVerify() {
         setError('No token provided');
         return;
       }
+
+      // Prevent double execution in React StrictMode
+      if (hasVerified.current) return;
+      hasVerified.current = true;
 
       try {
         const response = await fetch(`/api/auth/verify?token=${token}`, {
@@ -38,7 +43,7 @@ export default function AuthVerify() {
         // Redirect to dashboard with full page reload to ensure cookie is processed
         setTimeout(() => {
           window.location.href = '/';
-        }, 1000);
+        }, 500);
 
       } catch (err) {
         setStatus('error');
