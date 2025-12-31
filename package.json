@@ -5,15 +5,15 @@
   "private": true,
   "workspaces": [
     "proxy",
-    "admin",
+    "www",
     "shared"
   ],
   "scripts": {
     "dev:proxy": "npm run dev --workspace=proxy",
-    "dev:admin": "npm run dev --workspace=admin",
+    "dev:www": "npm run dev --workspace=www",
     "deploy:proxy": "npm run deploy --workspace=proxy",
-    "deploy:admin": "npm run deploy --workspace=admin",
-    "deploy:all": "npm run deploy:proxy && npm run deploy:admin",
+    "deploy:www": "npm run deploy --workspace=www",
+    "deploy:all": "npm run deploy:proxy && npm run deploy:www",
     "build": "npm run build --workspaces --if-present",
     "setup:mongodb": "node scripts/setup-mongodb.js",
     "seed:data": "node scripts/seed-data.js",

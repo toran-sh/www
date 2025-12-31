@@ -24,7 +24,7 @@ toran/
 │   │   └── utils/           # Helper functions
 │   └── wrangler.toml        # Worker configuration
 │
-├── admin/              # Admin Panel - React SPA on Cloudflare Pages
+├── www/                # Web App - React SPA on Cloudflare Pages
 │   ├── src/
 │   │   ├── components/      # React components (Layout, Dashboard, etc.)
 │   │   ├── pages/           # Page components (Login, AuthVerify)
@@ -54,29 +54,39 @@ User Request → xyz.toran.dev
 [Cloudflare Worker - Proxy]
        ↓
 1. Extract subdomain: "xyz"
-2. Fetch gateway config from Admin API
+2. Fetch gateway config from KV (Redis-like storage)
 3. Forward request to destination URL
-4. Log request/response to MongoDB
+4. Send log to WWW API endpoint
 5. Return response to user
 ```
 
 ### Architecture Components
 
 1. **Proxy Worker** (`*.toran.dev`)
-   - Handles all subdomain requests
-   - Fetches gateway configuration from Admin API
+   - Lightweight, stateless reverse proxy
+   - Reads gateway configs from KV only (no database access)
    - Performs reverse proxying with path preservation
-   - Logs all requests to MongoDB
+   - Sends logs to WWW logging endpoint via HTTP POST
+   - Dependencies: KV namespace only
 
-2. **Admin Panel** (`admin.toran.dev`)
+2. **WWW (Admin + API)** (`admin.toran.dev`)
    - Manages gateway configurations (create, view, delete)
+   - Writes flattened configs to KV on create/update
+   - Receives logs from proxy via POST /api/logs
    - Magic link authentication (passwordless)
    - Request logs viewer with analytics
    - Dark/light mode theming
    - Responsive UI
 
-3. **MongoDB Database**
-   - `gateways` collection: Subdomain → destination URL mappings
+3. **KV Storage** (Redis-like)
+   - Key format: `gateway:config:{subdomain}`
+   - Value: Flattened gateway configuration (JSON)
+   - Shared between Proxy (read) and WWW (write)
+   - No expiration (configs persist until deleted)
+
+4. **MongoDB Database** (WWW only)
+   - `gateways` collection: Gateway configurations
+   - `routes` collection: Route definitions with mutations
    - `logs` collection: Request/response logs (30-day TTL)
    - `magic_links` collection: Auth tokens (15-minute TTL)
    - `sessions` collection: User sessions (24-hour inactivity TTL)
@@ -86,16 +96,18 @@ User Request → xyz.toran.dev
 ### Proxy
 - **Runtime**: Cloudflare Workers (Edge compute)
 - **Language**: TypeScript
-- **Database**: MongoDB Atlas
-- **Cache**: Cloudflare KV (for gateway configs)
+- **Storage**: Cloudflare KV (gateway configs, read-only)
+- **Dependencies**: None (no database, no external APIs except WWW logging)
 
-### Admin Panel
+### WWW (Admin + API)
 - **Framework**: React 18 + TypeScript
 - **Routing**: React Router v6
 - **Styling**: CSS Custom Properties (theme system)
 - **Build**: Vite 7
 - **Hosting**: Cloudflare Pages
 - **API**: Pages Functions (serverless)
+- **Database**: MongoDB Atlas (via standard driver)
+- **Storage**: Cloudflare KV (gateway configs, read-write)
 - **Auth**: Magic link via Resend
 
 ## 📦 Installation & Setup
@@ -130,15 +142,19 @@ npm run seed:data
 #### Proxy (`proxy/wrangler.toml`)
 ```bash
 cd proxy
-wrangler secret put ADMIN_API_URL
-# Enter: https://admin.toran.dev
+wrangler secret put WWW_API_URL
+# Enter: https://admin.toran.dev (or your WWW deployment URL)
 ```
 
-#### Admin (`admin/` - set via Cloudflare Pages dashboard)
+**KV Namespace**: Already configured in `wrangler.toml` (GATEWAY_CONFIG binding)
+
+#### WWW (`www/` - set via Cloudflare Pages dashboard)
 - `MONGODB_URI` - MongoDB connection string
 - `MONGODB_DATABASE` - Database name (default: toran)
 - `RESEND_API_KEY` - Resend API key for emails
 - `APP_URL` - Admin panel URL (https://admin.toran.dev)
+
+**KV Namespace**: Already configured in `wrangler.toml` (GATEWAY_CONFIG binding, shared with proxy)
 
 ### 4. Deploy
 
@@ -398,27 +414,44 @@ See `CLOUDFLARE_AUTO_DEPLOY.md` for detailed setup.
 
 ### Project Context
 This is a **monorepo** with 3 main workspaces:
-1. **proxy/** - Cloudflare Worker for proxying
-2. **admin/** - React admin panel on Cloudflare Pages
+1. **proxy/** - Cloudflare Worker (stateless reverse proxy)
+2. **www/** - React admin panel + API on Cloudflare Pages
 3. **shared/** - Shared TypeScript types
+
+### Architecture Principles
+
+**Separation of Concerns:**
+- **Proxy**: Only reads from KV, sends logs to WWW. No database access.
+- **WWW**: Manages MongoDB, writes to KV, receives logs from proxy.
+- **KV**: Single source of truth for gateway configs, shared between proxy and WWW.
+
+**Data Flow:**
+- **Config writes**: User → WWW → MongoDB → KV (flattened)
+- **Config reads**: Proxy → KV → Response
+- **Logging**: Proxy → WWW API → MongoDB
 
 ### Common Tasks
 
-**Add a new API endpoint to admin:**
-- Create file in `admin/functions/api/<endpoint>.ts`
+**Add a new API endpoint to WWW:**
+- Create file in `www/functions/api/<endpoint>.ts`
 - Export `onRequestGet`, `onRequestPost`, etc.
 - Access via `/api/<endpoint>`
+- Can access MongoDB and KV via env bindings
 
 **Modify proxy logic:**
 - Edit `proxy/src/index.ts`
+- Proxy can only read from KV (via GATEWAY_CONFIG binding)
+- Proxy sends logs to WWW (via WWW_API_URL)
 - Deploy with `npm run deploy:proxy`
 
-**Update shared types:**
-- Edit `shared/src/types.ts`
-- Types are automatically shared across all workspaces
+**Update gateway config schema:**
+1. Edit `shared/src/types/gateway.ts` or `route.ts`
+2. Update `www/functions/utils/gateway-flatten.ts` to flatten new fields
+3. Update proxy to use new fields
+4. Types are automatically shared across all workspaces
 
-**Add a new admin component:**
-- Create in `admin/src/components/`
+**Add a new WWW component:**
+- Create in `www/src/components/`
 - Import and use in pages
 - Follow existing patterns (useAuth, useTheme hooks)
 
@@ -427,13 +460,26 @@ This is a **monorepo** with 3 main workspaces:
 **Why Cloudflare Workers?**
 - Edge compute (fast globally)
 - Serverless (no infrastructure management)
-- Built-in KV storage for caching
+- Built-in KV storage (Redis-like)
 - Pages Functions for backend API
 
+**Why separate Proxy and WWW?**
+- Proxy is lightweight and fast (no database overhead)
+- WWW handles complex operations (MongoDB queries, config flattening)
+- Better separation of concerns
+- Easier to scale independently
+
+**Why KV for configs?**
+- Sub-millisecond read latency
+- Global edge distribution
+- No rate limits on reads
+- Perfect for read-heavy proxy workload
+
 **Why MongoDB?**
-- TTL indexes for auto-cleanup
+- TTL indexes for auto-cleanup (logs, sessions, magic links)
 - Flexible schema for future features
 - Atlas free tier sufficient for moderate usage
+- Rich querying for logs and analytics
 
 **Why Magic Link Auth?**
 - No password management complexity
@@ -441,7 +487,7 @@ This is a **monorepo** with 3 main workspaces:
 - Better UX (one-click login)
 
 **Why Monorepo?**
-- Shared types across proxy and admin
+- Shared types across proxy and WWW
 - Atomic commits for related changes
 - Easier to maintain single source of truth
 

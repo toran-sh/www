@@ -24,6 +24,7 @@ import { ContextBuilder } from './core/context-builder';
 import { MutationEngine } from './mutations/engine';
 import { CacheManager } from './cache/cache-manager';
 import { CacheKeyGenerator } from './cache/key-generator';
+import { Logger } from './logging/logger';
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -33,8 +34,8 @@ export default {
       // ========================================================================
       // 1. Validate Configuration
       // ========================================================================
-      if (!env.ADMIN_API_URL) {
-        return errorResponse('CONFIGURATION_ERROR', 'Admin API URL not configured', 500);
+      if (!env.GATEWAY_CONFIG) {
+        return errorResponse('CONFIGURATION_ERROR', 'Gateway config KV namespace not bound', 500);
       }
 
       // ========================================================================
@@ -75,11 +76,7 @@ export default {
         // Build context for logging (no route match)
         const context = await ContextBuilder.build(request, gateway, env, {});
 
-        // TODO: Log no-match request via Admin API
-        // MongoDB logging removed - Worker no longer has direct DB access
-
-        // Debug response with route info
-        return new Response(
+        const noMatchResponse = new Response(
           JSON.stringify({
             error: 'NO_ROUTE_MATCH',
             message: 'No route matched for this request',
@@ -95,6 +92,26 @@ export default {
             headers: { 'Content-Type': 'application/json', 'X-Toran-Error': 'NO_ROUTE_MATCH' }
           }
         );
+
+        // Log the no-match request
+        ctx.waitUntil(
+          Logger.logRequest(context, noMatchResponse, {
+            routeId: null,
+            routeMatched: false,
+            cacheHit: false,
+            mutationsApplied: { pre: 0, post: 0 },
+            timing: {
+              completedAt: new Date(),
+              duration: performance.now() - startTime,
+              breakdown: {
+                routing: routingEnd - routingStart,
+                proxy: 0,
+              },
+            },
+          }, env)
+        );
+
+        return noMatchResponse;
       }
 
       const { route, pathParams } = routeMatch;
@@ -124,8 +141,25 @@ export default {
           cacheHit = true;
           const cachedResponse = CacheManager.toResponse(cached);
 
-          // TODO: Log cache hit via Admin API
-          // MongoDB logging removed - Worker no longer has direct DB access
+          // Log cache hit
+          ctx.waitUntil(
+            Logger.logRequest(context, cachedResponse, {
+              routeId: route._id || null,
+              routeName: route.name,
+              routeMatched: true,
+              cacheHit: true,
+              mutationsApplied: { pre: 0, post: 0 },
+              timing: {
+                completedAt: new Date(),
+                duration: performance.now() - startTime,
+                breakdown: {
+                  routing: routingEnd - routingStart,
+                  proxy: 0,
+                  caching: cachingEnd - cachingStart,
+                },
+              },
+            }, env)
+          );
 
           return cachedResponse;
         }
@@ -179,10 +213,31 @@ export default {
       }
 
       // ========================================================================
-      // 11. Update Stats Asynchronously
+      // 11. Log Request/Response
       // ========================================================================
-      // TODO: Update stats and log via Admin API
-      // MongoDB logging removed - Worker no longer has direct DB access
+      const endTime = performance.now();
+      ctx.waitUntil(
+        Logger.logRequest(context, response, {
+          routeId: route._id || null,
+          routeName: route.name,
+          routeMatched: true,
+          cacheHit: false,
+          mutationsApplied: {
+            pre: mutatedRequest.mutationsApplied || 0,
+            post: mutatedResponse.mutationsApplied || 0,
+          },
+          timing: {
+            completedAt: new Date(),
+            duration: endTime - startTime,
+            breakdown: {
+              routing: routingEnd - routingStart,
+              preMutations: preMutationsEnd - preMutationsStart,
+              proxy: proxyEnd - proxyStart,
+              postMutations: postMutationsEnd - postMutationsStart,
+            },
+          },
+        }, env)
+      );
 
       return response;
     } catch (error) {

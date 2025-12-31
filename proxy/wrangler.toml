@@ -5,13 +5,12 @@ compatibility_date = "2024-12-01"
 # Environment variables
 [vars]
 ENVIRONMENT = "production"
+# WWW_API_URL - Admin/WWW API endpoint for logging (set with: wrangler secret put WWW_API_URL)
+# For production: https://toran-www.pages.dev
 
-# ADMIN_API_URL secret - set with: wrangler secret put ADMIN_API_URL
-# For production, this should be: https://toran-admin.pages.dev
-
-# KV namespace for caching
+# KV namespace for gateway configs (populated by WWW)
 [[kv_namespaces]]
-binding = "CACHE"
+binding = "GATEWAY_CONFIG"
 id = "915c6dae07f94d2faf888513af25520a"
 preview_id = "9a8e25216f7342c683194d6aebb02adf"
 

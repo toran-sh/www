@@ -10,10 +10,12 @@
  */
 
 import { MongoClient, ObjectId } from 'mongodb';
-import type { Gateway } from '../../../shared/src/types';
+import type { Gateway, Route } from '../../../shared/src/types';
+import { flattenGateway, writeGatewayToKV, deleteGatewayFromKV } from '../utils/gateway-flatten';
 
 interface Env {
   MONGODB_URI: string;
+  GATEWAY_CONFIG: KVNamespace;
 }
 
 // MongoDB connection (reuse across requests)
@@ -93,6 +95,12 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       const result = await gateways.insertOne(gateway as Gateway);
       const created = await gateways.findOne({ _id: result.insertedId });
 
+      // Write flattened config to KV (with empty routes initially)
+      if (created) {
+        const flattened = flattenGateway(created, []);
+        await writeGatewayToKV(created.subdomain, flattened, env.GATEWAY_CONFIG);
+      }
+
       return jsonResponse(created, 201);
     }
 
@@ -120,16 +128,37 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
       const updated = await gateways.findOne({ _id: new ObjectId(params.id as string) });
 
-      // Invalidate gateway cache in worker KV
-      // Note: This would need access to the worker's KV binding
-      // For now, cache will auto-expire after 1 hour
+      // Write updated flattened config to KV
+      if (updated) {
+        // Fetch routes for this gateway
+        const routes = await db.collection<Route>('routes')
+          .find({
+            $or: [
+              { gatewayId: updated._id!.toString() },
+              { gatewayId: updated._id }
+            ],
+            active: true,
+          })
+          .toArray();
+
+        const flattened = flattenGateway(updated, routes);
+        await writeGatewayToKV(updated.subdomain, flattened, env.GATEWAY_CONFIG);
+      }
 
       return jsonResponse(updated);
     }
 
     // Delete gateway
     if (method === 'DELETE' && params.id) {
+      const gateway = await gateways.findOne({ _id: new ObjectId(params.id as string) });
+
       await gateways.deleteOne({ _id: new ObjectId(params.id as string) });
+
+      // Delete from KV
+      if (gateway) {
+        await deleteGatewayFromKV(gateway.subdomain, env.GATEWAY_CONFIG);
+      }
+
       return jsonResponse({ success: true });
     }
 

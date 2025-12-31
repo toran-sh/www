@@ -1,16 +1,16 @@
 /**
- * Enhanced Logger - Logs requests/responses with execution breakdown
+ * Enhanced Logger - Posts logs to WWW logging endpoint
  *
  * Features:
  * - Detailed timing breakdown (routing, mutations, proxy, caching)
  * - Request/response capture with size limits
  * - Error tracking with phase information
  * - Body truncation for large payloads
+ * - Sends logs to WWW endpoint via HTTP POST
  */
 
-import type { Log } from '../../../shared/src/types';
+import type { Log, Env } from '../../../shared/src/types';
 import type { RequestContext } from '../core/context-builder';
-import { MongoDBClient } from '../database/mongodb-client';
 
 const MAX_BODY_SIZE = 10 * 1024; // 10KB
 const BODY_TRUNCATE_SUFFIX = '... [truncated]';
@@ -48,12 +48,13 @@ export interface LogOptions {
 export class Logger {
   /**
    * Log request/response with execution details
+   * Sends log to WWW logging endpoint
    */
   static async logRequest(
     context: RequestContext,
     response: Response,
     options: LogOptions,
-    db: MongoDBClient
+    env: Env
   ): Promise<void> {
     try {
       // Extract response body (clone to avoid consuming)
@@ -109,10 +110,34 @@ export class Logger {
         error: options.error,
       };
 
-      // Insert log asynchronously
-      await db.insertLog(log);
+      // Send log to WWW endpoint
+      await this.sendLogToWWW(log, env);
     } catch (error) {
       console.error('Failed to log request:', error);
+    }
+  }
+
+  /**
+   * Send log to WWW logging endpoint via HTTP POST
+   */
+  private static async sendLogToWWW(log: Partial<Log>, env: Env): Promise<void> {
+    try {
+      const wwwApiUrl = env.WWW_API_URL || 'http://localhost:5173';
+      const url = `${wwwApiUrl}/api/logs`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(log),
+      });
+
+      if (!response.ok) {
+        console.error(`Failed to send log to WWW: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error sending log to WWW:', error);
     }
   }
 

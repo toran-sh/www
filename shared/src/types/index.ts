@@ -18,15 +18,16 @@ export interface KVNamespace {
 }
 
 /**
- * Cloudflare Worker environment bindings
+ * Cloudflare Worker environment bindings (Proxy)
  */
 export interface Env {
-  // Admin API URL - Worker fetches gateway configs from Admin backend
-  // Admin backend uses MongoDB drivers to query the database
-  ADMIN_API_URL: string;
+  // Gateway config KV namespace (populated by WWW)
+  // Key format: gateway:config:{subdomain}
+  GATEWAY_CONFIG: KVNamespace;
 
-  // Optional KV cache for configs and responses
-  CACHE?: KVNamespace;
+  // WWW API URL for logging
+  // Proxy sends logs to WWW endpoint
+  WWW_API_URL?: string;
 
   // Environment
   ENVIRONMENT?: string;
