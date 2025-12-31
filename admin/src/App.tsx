@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
 import { ThemeProvider } from './hooks/useTheme';
 import ProtectedRoute from './components/ProtectedRoute';
+import ThemeToggle from './components/ThemeToggle';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import MappingList from './components/MappingList';
@@ -15,6 +16,7 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
+          <ThemeToggle />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/auth/verify" element={<AuthVerify />} />
