@@ -326,7 +326,7 @@ Theme preference is saved to localStorage and accessible via floating widget in 
 
 ```bash
 # Start both frontend and API locally (recommended)
-npm run dev
+npm run dev:api
 ```
 
 This runs `vercel dev` which:
@@ -335,13 +335,18 @@ This runs `vercel dev` which:
 - ✅ Matches production environment exactly
 - ✅ Auto-reloads on changes
 
+**Frontend only** (without API):
+```bash
+npm run dev
+```
+
 **Proxy Development**: See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository
 
 ### Project Scripts
 
 ```bash
-npm run dev                 # Start full app (frontend + API via Vercel CLI)
-npm run dev:frontend        # Start frontend only (Vite dev server, no API)
+npm run dev:api             # Start full app (frontend + API via Vercel CLI)
+npm run dev                 # Start frontend only (Vite dev server, no API)
 npm run build               # Build for production
 npm run deploy              # Deploy to Vercel
 npm run setup:mongodb       # Initialize MongoDB collections

@@ -8,8 +8,8 @@
     "shared"
   ],
   "scripts": {
-    "dev": "vercel dev",
-    "dev:frontend": "vite",
+    "dev": "vite",
+    "dev:api": "vercel dev",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "deploy": "vercel --prod",
@@ -37,7 +37,7 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.3.3",
-    "vercel": "^33.0.0",
+    "vercel": "^33.7.1",
     "vite": "^7.3.0"
   },
   "engines": {
