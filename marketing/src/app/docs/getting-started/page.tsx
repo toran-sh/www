@@ -15,7 +15,7 @@ export default function GettingStarted() {
         </nav>
 
         <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 prose prose-blue max-w-none">
-          <h1>Getting Started with Toran</h1>
+          <h1>Getting Started with toran.dev</h1>
 
           <p className="lead">
             Learn how to set up and deploy your first API gateway in minutes.

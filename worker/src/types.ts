@@ -1,5 +1,5 @@
 /**
- * Worker-specific types for Toran reverse proxy
+ * Worker-specific types for toran project
  */
 
 import type { Mapping, Log } from '../../shared/types';

@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Toran - API Gateway as a Service',
+  title: 'toran.dev - API Accelerator & Debugger',
   description:
     'Transform, cache, and route API requests with powerful mutations. Built on Cloudflare Workers.',
 };

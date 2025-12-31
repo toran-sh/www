@@ -1,5 +1,5 @@
 /**
- * Request/Response logging module for Toran proxy
+ * Request/Response logging module for toran.dev accelerator & debugger
  */
 
 import type { MongoDBClient } from './database';

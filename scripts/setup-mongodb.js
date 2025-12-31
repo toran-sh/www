@@ -1,7 +1,7 @@
 /**
  * MongoDB Setup Script
  *
- * Creates collections and indexes for Toran API Gateway
+ * Creates collections and indexes for toran.dev API Accelerator & Debugger
  * Run with: node scripts/setup-mongodb.js
  */
 
@@ -21,7 +21,7 @@ if (!MONGODB_URI) {
 }
 
 async function setupMongoDB() {
-  console.log('🔧 Setting up MongoDB for Toran API Gateway\n');
+  console.log('🔧 Setting up MongoDB for toran.dev API Accelerator & Debugger\n');
 
   const client = new MongoClient(MONGODB_URI);
 

@@ -1,5 +1,5 @@
 /**
- * Toran API Gateway - Cloudflare Worker Entry Point
+ * toran.dev API Accelerator & Debugger - Cloudflare Worker Entry Point
  *
  * Pipeline Flow:
  * 1. Validate configuration

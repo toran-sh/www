@@ -1,5 +1,5 @@
 /**
- * Shared type definitions for Toran API Gateway
+ * Shared type definitions for toran.dev API Accelerator & Debugger
  */
 
 // Re-export all types

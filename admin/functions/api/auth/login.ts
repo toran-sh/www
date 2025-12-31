@@ -39,9 +39,9 @@ async function sendMagicLinkEmail(email: string, magicLink: string, apiKey: stri
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Toran Admin <noreply@admin.toran.dev>',
+        from: 'toran.dev Admin <noreply@admin.toran.dev>',
         to: [email],
-        subject: 'Your Toran Admin Login Link',
+        subject: 'Your toran.dev Admin Login Link',
         html: `
           <!DOCTYPE html>
           <html>
@@ -56,10 +56,10 @@ async function sendMagicLinkEmail(email: string, magicLink: string, apiKey: stri
             </head>
             <body>
               <div class="container">
-                <h1>🔐 Toran Admin Login</h1>
-                <p>Click the button below to log in to your Toran Admin panel:</p>
+                <h1>🔐 toran.dev Admin Login</h1>
+                <p>Click the button below to log in to your toran.dev Admin panel:</p>
                 <p>
-                  <a href="${magicLink}" class="button">Log In to Toran Admin</a>
+                  <a href="${magicLink}" class="button">Log In to toran.dev Admin</a>
                 </p>
                 <p>Or copy and paste this link into your browser:</p>
                 <p><a href="${magicLink}">${magicLink}</a></p>

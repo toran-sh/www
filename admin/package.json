@@ -1,7 +1,7 @@
 {
   "name": "toran-admin",
   "version": "1.0.0",
-  "description": "Admin dashboard for Toran API Gateway",
+  "description": "Admin dashboard for toran.dev API Accelerator & Debugger",
   "private": true,
   "type": "module",
   "scripts": {

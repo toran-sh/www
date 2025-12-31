@@ -1,10 +1,10 @@
-# MongoDB Setup for Toran API Gateway
+# MongoDB Setup for toran.dev API Accelerator & Debugger
 
-This document outlines the MongoDB database schema, indexes, and setup instructions for the Toran API Gateway system.
+This document outlines the MongoDB database schema, indexes, and setup instructions for the toran.dev API Accelerator & Debugger system.
 
 ## Database Overview
 
-Toran uses MongoDB to store gateway configurations, routes, and request/response logs. The database consists of three main collections:
+toran.dev uses MongoDB to store gateway configurations, routes, and request/response logs. The database consists of three main collections:
 
 1. **gateways** - Gateway configurations and settings
 2. **routes** - Route definitions with mutations and caching rules

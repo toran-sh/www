@@ -1,4 +1,4 @@
-# Toran Admin Authentication Setup Guide
+# toran.dev Admin Authentication Setup Guide
 
 Magic link authentication has been successfully implemented! Here's how to complete the setup:
 
@@ -45,7 +45,7 @@ Emails are sent from `noreply@admin.toran.dev`. You need to verify this domain i
 2. Add your domain and verify DNS records
 3. Update the email sender in `/admin/functions/api/auth/login.ts`:
    ```typescript
-   from: 'Toran Admin <noreply@yourdomain.com>',
+   from: 'toran.dev Admin <noreply@yourdomain.com>',
    ```
 
 ## 4. MongoDB Collections Created

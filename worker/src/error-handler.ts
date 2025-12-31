@@ -1,5 +1,5 @@
 /**
- * Error handling utilities for Toran proxy
+ * Error handling utilities for toran.dev accelerator & debugger
  */
 
 import type { ErrorResponse } from '../../shared/types';
@@ -146,7 +146,7 @@ function createErrorHTML(code: string, message: string, status: number): string 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Error ${status} - Toran Proxy</title>
+  <title>Error ${status} - toran.dev Accelerator & Debugger</title>
   <style>
     * {
       margin: 0;
@@ -208,7 +208,7 @@ function createErrorHTML(code: string, message: string, status: number): string 
     <div class="code">${code}</div>
     <div class="message">${escapeHtml(message)}</div>
     <div class="footer">
-      Powered by <a href="https://toran.dev">Toran Proxy</a>
+      Powered by <a href="https://www.toran.dev">toran.dev Accelerator & Debugger</a>
     </div>
   </div>
 </body>

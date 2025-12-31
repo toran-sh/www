@@ -1,5 +1,5 @@
 /**
- * Shared TypeScript types for Toran reverse proxy system
+ * Shared TypeScript types for toran project
  */
 
 /**

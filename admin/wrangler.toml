@@ -1,4 +1,4 @@
-# Cloudflare Pages configuration for Toran Admin
+# Cloudflare Pages configuration for toran.dev Admin
 name = "toran-admin"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]

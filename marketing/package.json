@@ -1,7 +1,7 @@
 {
   "name": "toran-marketing",
   "version": "1.0.0",
-  "description": "Marketing and documentation site for Toran API Gateway",
+  "description": "Marketing and documentation site for toran.dev API Accelerator & Debugger",
   "private": true,
   "scripts": {
     "dev": "next dev",

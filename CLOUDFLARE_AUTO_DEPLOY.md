@@ -1,6 +1,6 @@
 # Cloudflare Pages Auto-Deployment Setup
 
-This guide shows how to set up automatic deployments from GitHub to Cloudflare Pages for the Toran Admin panel.
+This guide shows how to set up automatic deployments from GitHub to Cloudflare Pages for the toran.dev Admin panel.
 
 ## Benefits
 

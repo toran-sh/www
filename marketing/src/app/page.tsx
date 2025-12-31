@@ -1,5 +1,5 @@
 /**
- * Toran Marketing - Landing Page
+ * toran.dev - Landing Page
  */
 
 import Link from 'next/link';
@@ -143,7 +143,7 @@ export default function Home() {
       <footer className="bg-gray-900 text-gray-400 py-12">
         <div className="container mx-auto px-4 max-w-6xl text-center">
           <p>
-            © 2024 Toran API Gateway. Built with Cloudflare Workers, MongoDB,
+            Built with ❤️ by the toran.dev team.
             and React.
           </p>
         </div>

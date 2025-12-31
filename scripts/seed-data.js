@@ -1,7 +1,7 @@
 /**
  * Data Seeding Script
  *
- * Seeds test gateway and routes for Toran API Gateway
+ * Seeds test gateway and routes for toran.dev API Accelerator & Debugger
  * Run with: node scripts/seed-data.js
  */
 
@@ -20,7 +20,7 @@ if (!MONGODB_URI) {
 }
 
 async function seedData() {
-  console.log('🌱 Seeding test data for Toran API Gateway\n');
+  console.log('🌱 Seeding test data for toran.dev API Accelerator & Debugger\n');
 
   const client = new MongoClient(MONGODB_URI);
 
@@ -38,7 +38,7 @@ async function seedData() {
     const gateway = {
       subdomain: 'test',
       name: 'Test Gateway',
-      description: 'Example gateway for testing Toran features',
+      description: 'Example gateway for testing toran.dev features',
       baseUrl: 'https://jsonplaceholder.typicode.com',
       active: true,
       variables: {

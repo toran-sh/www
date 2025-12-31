@@ -1,6 +1,6 @@
-# Toran API Gateway - Testing Guide
+# toran.dev API Accelerator & Debugger - Testing Guide
 
-Comprehensive testing guide for validating your Toran deployment.
+Comprehensive testing guide for validating your toran.dev deployment.
 
 ## Table of Contents
 
@@ -476,7 +476,7 @@ db.logs.findOne({}, {
 #!/bin/bash
 # test-all.sh
 
-echo "Testing Toran API Gateway..."
+echo "Testing toran.dev API Accelerator & Debugger..."
 
 # Test gateway resolution
 echo "1. Testing gateway resolution..."

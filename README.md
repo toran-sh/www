@@ -1,4 +1,4 @@
-# Toran API Gateway
+# toran.dev API Accelerator & Debugger
 
 **API Gateway as a Service** built on Cloudflare Workers with MongoDB, offering powerful request/response mutations, intelligent caching, and full observability.
 

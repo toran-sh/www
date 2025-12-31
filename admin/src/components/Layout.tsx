@@ -17,7 +17,7 @@ function Layout() {
         <div className="container header-content">
           <h1 className="logo">
             <span className="logo-icon">⚡</span>
-            Toran Admin
+            toran.dev Admin
           </h1>
           <nav className="nav">
             <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
@@ -54,7 +54,7 @@ function Layout() {
       <footer className="footer">
         <div className="container text-center">
           <p className="text-sm text-gray mb-0">
-            Powered by Cloudflare Workers • Toran Reverse Proxy
+            Built with ❤️ by the toran.dev team.
           </p>
         </div>
       </footer>

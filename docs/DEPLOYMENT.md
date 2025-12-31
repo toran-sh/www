@@ -1,6 +1,6 @@
-# Toran API Gateway - Deployment Guide
+# toran.dev API Accelerator & Debugger - Deployment Guide
 
-Complete guide for deploying Toran to production.
+Complete guide for deploying toran.dev to production.
 
 ## Prerequisites Checklist
 
@@ -54,7 +54,7 @@ node scripts/setup-mongodb.js
 
 **Expected output:**
 ```
-🔧 Setting up MongoDB for Toran API Gateway
+🔧 Setting up MongoDB for toran.dev API Accelerator & Debugger
 📡 Connecting to MongoDB...
 ✅ Connected successfully
 
@@ -81,7 +81,7 @@ node scripts/seed-data.js
 
 **Expected output:**
 ```
-🌱 Seeding test data for Toran API Gateway
+🌱 Seeding test data for toran.dev API Accelerator & Debugger
 ✅ Connected to MongoDB
 
 📦 Creating test gateway...
@@ -378,4 +378,4 @@ For issues or questions:
 
 ---
 
-**Congratulations!** 🎉 Your Toran API Gateway is now deployed and ready for production use.
+**Congratulations!** 🎉 Your toran.dev API Accelerator & Debugger is now deployed and ready for production use.
