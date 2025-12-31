@@ -12,16 +12,12 @@ interface Env {
   MONGODB_DATABASE: string;
 }
 
-let cachedClient: MongoClient | null = null;
-
 async function getMongoClient(env: Env): Promise<MongoClient> {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  const client = new MongoClient(env.MONGODB_URI);
+  const client = new MongoClient(env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000, // 5 second timeout
+    connectTimeoutMS: 5000,
+  });
   await client.connect();
-  cachedClient = client;
   return client;
 }
 
