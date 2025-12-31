@@ -34,7 +34,7 @@ export default function Home() {
       <header className="container mx-auto px-6 py-6">
         <nav className="flex items-center justify-between">
           <div className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 bg-clip-text text-transparent">
-            Toran
+            toran
           </div>
           <Link
             href="/login"
@@ -49,7 +49,7 @@ export default function Home() {
       <main className="container mx-auto px-6 py-20">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-bold leading-tight tracking-tight md:text-6xl">
-            API Gateway as a{" "}
+            API Accelerator & Debugger as a{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 bg-clip-text text-transparent">
               Service
             </span>
@@ -123,7 +123,7 @@ export default function Home() {
         <section className="mt-32 text-center">
           <h2 className="text-3xl font-bold">Ready to get started?</h2>
           <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-            Join developers using Toran to power their API infrastructure.
+            Join developers using toran to power their API integration.
           </p>
           <Link
             href="/login"
@@ -141,7 +141,7 @@ export default function Home() {
             Built with Cloudflare Workers, MongoDB, and React
           </div>
           <div className="text-sm text-zinc-500">
-            Toran - API Gateway as a Service
+            toran - API Accelerator & Debugger
           </div>
         </div>
       </footer>

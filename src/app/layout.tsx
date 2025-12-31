@@ -15,8 +15,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Toran - API Gateway as a Service",
-  description: "Transform, cache, and route API requests with powerful mutations. Built on Cloudflare Workers for global edge performance.",
+  title: "toran - API Acceleration & Debugger",
+  description: "Accelerate, Transform, Debug your API requests. Globally distributed edge performance.",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({

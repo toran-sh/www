@@ -19,7 +19,7 @@ export default async function DashboardPage() {
             href="/"
             className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 bg-clip-text text-transparent"
           >
-            Toran
+            toran
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-zinc-600 dark:text-zinc-400">{email}</span>
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
       <main className="container mx-auto px-6 py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">Welcome to your Toran dashboard</p>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">Welcome to your toran dashboard</p>
         </div>
 
         {/* Stats Grid */}
