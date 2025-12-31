@@ -88,7 +88,7 @@ export default function Login() {
         <div className="login-header">
           <img
             src="/logo.png"
-            alt="Toran Logo"
+            alt="toran Logo"
             className="login-logo"
             style={{
               width: '80px',
@@ -97,7 +97,7 @@ export default function Login() {
               display: 'block'
             }}
           />
-          <h1 className="login-title">toran.dev</h1>
+          <h1 className="login-title">toran</h1>
           <h2 className="login-subtitle">Sign in to your account</h2>
           <p className="login-description">
             Enter your email to receive a magic login link
@@ -158,7 +158,7 @@ export default function Login() {
           </button>
 
           <div className="login-footer">
-            <p>By continuing, you agree to receive login emails from toran.dev.</p>
+            <p>By continuing, you agree to receive login emails from toran.</p>
           </div>
         </form>
       </div>

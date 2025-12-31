@@ -16,7 +16,7 @@ function Layout() {
       <header className="header">
         <div className="container header-content">
           <h1 className="logo">
-            <img src="/logo.png" alt="Toran" className="logo-icon" />
+            <img src="/logo.png" alt="toran" className="logo-icon" />
             toran.dev
           </h1>
           <nav className="nav">

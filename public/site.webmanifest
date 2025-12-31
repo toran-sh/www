@@ -1,7 +1,7 @@
 {
-  "name": "Toran - API Gateway",
-  "short_name": "Toran",
-  "description": "API Gateway with reverse proxy, logging, and analytics",
+  "name": "toran - API Accelerator & Debugger",
+  "short_name": "toran",
+  "description": "API Gateway with reverse proxy, caching, logging, and analytics",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

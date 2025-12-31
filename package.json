@@ -1,7 +1,7 @@
 {
   "name": "toran-www",
   "version": "1.0.0",
-  "description": "Toran WWW - Admin panel and API for Toran API Gateway",
+  "description": "toran WWW - Admin panel and API for toran API",
   "private": true,
   "type": "module",
   "workspaces": [

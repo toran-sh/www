@@ -1,12 +1,12 @@
-# Toran WWW - Admin Panel & API
+# toran www - Admin Panel & API
 
-Admin panel and API for Toran API Gateway. Manages MongoDB, writes flattened configs to KV, and receives logs from the proxy.
+Admin panel and API for toran API Accelerator & Debugger. Manages MongoDB, writes flattened configs to KV, and receives logs from the proxy.
 
 **Note**: The proxy is now in a separate repository: [toran-proxy](https://github.com/kxbnb/toran-proxy)
 
-## 🎯 What is Toran?
+## 🎯 What is toran?
 
-Toran allows you to create and manage custom subdomains (e.g., `api.toran.dev`, `staging.toran.dev`) that act as gateways to your backend services. Each subdomain is a fully managed reverse proxy with:
+toran allows you to create and manage custom subdomains (e.g., `api.toran.dev`, `staging.toran.dev`) that act as gateways to your backend services. Each subdomain is a fully managed reverse proxy with:
 
 - **Auto-generated subdomains** (8-12 character random strings)
 - **Path preservation** - Requests to `xyz.toran.dev/users/123` forward to `your-backend.com/users/123`
@@ -186,7 +186,7 @@ npm run deploy
 # Original backend:
 curl https://api.example.com/users
 
-# Via Toran gateway:
+# Via toran gateway:
 curl https://xyz123abc.toran.dev/users
 
 # Path is preserved:
@@ -403,7 +403,7 @@ Required environment variables for Vercel deployment:
 ## 🧠 For AI Agents (Claude, etc.)
 
 ### Project Context
-This repository contains **toran-www**, the admin panel and API for Toran API Gateway.
+This repository contains **toran-www**, the admin panel and API for toran API Gateway.
 
 **Structure**:
 1. **src/** - React admin panel (Vite + React)
