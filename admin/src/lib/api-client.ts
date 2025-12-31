@@ -1,5 +1,5 @@
 /**
- * API Client for toran.dev Admin UI
+ * API Client for toran.dev admin UI
  *
  * Communicates with Cloudflare Pages Functions (admin/functions/api/...)
  */

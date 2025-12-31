@@ -78,7 +78,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1 className="login-title">toran.dev Admin</h1>
+          <h1 className="login-title">toran.dev</h1>
           <h2 className="login-subtitle">Sign in to your account</h2>
           <p className="login-description">
             Enter your email to receive a magic login link

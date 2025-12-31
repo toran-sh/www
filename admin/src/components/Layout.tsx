@@ -17,7 +17,7 @@ function Layout() {
         <div className="container header-content">
           <h1 className="logo">
             <span className="logo-icon">⚡</span>
-            toran.dev Admin
+            toran.dev
           </h1>
           <nav className="nav">
             <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
