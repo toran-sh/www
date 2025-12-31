@@ -8,16 +8,22 @@
     "shared"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=www",
-    "deploy": "npm run deploy --workspace=www",
-    "build": "npm run build --workspaces --if-present",
+    "dev": "vercel dev",
+    "build": "cd www && npm run build",
+    "deploy": "vercel --prod",
     "setup:mongodb": "node scripts/setup-mongodb.js",
     "seed:data": "node scripts/seed-data.js",
     "setup:all": "npm run setup:mongodb && npm run seed:data"
   },
+  "dependencies": {
+    "@vercel/kv": "^2.0.0",
+    "@vercel/node": "^3.0.0",
+    "dotenv": "^16.0.0",
+    "mongodb": "^7.0.0"
+  },
   "devDependencies": {
-    "mongodb": "^7.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vercel": "^33.0.0"
   },
   "engines": {
     "node": ">=18.0.0",

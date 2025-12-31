@@ -8,8 +8,19 @@
 
 const { MongoClient } = require('mongodb');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'REDACTED_MONGODB_URI';
+// Load environment variables from .env files
+require('dotenv').config();
+
+const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DATABASE = process.env.MONGODB_DATABASE || 'toran';
+
+if (!MONGODB_URI) {
+  console.error('❌ Error: MONGODB_URI environment variable is required');
+  console.error('\nPlease set it by either:');
+  console.error('  1. Creating a .env file with MONGODB_URI=your_connection_string');
+  console.error('  2. Exporting it: export MONGODB_URI="your_connection_string"');
+  process.exit(1);
+}
 
 async function setupAuth() {
   const client = new MongoClient(MONGODB_URI);
