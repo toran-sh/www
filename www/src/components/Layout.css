@@ -32,7 +32,10 @@
 }
 
 .logo-icon {
-  font-size: 1.75rem;
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* Make logo white to match header */
 }
 
 /* Navigation */

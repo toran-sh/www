@@ -78,6 +78,17 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
+          <img
+            src="/logo.png"
+            alt="Toran Logo"
+            className="login-logo"
+            style={{
+              width: '80px',
+              height: '80px',
+              margin: '0 auto 1.5rem',
+              display: 'block'
+            }}
+          />
           <h1 className="login-title">toran.dev</h1>
           <h2 className="login-subtitle">Sign in to your account</h2>
           <p className="login-description">
