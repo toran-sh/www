@@ -25,12 +25,20 @@ export default function Login() {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send login link');
+        // Try to parse JSON error, fallback to generic message
+        let errorMessage = 'Failed to send login link';
+        try {
+          const data = await response.json();
+          errorMessage = data.error || errorMessage;
+        } catch {
+          // Response is not JSON, use status text
+          errorMessage = `Server error (${response.status}): ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
+      await response.json(); // Success response
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');

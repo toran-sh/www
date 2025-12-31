@@ -6,7 +6,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getMongoClient, getDatabase } from '../utils/mongodb';
+import { getMongoClient, getDatabase } from '../utils/mongodb.js';
 
 function getSessionIdFromCookie(cookieHeader: string | undefined): string | null {
   if (!cookieHeader) return null;

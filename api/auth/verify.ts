@@ -6,7 +6,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getMongoClient, getDatabase } from '../utils/mongodb';
+import { getMongoClient, getDatabase } from '../utils/mongodb.js';
 
 function generateSessionId(): string {
   const array = new Uint8Array(32);

@@ -4,7 +4,7 @@
  */
 
 import type { Gateway, Route } from '../../shared/src/types';
-import type { KVAdapter } from './kv';
+import type { KVAdapter } from './kv.js';
 
 export interface FlattenedGateway {
   id: string;

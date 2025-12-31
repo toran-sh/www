@@ -12,9 +12,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { ObjectId } from 'mongodb';
 import type { Gateway, Route } from '../shared/src/types';
-import { flattenGateway, writeGatewayToKV, deleteGatewayFromKV } from './utils/gateway-flatten';
-import { getMongoClient, getDatabase } from './utils/mongodb';
-import { kv } from './utils/kv';
+import { flattenGateway, writeGatewayToKV, deleteGatewayFromKV } from './utils/gateway-flatten.js';
+import { getMongoClient, getDatabase } from './utils/mongodb.js';
+import { kv } from './utils/kv.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method, query } = req;

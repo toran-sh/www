@@ -6,8 +6,8 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getMongoClient, getDatabase } from '../utils/mongodb';
-import { getAppUrl } from '../utils/request-url';
+import { getMongoClient, getDatabase } from '../utils/mongodb.js';
+import { getAppUrl } from '../utils/request-url.js';
 
 function generateToken(): string {
   // Generate a secure random token
@@ -25,9 +25,9 @@ async function sendMagicLinkEmail(email: string, magicLink: string, apiKey: stri
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'toran.dev admin <noreply@toran.sh>',
+        from: 'toran.sh <noreply@toran.sh>',
         to: [email],
-        subject: 'Your toran.dev admin Login Link',
+        subject: 'Your toran.sh Login Link',
         html: `
           <!DOCTYPE html>
           <html>
@@ -42,10 +42,10 @@ async function sendMagicLinkEmail(email: string, magicLink: string, apiKey: stri
             </head>
             <body>
               <div class="container">
-                <h1>🔐 toran.dev admin Login</h1>
-                <p>Click the button below to log in to your toran.dev admin panel:</p>
+                <h1>🔐 toran.sh Login</h1>
+                <p>Click the button below to log in to toran.sh:</p>
                 <p>
-                  <a href="${magicLink}" class="button">Log In to toran.dev admin</a>
+                  <a href="${magicLink}" class="button">Log In to toran.sh</a>
                 </p>
                 <p>Or copy and paste this link into your browser:</p>
                 <p><a href="${magicLink}">${magicLink}</a></p>

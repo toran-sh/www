@@ -4,7 +4,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getMongoClient, getDatabase } from './utils/mongodb';
+import { getMongoClient, getDatabase } from './utils/mongodb.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method } = req;
