@@ -19,8 +19,10 @@ export default function AuthVerify() {
       const token = searchParams.get('token');
 
       if (!token) {
-        setStatus('error');
-        setError('No token provided');
+        if (!hasVerified.current) {
+          setStatus('error');
+          setError('No token provided');
+        }
         return;
       }
 
@@ -38,12 +40,8 @@ export default function AuthVerify() {
           throw new Error(data.error || 'Verification failed');
         }
 
-        setStatus('success');
-
-        // Redirect to dashboard with full page reload to ensure cookie is processed
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 500);
+        // Redirect immediately on success - no need to show success screen
+        window.location.href = '/';
 
       } catch (err) {
         setStatus('error');
@@ -54,6 +52,7 @@ export default function AuthVerify() {
     verifyToken();
   }, [searchParams]);
 
+  // Only show verifying or error states (success redirects immediately)
   if (status === 'verifying') {
     return (
       <div className="verify-container">
@@ -65,27 +64,7 @@ export default function AuthVerify() {
     );
   }
 
-  if (status === 'success') {
-    return (
-      <div className="verify-container">
-        <div className="verify-content">
-          <div className="verify-icon success">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h2 className="verify-title">Login successful!</h2>
-          <p className="verify-message">Redirecting to dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
+  // Error state
   return (
     <div className="verify-container">
       <div className="verify-content">
