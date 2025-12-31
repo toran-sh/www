@@ -1,7 +1,7 @@
 {
-  "name": "toran-worker",
+  "name": "toran-proxy",
   "version": "1.0.0",
-  "description": "Cloudflare Worker reverse proxy",
+  "description": "Cloudflare Worker API Gateway Proxy",
   "private": true,
   "main": "src/index.ts",
   "scripts": {

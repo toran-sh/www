@@ -4,19 +4,16 @@
   "description": "API Gateway as a Service on Cloudflare Workers",
   "private": true,
   "workspaces": [
-    "worker",
+    "proxy",
     "admin",
-    "marketing",
     "shared"
   ],
   "scripts": {
-    "dev:worker": "npm run dev --workspace=worker",
+    "dev:proxy": "npm run dev --workspace=proxy",
     "dev:admin": "npm run dev --workspace=admin",
-    "dev:marketing": "npm run dev --workspace=marketing",
-    "deploy:worker": "npm run deploy --workspace=worker",
+    "deploy:proxy": "npm run deploy --workspace=proxy",
     "deploy:admin": "npm run deploy --workspace=admin",
-    "deploy:marketing": "npm run deploy --workspace=marketing",
-    "deploy:all": "npm run deploy:worker && npm run deploy:admin && npm run deploy:marketing",
+    "deploy:all": "npm run deploy:proxy && npm run deploy:admin",
     "build": "npm run build --workspaces --if-present",
     "setup:mongodb": "node scripts/setup-mongodb.js",
     "seed:data": "node scripts/seed-data.js",
