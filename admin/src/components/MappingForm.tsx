@@ -1,5 +1,16 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// Generate random subdomain (8-12 characters, lowercase alphanumeric)
+function generateSubdomain(): string {
+  const length = Math.floor(Math.random() * 5) + 8; // 8-12 characters
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
 
 function MappingForm() {
   const navigate = useNavigate();
@@ -12,24 +23,36 @@ function MappingForm() {
     name: '',
     description: '',
     tags: '',
-    active: true,
-    preservePath: true,
   });
+
+  // Generate subdomain on mount for new mappings
+  useEffect(() => {
+    if (!isEdit && !formData.subdomain) {
+      setFormData(prev => ({
+        ...prev,
+        subdomain: generateSubdomain()
+      }));
+    }
+  }, [isEdit, formData.subdomain]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Add default values for active and preservePath
+    const submitData = {
+      ...formData,
+      active: true,
+      preservePath: true,
+    };
     // TODO: Implement save logic
-    console.log('Form data:', formData);
+    console.log('Form data:', submitData);
     alert('Save functionality will be implemented with API integration');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
   };
 
@@ -39,23 +62,26 @@ function MappingForm() {
 
       <div className="card">
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="subdomain">Subdomain *</label>
-            <input
-              type="text"
-              id="subdomain"
-              name="subdomain"
-              value={formData.subdomain}
-              onChange={handleChange}
-              placeholder="api"
-              required
-              pattern="[a-zA-Z0-9-]+"
-              title="Only letters, numbers, and hyphens allowed"
-            />
-            <p className="text-sm text-gray mt-1 mb-0">
-              Will be accessible at: <strong>{formData.subdomain || 'subdomain'}.toran.dev</strong>
-            </p>
-          </div>
+          {formData.subdomain && (
+            <div className="mb-3">
+              <label htmlFor="subdomain">Subdomain</label>
+              <input
+                type="text"
+                id="subdomain"
+                name="subdomain"
+                value={formData.subdomain}
+                readOnly
+                style={{
+                  backgroundColor: 'var(--bg-tertiary)',
+                  cursor: 'not-allowed',
+                  opacity: 0.7
+                }}
+              />
+              <p className="text-sm text-gray mt-1 mb-0">
+                Will be accessible at: <strong>{formData.subdomain}.toran.dev</strong>
+              </p>
+            </div>
+          )}
 
           <div className="mb-3">
             <label htmlFor="destinationUrl">Destination URL *</label>
@@ -96,7 +122,7 @@ function MappingForm() {
             />
           </div>
 
-          <div className="mb-3">
+          <div className="mb-4">
             <label htmlFor="tags">Tags (comma-separated)</label>
             <input
               type="text"
@@ -106,32 +132,6 @@ function MappingForm() {
               onChange={handleChange}
               placeholder="production, api, main"
             />
-          </div>
-
-          <div className="mb-3">
-            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                name="preservePath"
-                checked={formData.preservePath}
-                onChange={handleChange}
-                style={{ width: 'auto', margin: 0 }}
-              />
-              <span>Preserve path (forward URL path to destination)</span>
-            </label>
-          </div>
-
-          <div className="mb-4">
-            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                name="active"
-                checked={formData.active}
-                onChange={handleChange}
-                style={{ width: 'auto', margin: 0 }}
-              />
-              <span>Active (enable this mapping)</span>
-            </label>
           </div>
 
           <div style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
