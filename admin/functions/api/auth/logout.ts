@@ -49,7 +49,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     // Clear session cookie
-    const cookieValue = 'session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0';
+    const cookieValue = 'session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0';
 
     return new Response(
       JSON.stringify({ success: true, message: 'Logged out successfully' }),

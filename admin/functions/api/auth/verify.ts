@@ -81,8 +81,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     // Delete used magic link
     await db.collection('magic_links').deleteOne({ token });
 
-    // Set session cookie
-    const cookieValue = `session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`; // 24 hours
+    // Set session cookie (SameSite=Lax allows cookie on top-level navigations like magic links)
+    const cookieValue = `session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`; // 24 hours
 
     return new Response(
       JSON.stringify({

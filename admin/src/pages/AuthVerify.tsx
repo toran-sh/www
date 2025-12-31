@@ -5,13 +5,11 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import './AuthVerify.css';
 
 export default function AuthVerify() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { checkSession } = useAuth();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [error, setError] = useState('');
 
@@ -37,12 +35,9 @@ export default function AuthVerify() {
 
         setStatus('success');
 
-        // Update auth state with the new session
-        await checkSession();
-
-        // Redirect to dashboard after 1 second
+        // Redirect to dashboard with full page reload to ensure cookie is processed
         setTimeout(() => {
-          navigate('/', { replace: true });
+          window.location.href = '/';
         }, 1000);
 
       } catch (err) {
@@ -52,7 +47,7 @@ export default function AuthVerify() {
     };
 
     verifyToken();
-  }, [searchParams, navigate, checkSession]);
+  }, [searchParams]);
 
   if (status === 'verifying') {
     return (
