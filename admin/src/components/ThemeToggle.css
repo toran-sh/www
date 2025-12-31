@@ -1,0 +1,53 @@
+.theme-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-tertiary);
+  padding: 0.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-primary);
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-option:hover {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+.theme-option.active {
+  background: var(--bg-primary);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-option svg {
+  flex-shrink: 0;
+}
+
+.theme-option span {
+  white-space: nowrap;
+}
+
+/* Mobile: Show icons only */
+@media (max-width: 640px) {
+  .theme-option span {
+    display: none;
+  }
+
+  .theme-option {
+    padding: 0.5rem;
+  }
+}

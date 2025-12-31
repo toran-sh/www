@@ -1,5 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import ThemeToggle from './ThemeToggle';
 import './Layout.css';
 
 function Layout() {
@@ -29,18 +30,21 @@ function Layout() {
             <NavLink to="/logs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               Logs
             </NavLink>
-            {email && (
-              <div className="user-menu" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span className="text-sm text-gray" style={{ color: '#6b7280' }}>{email}</span>
-                <button
-                  onClick={handleLogout}
-                  className="nav-link"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-                  Logout
-                </button>
-              </div>
-            )}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <ThemeToggle />
+              {email && (
+                <div className="user-menu" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <span className="text-sm text-gray" style={{ color: 'var(--text-tertiary)' }}>{email}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="nav-link"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </nav>
         </div>
       </header>
