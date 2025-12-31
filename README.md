@@ -325,21 +325,29 @@ Theme preference is saved to localStorage and accessible via floating widget in 
 ### Local Development
 
 ```bash
-# Start WWW (admin panel + API) locally
+# Start both frontend and API locally (recommended)
 npm run dev
 ```
+
+This runs `vercel dev` which:
+- ✅ Serves frontend (React + Vite) at `http://localhost:3000`
+- ✅ Serves API routes at `http://localhost:3000/api/*`
+- ✅ Matches production environment exactly
+- ✅ Auto-reloads on changes
 
 **Proxy Development**: See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository
 
 ### Project Scripts
 
 ```bash
-npm run dev                 # Start WWW dev server
-npm run deploy              # Deploy WWW to Cloudflare Pages
-npm run build               # Build all workspaces
+npm run dev                 # Start full app (frontend + API via Vercel CLI)
+npm run dev:frontend        # Start frontend only (Vite dev server, no API)
+npm run build               # Build for production
+npm run deploy              # Deploy to Vercel
 npm run setup:mongodb       # Initialize MongoDB collections
 npm run seed:data           # Seed sample gateway data
 npm run setup:all           # Run all setup scripts
+npm run type-check          # Type check without building
 ```
 
 ## 🌐 Deployment
