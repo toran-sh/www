@@ -14,7 +14,7 @@ import { ObjectId } from 'mongodb';
 import type { Gateway, Route } from '../shared/src/types';
 import { flattenGateway, writeGatewayToKV, deleteGatewayFromKV } from './utils/gateway-flatten';
 import { getMongoClient, getDatabase } from './utils/mongodb';
-import { vercelKV } from './utils/kv';
+import { kv } from './utils/kv';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method, query } = req;
@@ -87,7 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Write flattened config to KV (with empty routes initially)
       if (created) {
         const flattened = flattenGateway(created, []);
-        await writeGatewayToKV(created.subdomain, flattened, vercelKV);
+        await writeGatewayToKV(created.subdomain, flattened, kv);
       }
 
       return res.status(201).json(created);
@@ -131,7 +131,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .toArray();
 
         const flattened = flattenGateway(updated, routes);
-        await writeGatewayToKV(updated.subdomain, flattened, vercelKV);
+        await writeGatewayToKV(updated.subdomain, flattened, kv);
       }
 
       return res.status(200).json(updated);
@@ -145,7 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // Delete from KV
       if (gateway) {
-        await deleteGatewayFromKV(gateway.subdomain, vercelKV);
+        await deleteGatewayFromKV(gateway.subdomain, kv);
       }
 
       return res.status(200).json({ success: true });

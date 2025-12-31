@@ -7,7 +7,7 @@ This guide explains how to deploy the Toran WWW project to Vercel.
 - Vercel account
 - MongoDB Atlas account
 - Resend account (for email)
-- Vercel KV database (for gateway configs)
+- Redis instance (Upstash, Redis Cloud, or self-hosted)
 
 ## Setup Steps
 
@@ -23,12 +23,26 @@ npm install -g vercel
 npm install
 ```
 
-### 3. Create Vercel KV Database
+### 3. Set Up Redis
 
-1. Go to your Vercel dashboard
-2. Navigate to Storage
-3. Create a new KV database
-4. Note the database credentials (they will be automatically added to your project)
+You need a Redis instance for gateway configuration storage.
+
+#### Option A: Upstash Redis (Recommended)
+1. Sign up at [Upstash](https://upstash.com)
+2. Create a new Redis database
+3. Copy the **REDIS_URL** connection string
+4. Add to Vercel environment variables
+
+#### Option B: Redis Cloud
+1. Sign up at [Redis Cloud](https://redis.com/try-free/)
+2. Create a free database
+3. Copy the connection string
+4. Add to Vercel environment variables
+
+#### Option C: Self-Hosted Redis
+- Set up Redis on your infrastructure
+- Ensure it's accessible from Vercel's serverless functions
+- Use connection string: `redis://[username:password@]host:port`
 
 ### 4. Configure Environment Variables
 
@@ -48,11 +62,9 @@ RESEND_API_KEY=re_your_api_key_here
 # Only set this if you need to override automatic domain detection
 # APP_URL=https://your-domain.vercel.app
 
-# Vercel KV (automatically set when you create a KV database)
-KV_URL=redis://...
-KV_REST_API_URL=https://...
-KV_REST_API_TOKEN=...
-KV_REST_API_READ_ONLY_TOKEN=...
+# Redis Configuration
+# Format: redis://[[username:]password@]host[:port][/db-number]
+REDIS_URL=redis://username:password@host:port
 ```
 
 #### Setting Environment Variables via CLI
@@ -61,6 +73,7 @@ KV_REST_API_READ_ONLY_TOKEN=...
 vercel env add MONGODB_URI
 vercel env add MONGODB_DATABASE
 vercel env add RESEND_API_KEY
+vercel env add REDIS_URL
 # APP_URL is optional - only add if you need to override domain detection
 # vercel env add APP_URL
 ```
@@ -169,10 +182,11 @@ Stores:
 - Magic links (15-minute TTL)
 - Sessions (24-hour inactivity TTL)
 
-### Vercel KV (Redis)
+### Redis
 Stores:
 - Flattened gateway configs (read by proxy worker)
 - Key format: `gateway:config:{subdomain}`
+- Recommended: Upstash Redis (serverless-friendly, free tier available)
 
 ## Development
 
@@ -236,7 +250,7 @@ Monitor deployments, functions, and analytics in the Vercel dashboard:
 | Feature | Cloudflare Pages | Vercel |
 |---------|-----------------|--------|
 | **API Functions** | Pages Functions (`functions/api/*.ts`) | API Routes (`api/*.ts`) |
-| **KV Storage** | Cloudflare KV (`env.GATEWAY_CONFIG`) | Vercel KV (`@vercel/kv`) |
+| **KV Storage** | Cloudflare KV (`env.GATEWAY_CONFIG`) | Redis (`ioredis`) |
 | **Environment** | `env` object in function context | `process.env` |
 | **Types** | `PagesFunction<Env>` | `VercelRequest, VercelResponse` |
 | **Deployment** | `wrangler pages deploy` | `vercel --prod` |
@@ -255,11 +269,12 @@ Monitor deployments, functions, and analytics in the Vercel dashboard:
 - Verify environment variables are set correctly
 - Test locally with `vercel dev`
 
-### KV Connection Issues
+### Redis Connection Issues
 
-- Ensure Vercel KV database is created and linked to project
-- Check KV environment variables are set
-- Verify KV credentials are correct
+- Ensure Redis instance is running and accessible
+- Check REDIS_URL environment variable is set correctly
+- Verify Redis connection string format
+- Test connection with `redis-cli` if using self-hosted
 
 ### MongoDB Connection Issues
 
@@ -275,8 +290,9 @@ Monitor deployments, functions, and analytics in the Vercel dashboard:
 - Unlimited API requests
 - Serverless function executions (up to limits)
 
-### Vercel KV:
-- Free tier: 256 MB storage, 3,000 commands/day
+### Redis (Upstash):
+- Free tier: 10,000 commands/day, 256 MB storage
+- Serverless-friendly with global replication
 - Paid tiers available for higher usage
 
 ### Recommendations:

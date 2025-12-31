@@ -16,9 +16,9 @@
     "setup:all": "npm run setup:mongodb && npm run seed:data"
   },
   "dependencies": {
-    "@vercel/kv": "^2.0.0",
     "@vercel/node": "^3.0.0",
     "dotenv": "^16.0.0",
+    "ioredis": "^5.3.2",
     "mongodb": "^7.0.0"
   },
   "devDependencies": {

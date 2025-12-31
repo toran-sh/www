@@ -6,7 +6,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { vercelKV } from '../utils/kv';
+import { kv } from '../utils/kv';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const key = `gateway:config:${subdomain}`;
-    const config = await vercelKV.get(key);
+    const config = await kv.get(key);
 
     if (!config) {
       return res.status(404).json({ error: 'Gateway not found' });

@@ -1,9 +1,9 @@
 /**
- * Vercel KV Adapter
- * Provides KV storage using Vercel KV
+ * Redis KV Adapter
+ * Provides KV storage using Redis
  */
 
-import { kv } from '@vercel/kv';
+import Redis from 'ioredis';
 
 export interface KVAdapter {
   get(key: string): Promise<string | null>;
@@ -11,31 +11,68 @@ export interface KVAdapter {
   delete(key: string): Promise<void>;
 }
 
-export const vercelKV: KVAdapter = {
+// Singleton Redis client
+let redisClient: Redis | null = null;
+
+function getRedisClient(): Redis {
+  if (redisClient) {
+    return redisClient;
+  }
+
+  const redisUrl = process.env.REDIS_URL;
+
+  if (!redisUrl) {
+    throw new Error('REDIS_URL environment variable is not set');
+  }
+
+  redisClient = new Redis(redisUrl, {
+    maxRetriesPerRequest: 3,
+    enableReadyCheck: true,
+    lazyConnect: false,
+  });
+
+  redisClient.on('error', (error) => {
+    console.error('Redis client error:', error);
+  });
+
+  redisClient.on('connect', () => {
+    console.log('Redis client connected');
+  });
+
+  return redisClient;
+}
+
+export const redisKV: KVAdapter = {
   async get(key: string): Promise<string | null> {
     try {
-      return await kv.get(key);
+      const client = getRedisClient();
+      return await client.get(key);
     } catch (error) {
-      console.error('KV get error:', error);
+      console.error('Redis get error:', error);
       return null;
     }
   },
 
   async put(key: string, value: string): Promise<void> {
     try {
-      await kv.set(key, value);
+      const client = getRedisClient();
+      await client.set(key, value);
     } catch (error) {
-      console.error('KV put error:', error);
+      console.error('Redis put error:', error);
       throw error;
     }
   },
 
   async delete(key: string): Promise<void> {
     try {
-      await kv.del(key);
+      const client = getRedisClient();
+      await client.del(key);
     } catch (error) {
-      console.error('KV delete error:', error);
+      console.error('Redis delete error:', error);
       throw error;
     }
   },
 };
+
+// For backward compatibility, export as default KV adapter
+export const kv = redisKV;

@@ -76,6 +76,7 @@ In Vercel Dashboard:
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DATABASE=toran
 RESEND_API_KEY=re_your_api_key_here
+REDIS_URL=redis://username:password@host:port
 ```
 
 **Note**: `APP_URL` is optional and auto-detected from the request domain. Only set it if you need to override.
@@ -85,17 +86,39 @@ Or via CLI:
 vercel env add MONGODB_URI
 vercel env add MONGODB_DATABASE
 vercel env add RESEND_API_KEY
+vercel env add REDIS_URL
 # APP_URL is optional - only add if you need to override
 # vercel env add APP_URL
 ```
 
-### Step 5: Create Vercel KV Database
+### Step 5: Set Up Redis
 
-1. In Vercel Dashboard, go to **Storage** tab
-2. Click **Create Database** → **KV**
-3. Name it `toran-kv`
-4. Click **Create**
-5. Link to your project (environment variables added automatically)
+You need a Redis instance for gateway configuration storage. Choose one of these options:
+
+#### Option A: Upstash Redis (Recommended for Vercel)
+1. Sign up at [Upstash](https://upstash.com)
+2. Create a new Redis database
+3. Copy the **REDIS_URL** connection string
+4. Add to Vercel environment variables: `REDIS_URL`
+
+#### Option B: Redis Cloud
+1. Sign up at [Redis Cloud](https://redis.com/try-free/)
+2. Create a free database
+3. Copy the connection string
+4. Add to Vercel: `REDIS_URL=redis://user:password@host:port`
+
+#### Option C: Local Redis (Development Only)
+```bash
+# Install Redis locally
+brew install redis  # macOS
+# or: apt-get install redis  # Linux
+
+# Start Redis
+redis-server
+
+# Use in .env:
+REDIS_URL=redis://localhost:6379
+```
 
 ### Step 6: Get Resend API Key
 
@@ -141,9 +164,10 @@ Access at: `http://localhost:3000`
 - Verify environment variables are set correctly
 - Check MongoDB connection string
 
-### KV errors
-- Ensure Vercel KV database is created and linked
-- Check KV environment variables exist
+### Redis errors
+- Ensure Redis instance is running and accessible
+- Check REDIS_URL is set correctly
+- Verify Redis connection string format
 
 ### Email not sending
 - Verify Resend API key is correct
@@ -154,7 +178,7 @@ Access at: `http://localhost:3000`
 
 1. ✅ Deploy to Vercel
 2. ✅ Configure environment variables
-3. ✅ Create KV database
+3. ✅ Set up Redis
 4. ✅ Test the application
 5. 🔄 Configure custom domain (optional)
 6. 🔄 Set up monitoring and alerts
@@ -163,7 +187,7 @@ Access at: `http://localhost:3000`
 ## Resources
 
 - **Vercel Documentation**: https://vercel.com/docs
-- **Vercel KV**: https://vercel.com/docs/storage/vercel-kv
+- **Redis/Upstash**: https://upstash.com/docs/redis
 - **MongoDB Atlas**: https://docs.atlas.mongodb.com/
 - **Resend**: https://resend.com/docs
 
