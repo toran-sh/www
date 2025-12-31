@@ -11,13 +11,13 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-100 to-white dark:from-zinc-900 dark:to-black text-zinc-900 dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
       {/* Header */}
       <header className="border-b border-zinc-200 dark:border-zinc-800">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 bg-clip-text text-transparent"
+            className="text-xl font-bold text-cyan-600 dark:text-cyan-400"
           >
             toran
           </Link>
@@ -31,21 +31,21 @@ export default async function DashboardPage() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">Welcome to your toran dashboard</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-6">
+          <div className="border border-zinc-200 dark:border-zinc-800 p-6">
             <div className="text-sm text-zinc-600 dark:text-zinc-400">Total Gateways</div>
             <div className="mt-2 text-3xl font-bold">0</div>
           </div>
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-6">
+          <div className="border border-zinc-200 dark:border-zinc-800 p-6">
             <div className="text-sm text-zinc-600 dark:text-zinc-400">API Requests (24h)</div>
             <div className="mt-2 text-3xl font-bold">0</div>
           </div>
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-6">
+          <div className="border border-zinc-200 dark:border-zinc-800 p-6">
             <div className="text-sm text-zinc-600 dark:text-zinc-400">Cache Hit Rate</div>
             <div className="mt-2 text-3xl font-bold">--%</div>
           </div>
@@ -53,12 +53,12 @@ export default async function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="mt-12">
-          <h2 className="text-xl font-semibold">Quick Actions</h2>
+          <h2 className="text-lg font-semibold">Quick Actions</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <button className="flex items-center gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-4 text-left transition hover:border-zinc-300 dark:hover:border-zinc-700">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/20">
+            <button className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-800 p-4 text-left hover:border-zinc-400 dark:hover:border-zinc-600">
+              <div className="flex h-10 w-10 items-center justify-center border border-cyan-600 dark:border-cyan-400 text-cyan-600 dark:text-cyan-400">
                 <svg
-                  className="h-5 w-5 text-blue-500 dark:text-blue-400"
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -77,10 +77,10 @@ export default async function DashboardPage() {
               </div>
             </button>
 
-            <button className="flex items-center gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-4 text-left transition hover:border-zinc-300 dark:hover:border-zinc-700">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/20">
+            <button className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-800 p-4 text-left hover:border-zinc-400 dark:hover:border-zinc-600">
+              <div className="flex h-10 w-10 items-center justify-center border border-zinc-400 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400">
                 <svg
-                  className="h-5 w-5 text-purple-500 dark:text-purple-400"
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -99,10 +99,10 @@ export default async function DashboardPage() {
               </div>
             </button>
 
-            <button className="flex items-center gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-4 text-left transition hover:border-zinc-300 dark:hover:border-zinc-700">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20">
+            <button className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-800 p-4 text-left hover:border-zinc-400 dark:hover:border-zinc-600">
+              <div className="flex h-10 w-10 items-center justify-center border border-zinc-400 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400">
                 <svg
-                  className="h-5 w-5 text-green-500 dark:text-green-400"
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -131,11 +131,11 @@ export default async function DashboardPage() {
 
         {/* Empty State for Gateways */}
         <div className="mt-12">
-          <h2 className="text-xl font-semibold">Your Gateways</h2>
-          <div className="mt-6 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-12 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <h2 className="text-lg font-semibold">Your Gateways</h2>
+          <div className="mt-6 border border-dashed border-zinc-300 dark:border-zinc-700 p-12 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center border border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400">
               <svg
-                className="h-6 w-6 text-zinc-500 dark:text-zinc-400"
+                className="h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
               Create your first gateway to start routing API requests
             </p>
-            <button className="mt-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-2 text-sm font-medium text-white transition hover:opacity-90">
+            <button className="mt-6 bg-cyan-600 dark:bg-cyan-500 px-6 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400">
               Create Gateway
             </button>
           </div>

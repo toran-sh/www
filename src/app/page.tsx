@@ -29,16 +29,16 @@ const features = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-100 to-white dark:from-zinc-900 dark:to-black text-zinc-900 dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
       {/* Header */}
       <header className="container mx-auto px-6 py-6">
         <nav className="flex items-center justify-between">
-          <div className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 bg-clip-text text-transparent">
+          <div className="text-xl font-bold text-cyan-600 dark:text-cyan-400">
             toran
           </div>
           <Link
             href="/login"
-            className="rounded-full bg-zinc-900 dark:bg-white px-6 py-2 text-sm font-medium text-white dark:text-black transition hover:bg-zinc-700 dark:hover:bg-zinc-200"
+            className="border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
           >
             Get Started
           </Link>
@@ -47,27 +47,25 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="container mx-auto px-6 py-20">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-5xl font-bold leading-tight tracking-tight md:text-6xl">
+        <div className="mx-auto max-w-3xl">
+          <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl">
             API Accelerator & Debugger as a{" "}
-            <span className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 bg-clip-text text-transparent">
-              Service
-            </span>
+            <span className="text-cyan-600 dark:text-cyan-400">Service</span>
           </h1>
-          <p className="mt-6 text-xl text-zinc-600 dark:text-zinc-400">
+          <p className="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
             Transform, cache, and route API requests with powerful mutations.
             Built on Cloudflare Workers for global edge performance.
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Link
               href="/login"
-              className="w-full rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-3 font-medium text-white transition hover:opacity-90 sm:w-auto"
+              className="bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
             >
               Get Started Free
             </Link>
             <a
               href="#features"
-              className="w-full rounded-full border border-zinc-300 dark:border-zinc-700 px-8 py-3 font-medium transition hover:bg-zinc-100 dark:hover:bg-zinc-800 sm:w-auto"
+              className="border border-zinc-300 dark:border-zinc-700 px-6 py-3 hover:bg-zinc-100 dark:hover:bg-zinc-900"
             >
               Learn More
             </a>
@@ -76,18 +74,18 @@ export default function Home() {
 
         {/* Features Section */}
         <section id="features" className="mt-32">
-          <h2 className="text-center text-3xl font-bold">Powerful Features</h2>
-          <p className="mt-4 text-center text-zinc-600 dark:text-zinc-400">
+          <h2 className="text-2xl font-bold">Features</h2>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             Everything you need to manage and transform your API traffic
           </p>
 
-          <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-6 transition hover:border-zinc-300 dark:hover:border-zinc-700"
+                className="border border-zinc-200 dark:border-zinc-800 p-6"
               >
-                <h3 className="text-lg font-semibold">{feature.title}</h3>
+                <h3 className="font-semibold">{feature.title}</h3>
                 <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{feature.description}</p>
               </div>
             ))}
@@ -96,21 +94,21 @@ export default function Home() {
 
         {/* Use Cases Section */}
         <section className="mt-32">
-          <h2 className="text-center text-3xl font-bold">Use Cases</h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-6">
+          <h2 className="text-2xl font-bold">Use Cases</h2>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div className="border border-zinc-200 dark:border-zinc-800 p-6">
               <h3 className="font-semibold">Auth Header Injection</h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Automatically inject authentication headers from gateway variables.
               </p>
             </div>
-            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-6">
+            <div className="border border-zinc-200 dark:border-zinc-800 p-6">
               <h3 className="font-semibold">Request Transformation</h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Transform request bodies for legacy API compatibility.
               </p>
             </div>
-            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-6">
+            <div className="border border-zinc-200 dark:border-zinc-800 p-6">
               <h3 className="font-semibold">Response Filtering</h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Filter response data using JSONPath expressions.
@@ -120,14 +118,14 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="mt-32 text-center">
-          <h2 className="text-3xl font-bold">Ready to get started?</h2>
-          <p className="mt-4 text-zinc-600 dark:text-zinc-400">
+        <section className="mt-32">
+          <h2 className="text-2xl font-bold">Ready to get started?</h2>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             Join developers using toran to power their API integration.
           </p>
           <Link
             href="/login"
-            className="mt-8 inline-block rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-3 font-medium text-white transition hover:opacity-90"
+            className="mt-6 inline-block bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
           >
             Start Building Now
           </Link>

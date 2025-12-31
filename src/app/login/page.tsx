@@ -42,9 +42,9 @@ function LoginForm() {
   if (isSent) {
     return (
       <div className="text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
+        <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center border border-cyan-600 dark:border-cyan-400 text-cyan-600 dark:text-cyan-400">
           <svg
-            className="h-8 w-8 text-white"
+            className="h-6 w-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ function LoginForm() {
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold">Check your email</h2>
+        <h2 className="text-xl font-bold">Check your email</h2>
         <p className="mt-4 text-zinc-600 dark:text-zinc-400">
           We sent a magic link to <span className="text-zinc-900 dark:text-white">{email}</span>
         </p>
@@ -69,7 +69,7 @@ function LoginForm() {
             setIsSent(false);
             setEmail("");
           }}
-          className="mt-8 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+          className="mt-8 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white underline"
         >
           Use a different email
         </button>
@@ -79,13 +79,13 @@ function LoginForm() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold">Get Started</h1>
+      <h1 className="text-2xl font-bold">Get Started</h1>
       <p className="mt-2 text-zinc-600 dark:text-zinc-400">
         Enter your email to sign in or create an account
       </p>
 
       {(error || urlError) && (
-        <div className="mt-6 rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-600 dark:text-red-400">
+        <div className="mt-6 border border-red-500 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-400">
           {error ||
             (urlError === "missing_token"
               ? "Invalid login link. Please request a new one."
@@ -96,7 +96,7 @@ function LoginForm() {
       )}
 
       <form onSubmit={handleSubmit} className="mt-8">
-        <label htmlFor="email" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="email" className="block text-sm text-zinc-700 dark:text-zinc-300">
           Email address
         </label>
         <input
@@ -106,12 +106,12 @@ function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="mt-2 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
         />
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-4 w-full rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 py-3 font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+          className="mt-4 w-full bg-cyan-600 dark:bg-cyan-500 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
         >
           {isLoading ? "Sending..." : "Continue with Email"}
         </button>
@@ -126,11 +126,11 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-zinc-100 to-white dark:from-zinc-900 dark:to-black text-zinc-900 dark:text-white px-4">
+    <div className="flex min-h-screen items-center justify-center bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-4">
       <div className="w-full max-w-md">
         <Link
           href="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
         >
           <svg
             className="h-4 w-4"
@@ -148,7 +148,7 @@ export default function LoginPage() {
           Back to home
         </Link>
 
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-8">
+        <div className="border border-zinc-200 dark:border-zinc-800 p-8">
           <Suspense fallback={<div className="text-center text-zinc-600 dark:text-zinc-400">Loading...</div>}>
             <LoginForm />
           </Suspense>
