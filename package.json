@@ -1,19 +1,15 @@
 {
-  "name": "toran",
+  "name": "toran-www",
   "version": "1.0.0",
-  "description": "API Gateway as a Service on Cloudflare Workers",
+  "description": "Toran WWW - Admin panel and API for Toran API Gateway",
   "private": true,
   "workspaces": [
-    "proxy",
     "www",
     "shared"
   ],
   "scripts": {
-    "dev:proxy": "npm run dev --workspace=proxy",
-    "dev:www": "npm run dev --workspace=www",
-    "deploy:proxy": "npm run deploy --workspace=proxy",
-    "deploy:www": "npm run deploy --workspace=www",
-    "deploy:all": "npm run deploy:proxy && npm run deploy:www",
+    "dev": "npm run dev --workspace=www",
+    "deploy": "npm run deploy --workspace=www",
     "build": "npm run build --workspaces --if-present",
     "setup:mongodb": "node scripts/setup-mongodb.js",
     "seed:data": "node scripts/seed-data.js",

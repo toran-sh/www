@@ -1,6 +1,8 @@
-# Toran - API Gateway as a Service
+# Toran WWW - Admin Panel & API
 
-Toran is a lightweight, serverless API Gateway built on Cloudflare Workers that provides subdomain-based reverse proxying with comprehensive management capabilities.
+Admin panel and API for Toran API Gateway. Manages MongoDB, writes flattened configs to KV, and receives logs from the proxy.
+
+**Note**: The proxy is now in a separate repository: [toran-proxy](https://github.com/kxbnb/toran-proxy)
 
 ## 🎯 What is Toran?
 
@@ -15,15 +17,7 @@ Toran allows you to create and manage custom subdomains (e.g., `api.toran.dev`, 
 ## 📁 Project Structure
 
 ```
-toran/
-├── proxy/              # Cloudflare Worker - Gateway proxy engine
-│   ├── src/
-│   │   ├── index.ts         # Main proxy handler
-│   │   ├── database/        # MongoDB client
-│   │   ├── logger/          # Request/response logging
-│   │   └── utils/           # Helper functions
-│   └── wrangler.toml        # Worker configuration
-│
+toran-www/
 ├── www/                # Web App - React SPA on Cloudflare Pages
 │   ├── src/
 │   │   ├── components/      # React components (Layout, Dashboard, etc.)
@@ -33,7 +27,9 @@ toran/
 │   ├── functions/
 │   │   └── api/
 │   │       ├── auth/        # Magic link authentication endpoints
-│   │       └── gateway-config/ # Proxy configuration API
+│   │       ├── gateways.ts  # Gateway CRUD + KV write
+│   │       ├── logs.ts      # Receive logs from proxy
+│   │       └── gateway-config/ # Gateway config API
 │   └── wrangler.toml        # Pages configuration
 │
 ├── shared/             # Shared TypeScript types
@@ -43,6 +39,8 @@ toran/
     ├── setup-mongodb.js     # Initialize MongoDB collections
     └── seed-data.js         # Seed sample data
 ```
+
+**Proxy Repository**: [toran-proxy](https://github.com/kxbnb/toran-proxy) - Separate stateless worker
 
 ## 🚀 How It Works
 
@@ -159,15 +157,11 @@ wrangler secret put WWW_API_URL
 ### 4. Deploy
 
 ```bash
-# Deploy proxy worker
-npm run deploy:proxy
-
-# Deploy admin panel
-npm run deploy:admin
-
-# Or deploy both
-npm run deploy:all
+# Deploy WWW (admin panel + API)
+npm run deploy
 ```
+
+**Proxy Deployment**: See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository
 
 ## 🎮 Usage
 
@@ -329,21 +323,17 @@ Theme preference is saved to localStorage and accessible via floating widget in 
 ### Local Development
 
 ```bash
-# Start proxy worker locally
-npm run dev:proxy
-
-# Start admin panel locally
-npm run dev:admin
+# Start WWW (admin panel + API) locally
+npm run dev
 ```
+
+**Proxy Development**: See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository
 
 ### Project Scripts
 
 ```bash
-npm run dev:proxy           # Start proxy worker dev server
-npm run dev:admin           # Start admin panel dev server
-npm run deploy:proxy        # Deploy proxy to Cloudflare Workers
-npm run deploy:admin        # Deploy admin to Cloudflare Pages
-npm run deploy:all          # Deploy both proxy and admin
+npm run dev                 # Start WWW dev server
+npm run deploy              # Deploy WWW to Cloudflare Pages
 npm run build               # Build all workspaces
 npm run setup:mongodb       # Initialize MongoDB collections
 npm run seed:data           # Seed sample gateway data
@@ -352,36 +342,25 @@ npm run setup:all           # Run all setup scripts
 
 ## 🌐 Deployment
 
-### Proxy Worker Deployment
-
-```bash
-cd proxy
-wrangler deploy
-```
-
-**DNS Setup:**
-- Add wildcard DNS record: `*.toran.dev` → Cloudflare Worker
-- Add specific record: `toran.dev` → Cloudflare Worker (optional)
-
-### Admin Panel Deployment
+### WWW Deployment
 
 **Via Manual Deploy:**
 ```bash
-cd admin
-npm run build
-wrangler pages deploy
+npm run deploy
 ```
 
 **Via GitHub Integration (Recommended):**
 1. Connect GitHub repository to Cloudflare Pages
 2. Configure build settings:
-   - Build command: `./admin/build.sh`
-   - Build output: `/admin/dist`
+   - Build command: `./www/build.sh`
+   - Build output: `/www/dist`
    - Root directory: `/`
 3. Set environment variables in Pages dashboard
 4. Push to main branch → auto-deploy
 
-See `CLOUDFLARE_AUTO_DEPLOY.md` for detailed setup.
+### Proxy Deployment
+
+See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository for proxy deployment instructions.
 
 ## 📝 Key Features
 
@@ -413,10 +392,14 @@ See `CLOUDFLARE_AUTO_DEPLOY.md` for detailed setup.
 ## 🧠 For AI Agents (Claude, etc.)
 
 ### Project Context
-This is a **monorepo** with 3 main workspaces:
-1. **proxy/** - Cloudflare Worker (stateless reverse proxy)
-2. **www/** - React admin panel + API on Cloudflare Pages
-3. **shared/** - Shared TypeScript types
+This repository contains **toran-www**, the admin panel and API for Toran API Gateway.
+
+**Workspaces**:
+1. **www/** - React admin panel + API on Cloudflare Pages
+2. **shared/** - Shared TypeScript types
+
+**Related Repository**:
+- **toran-proxy** - Separate repo with the stateless Cloudflare Worker proxy
 
 ### Architecture Principles
 
@@ -494,14 +477,17 @@ This is a **monorepo** with 3 main workspaces:
 ## 📖 Documentation Files
 
 - `README.md` - This file (overview)
-- `AUTH_SETUP.md` - Authentication setup guide
-- `CLOUDFLARE_AUTO_DEPLOY.md` - GitHub auto-deployment setup
-- Plan file at `~/.claude/plans/humming-orbiting-jellyfish.md` - Full architecture plan
+- `AUTH_SETUP.md` - Authentication setup guide (if exists)
+- `CLOUDFLARE_AUTO_DEPLOY.md` - GitHub auto-deployment setup (if exists)
+
+## 🔗 Related Repositories
+
+- **[toran-proxy](https://github.com/kxbnb/toran-proxy)** - Stateless Cloudflare Worker proxy
 
 ## 🤝 Contributing
 
-1. Make changes in appropriate workspace (`proxy/`, `admin/`, `shared/`)
-2. Test locally with `npm run dev:<workspace>`
+1. Make changes in appropriate workspace (`www/`, `shared/`)
+2. Test locally with `npm run dev`
 3. Commit with descriptive message
 4. Push to GitHub (auto-deploys to Cloudflare if configured)
 
