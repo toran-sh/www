@@ -44,8 +44,9 @@ MONGODB_DATABASE=toran
 # Email Service (Resend)
 RESEND_API_KEY=re_your_api_key_here
 
-# Application URL (set automatically by Vercel, or override)
-APP_URL=https://your-domain.vercel.app
+# Application URL (Optional - auto-detected from request if not set)
+# Only set this if you need to override automatic domain detection
+# APP_URL=https://your-domain.vercel.app
 
 # Vercel KV (automatically set when you create a KV database)
 KV_URL=redis://...
@@ -60,7 +61,8 @@ KV_REST_API_READ_ONLY_TOKEN=...
 vercel env add MONGODB_URI
 vercel env add MONGODB_DATABASE
 vercel env add RESEND_API_KEY
-vercel env add APP_URL
+# APP_URL is optional - only add if you need to override domain detection
+# vercel env add APP_URL
 ```
 
 #### Setting Environment Variables via Dashboard

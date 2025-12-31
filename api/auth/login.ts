@@ -7,6 +7,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getMongoClient, getDatabase } from '../utils/mongodb';
+import { getAppUrl } from '../utils/request-url';
 
 function generateToken(): string {
   // Generate a secure random token
@@ -114,9 +115,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // Build magic link URL
-    const appUrl = process.env.APP_URL || process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
+    const appUrl = getAppUrl(req);
     const magicLink = `${appUrl}/auth/verify?token=${token}`;
 
     // Send email

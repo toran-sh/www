@@ -76,15 +76,17 @@ In Vercel Dashboard:
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DATABASE=toran
 RESEND_API_KEY=re_your_api_key_here
-APP_URL=https://your-project.vercel.app
 ```
+
+**Note**: `APP_URL` is optional and auto-detected from the request domain. Only set it if you need to override.
 
 Or via CLI:
 ```bash
 vercel env add MONGODB_URI
 vercel env add MONGODB_DATABASE
 vercel env add RESEND_API_KEY
-vercel env add APP_URL
+# APP_URL is optional - only add if you need to override
+# vercel env add APP_URL
 ```
 
 ### Step 5: Create Vercel KV Database
