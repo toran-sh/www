@@ -25,7 +25,7 @@ async function sendMagicLinkEmail(email: string, magicLink: string, apiKey: stri
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'toran.dev admin <noreply@admin.toran.dev>',
+        from: 'toran.dev admin <noreply@toran.sh>',
         to: [email],
         subject: 'Your toran.dev admin Login Link',
         html: `

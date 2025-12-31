@@ -13,7 +13,7 @@ import type {
   CreateRouteRequest,
   UpdateRouteRequest,
   LogFilters
-} from '../../../shared/src/types';
+} from '../../shared/src/types';
 
 const API_BASE = '/api';
 

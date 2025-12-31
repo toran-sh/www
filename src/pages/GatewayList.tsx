@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Plus, Settings, Power } from 'lucide-react';
 import { apiClient } from '../lib/api-client';
-import type { Gateway } from '../../../shared/src/types';
+import type { Gateway } from '../../shared/src/types';
 
 export function GatewayList() {
   const { data: gateways, isLoading, error } = useQuery({

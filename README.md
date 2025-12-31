@@ -18,26 +18,32 @@ Toran allows you to create and manage custom subdomains (e.g., `api.toran.dev`, 
 
 ```
 toran-www/
-├── www/                # Web App - React SPA on Cloudflare Pages
-│   ├── src/
-│   │   ├── components/      # React components (Layout, Dashboard, etc.)
-│   │   ├── pages/           # Page components (Login, AuthVerify)
-│   │   ├── hooks/           # React hooks (useAuth, useTheme)
-│   │   └── index.css        # Theme system with CSS variables
-│   ├── functions/
-│   │   └── api/
-│   │       ├── auth/        # Magic link authentication endpoints
-│   │       ├── gateways.ts  # Gateway CRUD + KV write
-│   │       ├── logs.ts      # Receive logs from proxy
-│   │       └── gateway-config/ # Gateway config API
-│   └── wrangler.toml        # Pages configuration
+├── src/                # React frontend source
+│   ├── components/      # React components (Layout, Dashboard, etc.)
+│   ├── pages/           # Page components (Login, AuthVerify)
+│   ├── hooks/           # React hooks (useAuth, useTheme)
+│   └── index.css        # Theme system with CSS variables
+│
+├── public/             # Static assets (logo, favicons, etc.)
+│
+├── api/                # Vercel API Routes (serverless functions)
+│   ├── auth/            # Magic link authentication endpoints
+│   ├── gateways.ts      # Gateway CRUD + Redis write
+│   ├── logs.ts          # Receive logs from proxy
+│   ├── gateway-config/  # Gateway config API
+│   └── utils/           # Shared utilities (MongoDB, Redis, etc.)
 │
 ├── shared/             # Shared TypeScript types
-│   └── src/types.ts         # Gateway, Route, Log types
+│   └── src/types.ts     # Gateway, Route, Log types
 │
-└── scripts/            # Setup and utility scripts
-    ├── setup-mongodb.js     # Initialize MongoDB collections
-    └── seed-data.js         # Seed sample data
+├── scripts/            # Setup and utility scripts
+│   ├── setup-mongodb.js # Initialize MongoDB collections
+│   └── seed-data.js     # Seed sample data
+│
+├── dist/               # Build output (gitignored)
+├── index.html          # Entry HTML file
+├── vite.config.ts      # Vite configuration
+└── vercel.json         # Vercel deployment config
 ```
 
 **Proxy Repository**: [toran-proxy](https://github.com/kxbnb/toran-proxy) - Separate stateless worker
@@ -69,14 +75,14 @@ User Request → xyz.toran.dev
 
 2. **WWW (Admin + API)** (`admin.toran.dev`)
    - Manages gateway configurations (create, view, delete)
-   - Writes flattened configs to KV on create/update
+   - Writes flattened configs to Redis on create/update
    - Receives logs from proxy via POST /api/logs
    - Magic link authentication (passwordless)
    - Request logs viewer with analytics
    - Dark/light mode theming
    - Responsive UI
 
-3. **KV Storage** (Redis-like)
+3. **Redis Storage**
    - Key format: `gateway:config:{subdomain}`
    - Value: Flattened gateway configuration (JSON)
    - Shared between Proxy (read) and WWW (write)
@@ -102,10 +108,10 @@ User Request → xyz.toran.dev
 - **Routing**: React Router v6
 - **Styling**: CSS Custom Properties (theme system)
 - **Build**: Vite 7
-- **Hosting**: Cloudflare Pages
-- **API**: Pages Functions (serverless)
+- **Hosting**: Vercel
+- **API**: Vercel Serverless Functions
 - **Database**: MongoDB Atlas (via standard driver)
-- **Storage**: Cloudflare KV (gateway configs, read-write)
+- **Storage**: Redis (gateway configs, read-write)
 - **Auth**: Magic link via Resend
 
 ## 📦 Installation & Setup
@@ -114,7 +120,8 @@ User Request → xyz.toran.dev
 - Node.js 18+
 - npm 9+
 - MongoDB Atlas account
-- Cloudflare account
+- Redis instance (Upstash, Redis Cloud, or self-hosted)
+- Vercel account
 - Resend account (for email)
 
 ### 1. Clone and Install
@@ -137,22 +144,17 @@ npm run seed:data
 
 ### 3. Configure Environment Variables
 
-#### Proxy (`proxy/wrangler.toml`)
-```bash
-cd proxy
-wrangler secret put WWW_API_URL
-# Enter: https://admin.toran.dev (or your WWW deployment URL)
-```
+#### WWW (Vercel environment variables)
+Set these in your Vercel project dashboard or via `.env.local` for local development:
 
-**KV Namespace**: Already configured in `wrangler.toml` (GATEWAY_CONFIG binding)
-
-#### WWW (`www/` - set via Cloudflare Pages dashboard)
 - `MONGODB_URI` - MongoDB connection string
 - `MONGODB_DATABASE` - Database name (default: toran)
-- `RESEND_API_KEY` - Resend API key for emails
-- `APP_URL` - Admin panel URL (https://admin.toran.dev)
+- `RESEND_API_KEY` - Resend API key for magic link emails
+- `REDIS_URL` - Redis connection string (e.g., `redis://default:password@host:port`)
+- `APP_URL` - (Optional) Admin panel URL - auto-detected from request if not set
 
-**KV Namespace**: Already configured in `wrangler.toml` (GATEWAY_CONFIG binding, shared with proxy)
+#### Proxy (separate repository)
+See [toran-proxy](https://github.com/kxbnb/toran-proxy) for proxy configuration instructions.
 
 ### 4. Deploy
 
@@ -350,17 +352,26 @@ npm run deploy
 ```
 
 **Via GitHub Integration (Recommended):**
-1. Connect GitHub repository to Cloudflare Pages
+1. Connect GitHub repository to Vercel
 2. Configure build settings:
-   - Build command: `./www/build.sh`
-   - Build output: `/www/dist`
+   - Build command: `npm run build`
+   - Build output: `/dist`
    - Root directory: `/`
-3. Set environment variables in Pages dashboard
+3. Set environment variables in Vercel dashboard
 4. Push to main branch → auto-deploy
 
 ### Proxy Deployment
 
 See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository for proxy deployment instructions.
+
+### Environment Variables
+
+Required environment variables for Vercel deployment:
+- `MONGODB_URI` - MongoDB connection string
+- `MONGODB_DATABASE` - Database name (default: toran)
+- `RESEND_API_KEY` - Resend API key for magic link emails
+- `REDIS_URL` - Redis connection string (replaces KV storage)
+- `APP_URL` - (Optional) Admin panel URL - auto-detected from request if not set
 
 ## 📝 Key Features
 
@@ -394,9 +405,10 @@ See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository for proxy dep
 ### Project Context
 This repository contains **toran-www**, the admin panel and API for Toran API Gateway.
 
-**Workspaces**:
-1. **www/** - React admin panel + API on Cloudflare Pages
-2. **shared/** - Shared TypeScript types
+**Structure**:
+1. **src/** - React admin panel (Vite + React)
+2. **api/** - Vercel serverless functions
+3. **shared/** - Shared TypeScript types
 
 **Related Repository**:
 - **toran-proxy** - Separate repo with the stateless Cloudflare Worker proxy
@@ -404,47 +416,46 @@ This repository contains **toran-www**, the admin panel and API for Toran API Ga
 ### Architecture Principles
 
 **Separation of Concerns:**
-- **Proxy**: Only reads from KV, sends logs to WWW. No database access.
-- **WWW**: Manages MongoDB, writes to KV, receives logs from proxy.
-- **KV**: Single source of truth for gateway configs, shared between proxy and WWW.
+- **Proxy**: Only reads from Redis, sends logs to WWW. No database access.
+- **WWW**: Manages MongoDB, writes to Redis, receives logs from proxy.
+- **Redis**: Single source of truth for gateway configs, shared between proxy and WWW.
 
 **Data Flow:**
-- **Config writes**: User → WWW → MongoDB → KV (flattened)
-- **Config reads**: Proxy → KV → Response
+- **Config writes**: User → WWW → MongoDB → Redis (flattened)
+- **Config reads**: Proxy → Redis → Response
 - **Logging**: Proxy → WWW API → MongoDB
 
 ### Common Tasks
 
-**Add a new API endpoint to WWW:**
-- Create file in `www/functions/api/<endpoint>.ts`
-- Export `onRequestGet`, `onRequestPost`, etc.
+**Add a new API endpoint:**
+- Create file in `api/<endpoint>.ts`
+- Export Vercel handler function
 - Access via `/api/<endpoint>`
-- Can access MongoDB and KV via env bindings
+- Can access MongoDB and Redis via `api/utils/` helpers
 
 **Modify proxy logic:**
-- Edit `proxy/src/index.ts`
-- Proxy can only read from KV (via GATEWAY_CONFIG binding)
+- See [toran-proxy](https://github.com/kxbnb/toran-proxy) repository
+- Proxy reads from Redis for gateway configs
 - Proxy sends logs to WWW (via WWW_API_URL)
-- Deploy with `npm run deploy:proxy`
 
 **Update gateway config schema:**
 1. Edit `shared/src/types/gateway.ts` or `route.ts`
-2. Update `www/functions/utils/gateway-flatten.ts` to flatten new fields
+2. Update `api/utils/gateway-flatten.ts` to flatten new fields
 3. Update proxy to use new fields
-4. Types are automatically shared across all workspaces
+4. Types are automatically shared via workspace
 
-**Add a new WWW component:**
-- Create in `www/src/components/`
+**Add a new React component:**
+- Create in `src/components/`
 - Import and use in pages
 - Follow existing patterns (useAuth, useTheme hooks)
 
 ### Architecture Decisions
 
-**Why Cloudflare Workers?**
+**Why Cloudflare Workers for Proxy?**
 - Edge compute (fast globally)
 - Serverless (no infrastructure management)
-- Built-in KV storage (Redis-like)
-- Pages Functions for backend API
+- Low latency for reverse proxy workload
+- Handles high traffic efficiently
 
 **Why separate Proxy and WWW?**
 - Proxy is lightweight and fast (no database overhead)
@@ -452,11 +463,12 @@ This repository contains **toran-www**, the admin panel and API for Toran API Ga
 - Better separation of concerns
 - Easier to scale independently
 
-**Why KV for configs?**
+**Why Redis for configs?**
 - Sub-millisecond read latency
-- Global edge distribution
-- No rate limits on reads
+- Industry-standard key-value store
+- Multiple hosting options (Upstash, Redis Cloud, self-hosted)
 - Perfect for read-heavy proxy workload
+- Easy to integrate with both Cloudflare Workers and Vercel
 
 **Why MongoDB?**
 - TTL indexes for auto-cleanup (logs, sessions, magic links)
@@ -486,10 +498,10 @@ This repository contains **toran-www**, the admin panel and API for Toran API Ga
 
 ## 🤝 Contributing
 
-1. Make changes in appropriate workspace (`www/`, `shared/`)
+1. Make changes in appropriate directory (`src/`, `api/`, `shared/`)
 2. Test locally with `npm run dev`
 3. Commit with descriptive message
-4. Push to GitHub (auto-deploys to Cloudflare if configured)
+4. Push to GitHub (auto-deploys to Vercel if configured)
 
 ## 📄 License
 
@@ -497,8 +509,8 @@ Private project - All rights reserved
 
 ## 🙋 Support
 
-For issues or questions, refer to the documentation files or check Cloudflare Workers/Pages documentation.
+For issues or questions, refer to the documentation files or check Vercel and Cloudflare Workers documentation.
 
 ---
 
-**Built with ❤️ using Cloudflare Workers, React, and MongoDB**
+**Built with ❤️ using Vercel, Cloudflare Workers, React, Redis, and MongoDB**
