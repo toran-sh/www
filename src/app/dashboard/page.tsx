@@ -17,8 +17,9 @@ export default async function DashboardPage() {
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="text-xl font-bold text-cyan-600 dark:text-cyan-400"
+            className="flex items-center gap-2 text-xl font-bold text-cyan-600 dark:text-cyan-400"
           >
+            <img src="/logo.png" alt="toran" className="h-6 w-6" />
             toran
           </Link>
           <div className="flex items-center gap-4">

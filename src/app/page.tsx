@@ -33,7 +33,8 @@ export default function Home() {
       {/* Header */}
       <header className="container mx-auto px-6 py-6">
         <nav className="flex items-center justify-between">
-          <div className="text-xl font-bold text-cyan-600 dark:text-cyan-400">
+          <div className="flex items-center gap-2 text-xl font-bold text-cyan-600 dark:text-cyan-400">
+            <img src="/logo.png" alt="toran" className="h-6 w-6" />
             toran
           </div>
           <Link
