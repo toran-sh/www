@@ -24,10 +24,17 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      upstreamBaseUrl: gateway.upstreamBaseUrl,
-      cacheTtl: gateway.cacheTtl,
-    });
+    return NextResponse.json(
+      {
+        upstreamBaseUrl: gateway.upstreamBaseUrl,
+        cacheTtl: gateway.cacheTtl,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, max-age=60",
+        },
+      }
+    );
   } catch (error) {
     console.error("Configuration fetch error:", error);
     return NextResponse.json(
