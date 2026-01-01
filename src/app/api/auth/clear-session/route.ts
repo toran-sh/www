@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
 export async function GET(request: Request) {
-  const cookieStore = await cookies();
-  cookieStore.delete("session");
+  const response = NextResponse.redirect(new URL("/login", request.url));
 
-  return NextResponse.redirect(new URL("/login", request.url));
+  // Clear the session cookie by setting it to expire immediately
+  response.cookies.set("session", "", {
+    expires: new Date(0),
+    path: "/",
+  });
+
+  return response;
 }
