@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { ObjectId } from "mongodb";
 import { db } from "./mongodb";
 
 const MAGIC_LINK_TTL_MS = 15 * 60 * 1000; // 15 minutes
@@ -12,13 +13,20 @@ interface MagicLinkDoc {
 
 interface SessionDoc {
   token: string;
-  email: string;
+  userId: string;
   expiresAt: Date;
+}
+
+interface UserDoc {
+  _id: ObjectId;
+  email: string;
+  createdAt: Date;
 }
 
 // Get collections with TTL indexes
 const magicLinksCollection = () => db.collection<MagicLinkDoc>("magic_links");
 const sessionsCollection = () => db.collection<SessionDoc>("sessions");
+const usersCollection = () => db.collection<UserDoc>("users");
 
 // Ensure TTL indexes exist (call once on startup or use MongoDB shell)
 export async function ensureIndexes(): Promise<void> {
@@ -39,6 +47,21 @@ export async function ensureIndexes(): Promise<void> {
   );
   await magicLinksCollection().createIndex({ token: 1 }, { unique: true });
   await sessionsCollection().createIndex({ token: 1 }, { unique: true });
+  await usersCollection().createIndex({ email: 1 }, { unique: true });
+}
+
+export async function findOrCreateUser(email: string): Promise<string> {
+  const existingUser = await usersCollection().findOne({ email });
+  if (existingUser) {
+    return existingUser._id.toString();
+  }
+
+  const result = await usersCollection().insertOne({
+    email,
+    createdAt: new Date(),
+  } as UserDoc);
+
+  return result.insertedId.toString();
 }
 
 export function generateToken(): string {
@@ -68,9 +91,12 @@ export async function createSession(email: string): Promise<void> {
   const cookieStore = await cookies();
   const sessionToken = generateToken();
 
+  // Find or create user, get their ID
+  const userId = await findOrCreateUser(email);
+
   await sessionsCollection().insertOne({
     token: sessionToken,
-    email,
+    userId,
     expiresAt: new Date(Date.now() + SESSION_TTL_MS),
   });
 
@@ -106,7 +132,7 @@ export async function getSession(): Promise<string | null> {
     }
   );
 
-  return doc?.email || null;
+  return doc?.userId || null;
 }
 
 export async function deleteSession(): Promise<void> {

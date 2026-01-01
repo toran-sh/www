@@ -8,8 +8,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const email = await getSession();
-    if (!email) {
+    const userId = await getSession();
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -21,7 +21,7 @@ export async function GET(
 
     const gateway = await db.collection("gateways").findOne({
       _id: new ObjectId(id),
-      user_id: email,
+      user_id: userId,
     });
 
     if (!gateway) {
@@ -43,8 +43,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const email = await getSession();
-    if (!email) {
+    const userId = await getSession();
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -64,7 +64,7 @@ export async function PUT(
     }
 
     const result = await db.collection("gateways").findOneAndUpdate(
-      { _id: new ObjectId(id), user_id: email },
+      { _id: new ObjectId(id), user_id: userId },
       { $set: { upstreamBaseUrl, cacheTtl: cacheTtl ?? null, updatedAt: new Date() } },
       { returnDocument: "after" }
     );
@@ -88,8 +88,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const email = await getSession();
-    if (!email) {
+    const userId = await getSession();
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -101,7 +101,7 @@ export async function DELETE(
 
     const result = await db.collection("gateways").deleteOne({
       _id: new ObjectId(id),
-      user_id: email,
+      user_id: userId,
     });
 
     if (result.deletedCount === 0) {

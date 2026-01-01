@@ -5,14 +5,14 @@ import { generateSubdomain } from "@/lib/subdomain";
 
 export async function GET() {
   try {
-    const email = await getSession();
-    if (!email) {
+    const userId = await getSession();
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const gateways = await db
       .collection("gateways")
-      .find({ user_id: email })
+      .find({ user_id: userId })
       .sort({ createdAt: -1 })
       .toArray();
 
@@ -28,8 +28,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const email = await getSession();
-    if (!email) {
+    const userId = await getSession();
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       subdomain,
       upstreamBaseUrl,
       cacheTtl: cacheTtl ?? null,
-      user_id: email,
+      user_id: userId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
