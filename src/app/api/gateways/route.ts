@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { upstreamBaseUrl } = body;
+    const { upstreamBaseUrl, cacheTtl } = body;
 
     if (!upstreamBaseUrl) {
       return NextResponse.json(
@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
     const gateway = {
       subdomain,
       upstreamBaseUrl,
+      cacheTtl: cacheTtl ?? null,
       user_id: email,
       createdAt: new Date(),
       updatedAt: new Date(),

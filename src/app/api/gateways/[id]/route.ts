@@ -50,7 +50,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { upstreamBaseUrl } = body;
+    const { upstreamBaseUrl, cacheTtl } = body;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid gateway ID" }, { status: 400 });
@@ -65,7 +65,7 @@ export async function PUT(
 
     const result = await db.collection("gateways").findOneAndUpdate(
       { _id: new ObjectId(id), user_id: email },
-      { $set: { upstreamBaseUrl, updatedAt: new Date() } },
+      { $set: { upstreamBaseUrl, cacheTtl: cacheTtl ?? null, updatedAt: new Date() } },
       { returnDocument: "after" }
     );
 

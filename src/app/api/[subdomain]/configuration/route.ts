@@ -24,7 +24,10 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(gateway);
+    return NextResponse.json({
+      upstreamBaseUrl: gateway.upstreamBaseUrl,
+      cacheTtl: gateway.cacheTtl,
+    });
   } catch (error) {
     console.error("Configuration fetch error:", error);
     return NextResponse.json(
