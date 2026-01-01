@@ -6,6 +6,7 @@ interface Gateway {
   _id: string;
   subdomain: string;
   upstreamBaseUrl: string;
+  cacheTtl: number | null;
   createdAt: string;
 }
 
@@ -21,6 +22,7 @@ export function EditGatewayModal({
   onClose,
 }: EditGatewayModalProps) {
   const [upstreamBaseUrl, setUpstreamBaseUrl] = useState(gateway.upstreamBaseUrl);
+  const [cacheTtl, setCacheTtl] = useState(gateway.cacheTtl?.toString() ?? "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,7 +35,10 @@ export function EditGatewayModal({
       const response = await fetch(`/api/gateways/${gateway._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ upstreamBaseUrl }),
+        body: JSON.stringify({
+          upstreamBaseUrl,
+          cacheTtl: cacheTtl ? parseInt(cacheTtl, 10) : null,
+        }),
       });
 
       const data = await response.json();
@@ -83,6 +88,25 @@ export function EditGatewayModal({
             required
             className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
           />
+
+          <label
+            htmlFor="editCacheTtl"
+            className="block text-sm text-zinc-700 dark:text-zinc-300 mt-4"
+          >
+            Cache TTL (seconds)
+          </label>
+          <input
+            type="number"
+            id="editCacheTtl"
+            value={cacheTtl}
+            onChange={(e) => setCacheTtl(e.target.value)}
+            placeholder="e.g. 300"
+            min="0"
+            className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
+          />
+          <p className="mt-2 text-xs text-zinc-500">
+            How long to cache upstream responses. Leave empty to disable caching.
+          </p>
 
           <div className="mt-6 flex gap-3">
             <button
