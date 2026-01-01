@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const response = NextResponse.redirect(new URL("/login", request.url));
+  const url = new URL("/login", request.url);
+  const response = NextResponse.redirect(url, { status: 302 });
 
-  // Clear the session cookie by setting it to expire immediately
-  response.cookies.set("session", "", {
-    expires: new Date(0),
-    path: "/",
-  });
+  // Prevent caching of this redirect
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  response.headers.set("Pragma", "no-cache");
+
+  // Clear the session cookie
+  response.cookies.delete("session");
 
   return response;
 }
