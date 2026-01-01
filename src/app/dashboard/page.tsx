@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { getSession } from "@/lib/tokens";
 import { LogoutButton } from "./logout-button";
 import { GatewayList } from "./gateway-list";
@@ -9,10 +8,8 @@ export default async function DashboardPage() {
   const userId = await getSession();
 
   if (!userId) {
-    // Clear any stale session cookie before redirecting
-    const cookieStore = await cookies();
-    cookieStore.delete("session");
-    redirect("/login");
+    // Redirect to clear-session route which clears cookie and redirects to login
+    redirect("/api/auth/clear-session");
   }
 
   return (

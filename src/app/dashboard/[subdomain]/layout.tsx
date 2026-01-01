@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { cookies } from "next/headers";
 import { getSession } from "@/lib/tokens";
 import { db } from "@/lib/mongodb";
 import { LogoutButton } from "../logout-button";
@@ -15,10 +14,8 @@ export default async function GatewayLayout({ params, children }: Props) {
   const userId = await getSession();
 
   if (!userId) {
-    // Clear any stale session cookie before redirecting
-    const cookieStore = await cookies();
-    cookieStore.delete("session");
-    redirect("/login");
+    // Redirect to clear-session route which clears cookie and redirects to login
+    redirect("/api/auth/clear-session");
   }
 
   const { subdomain } = await params;
