@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { getSession } from "@/lib/tokens";
 import { LogoutButton } from "./logout-button";
 import { GatewayList } from "./gateway-list";
 
 export default async function DashboardPage() {
-  const email = await getSession();
+  const userId = await getSession();
 
-  if (!email) {
+  if (!userId) {
+    // Clear any stale session cookie before redirecting
+    const cookieStore = await cookies();
+    cookieStore.delete("session");
     redirect("/login");
   }
 
@@ -23,10 +27,7 @@ export default async function DashboardPage() {
             <img src="/logo.png" alt="toran" className="h-6 w-6" />
             toran
           </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">{email}</span>
-            <LogoutButton />
-          </div>
+          <LogoutButton />
         </div>
       </header>
 
