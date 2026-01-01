@@ -23,12 +23,14 @@ export async function POST(
       createdAt: new Date(),
     };
 
-    // Await the insert to ensure it completes
-    await db.collection("logs").insertOne(logEntry);
+    // Fire-and-forget: return immediately, insert in background
+    db.collection("logs").insertOne(logEntry).catch((error) => {
+      console.error("Log insert error:", error);
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Log insert error:", error);
+    console.error("Log request error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
