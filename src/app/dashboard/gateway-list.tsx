@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { AddGatewayForm } from "./add-gateway-form";
-import { EditGatewayModal } from "./edit-gateway-modal";
-import { DeleteConfirmModal } from "./delete-confirm-modal";
 
 interface Gateway {
   _id: string;
@@ -16,8 +15,6 @@ export function GatewayList() {
   const [gateways, setGateways] = useState<Gateway[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingGateway, setEditingGateway] = useState<Gateway | null>(null);
-  const [deletingGateway, setDeletingGateway] = useState<Gateway | null>(null);
 
   const fetchGateways = async () => {
     try {
@@ -40,16 +37,6 @@ export function GatewayList() {
   const handleGatewayAdded = (gateway: Gateway) => {
     setGateways([gateway, ...gateways]);
     setShowAddForm(false);
-  };
-
-  const handleGatewayUpdated = (updated: Gateway) => {
-    setGateways(gateways.map((g) => (g._id === updated._id ? updated : g)));
-    setEditingGateway(null);
-  };
-
-  const handleGatewayDeleted = (id: string) => {
-    setGateways(gateways.filter((g) => g._id !== id));
-    setDeletingGateway(null);
   };
 
   if (isLoading) {
@@ -112,19 +99,21 @@ export function GatewayList() {
                   <th className="px-4 py-3 text-left font-medium">Subdomain</th>
                   <th className="px-4 py-3 text-left font-medium">Upstream Base URL</th>
                   <th className="px-4 py-3 text-left font-medium">Created</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {gateways.map((gateway) => (
                   <tr
                     key={gateway._id}
-                    className="border-b border-zinc-200 dark:border-zinc-800 last:border-b-0"
+                    className="border-b border-zinc-200 dark:border-zinc-800 last:border-b-0 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                   >
                     <td className="px-4 py-3">
-                      <code className="text-cyan-600 dark:text-cyan-400">
+                      <Link
+                        href={`/dashboard/${gateway.subdomain}`}
+                        className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:underline font-mono"
+                      >
                         {gateway.subdomain}
-                      </code>
+                      </Link>
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {gateway.upstreamBaseUrl}
@@ -132,42 +121,12 @@ export function GatewayList() {
                     <td className="px-4 py-3 text-zinc-500">
                       {new Date(gateway.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => setEditingGateway(gateway)}
-                        className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mr-4"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setDeletingGateway(gateway)}
-                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                      >
-                        Delete
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </>
-      )}
-
-      {editingGateway && (
-        <EditGatewayModal
-          gateway={editingGateway}
-          onSuccess={handleGatewayUpdated}
-          onClose={() => setEditingGateway(null)}
-        />
-      )}
-
-      {deletingGateway && (
-        <DeleteConfirmModal
-          gateway={deletingGateway}
-          onSuccess={() => handleGatewayDeleted(deletingGateway._id)}
-          onClose={() => setDeletingGateway(null)}
-        />
       )}
     </div>
   );
