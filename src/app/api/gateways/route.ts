@@ -1,16 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/mongodb";
 import { getSession } from "@/lib/tokens";
-
-function generateSubdomain(): string {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  const length = 8 + Math.floor(Math.random() * 3); // 8-10 chars
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
+import { generateSubdomain } from "@/lib/subdomain";
 
 export async function GET() {
   try {
