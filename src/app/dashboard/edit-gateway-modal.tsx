@@ -5,7 +5,7 @@ import { useState } from "react";
 interface Gateway {
   _id: string;
   subdomain: string;
-  upstreamDomain: string;
+  upstreamBaseUrl: string;
   createdAt: string;
 }
 
@@ -20,7 +20,7 @@ export function EditGatewayModal({
   onSuccess,
   onClose,
 }: EditGatewayModalProps) {
-  const [upstreamDomain, setUpstreamDomain] = useState(gateway.upstreamDomain);
+  const [upstreamBaseUrl, setUpstreamBaseUrl] = useState(gateway.upstreamBaseUrl);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,7 +33,7 @@ export function EditGatewayModal({
       const response = await fetch(`/api/gateways/${gateway._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ upstreamDomain }),
+        body: JSON.stringify({ upstreamBaseUrl }),
       });
 
       const data = await response.json();
@@ -69,17 +69,17 @@ export function EditGatewayModal({
 
         <form onSubmit={handleSubmit}>
           <label
-            htmlFor="editUpstreamDomain"
+            htmlFor="editUpstreamBaseUrl"
             className="block text-sm text-zinc-700 dark:text-zinc-300"
           >
-            Upstream Domain <span className="text-red-500">*</span>
+            Upstream Base URL <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            id="editUpstreamDomain"
-            value={upstreamDomain}
-            onChange={(e) => setUpstreamDomain(e.target.value)}
-            placeholder="api.example.com"
+            id="editUpstreamBaseUrl"
+            value={upstreamBaseUrl}
+            onChange={(e) => setUpstreamBaseUrl(e.target.value)}
+            placeholder="https://api.example.com"
             required
             className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
           />

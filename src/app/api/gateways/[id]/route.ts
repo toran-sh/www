@@ -50,22 +50,22 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { upstreamDomain } = body;
+    const { upstreamBaseUrl } = body;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid gateway ID" }, { status: 400 });
     }
 
-    if (!upstreamDomain) {
+    if (!upstreamBaseUrl) {
       return NextResponse.json(
-        { error: "Upstream domain is required" },
+        { error: "Upstream base URL is required" },
         { status: 400 }
       );
     }
 
     const result = await db.collection("gateways").findOneAndUpdate(
       { _id: new ObjectId(id), user_id: email },
-      { $set: { upstreamDomain, updatedAt: new Date() } },
+      { $set: { upstreamBaseUrl, updatedAt: new Date() } },
       { returnDocument: "after" }
     );
 

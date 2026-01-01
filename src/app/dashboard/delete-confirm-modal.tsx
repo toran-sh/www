@@ -5,7 +5,7 @@ import { useState } from "react";
 interface Gateway {
   _id: string;
   subdomain: string;
-  upstreamDomain: string;
+  upstreamBaseUrl: string;
 }
 
 interface DeleteConfirmModalProps {

@@ -43,11 +43,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { upstreamDomain } = body;
+    const { upstreamBaseUrl } = body;
 
-    if (!upstreamDomain) {
+    if (!upstreamBaseUrl) {
       return NextResponse.json(
-        { error: "Upstream domain is required" },
+        { error: "Upstream base URL is required" },
         { status: 400 }
       );
     }
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     const gateway = {
       subdomain,
-      upstreamDomain,
+      upstreamBaseUrl,
       user_id: email,
       createdAt: new Date(),
       updatedAt: new Date(),

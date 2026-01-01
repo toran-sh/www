@@ -8,7 +8,7 @@ import { DeleteConfirmModal } from "./delete-confirm-modal";
 interface Gateway {
   _id: string;
   subdomain: string;
-  upstreamDomain: string;
+  upstreamBaseUrl: string;
   createdAt: string;
 }
 
@@ -110,7 +110,7 @@ export function GatewayList() {
               <thead>
                 <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
                   <th className="px-4 py-3 text-left font-medium">Subdomain</th>
-                  <th className="px-4 py-3 text-left font-medium">Upstream Domain</th>
+                  <th className="px-4 py-3 text-left font-medium">Upstream Base URL</th>
                   <th className="px-4 py-3 text-left font-medium">Created</th>
                   <th className="px-4 py-3 text-right font-medium">Actions</th>
                 </tr>
@@ -127,7 +127,7 @@ export function GatewayList() {
                       </code>
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                      {gateway.upstreamDomain}
+                      {gateway.upstreamBaseUrl}
                     </td>
                     <td className="px-4 py-3 text-zinc-500">
                       {new Date(gateway.createdAt).toLocaleDateString()}

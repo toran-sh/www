@@ -5,7 +5,7 @@ import { useState } from "react";
 interface Gateway {
   _id: string;
   subdomain: string;
-  upstreamDomain: string;
+  upstreamBaseUrl: string;
   createdAt: string;
 }
 
@@ -15,7 +15,7 @@ interface AddGatewayFormProps {
 }
 
 export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
-  const [upstreamDomain, setUpstreamDomain] = useState("");
+  const [upstreamBaseUrl, setUpstreamBaseUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
       const response = await fetch("/api/gateways", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ upstreamDomain }),
+        body: JSON.stringify({ upstreamBaseUrl }),
       });
 
       const data = await response.json();
@@ -57,22 +57,22 @@ export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
 
       <form onSubmit={handleSubmit}>
         <label
-          htmlFor="upstreamDomain"
+          htmlFor="upstreamBaseUrl"
           className="block text-sm text-zinc-700 dark:text-zinc-300"
         >
-          Upstream Domain <span className="text-red-500">*</span>
+          Upstream Base URL <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          id="upstreamDomain"
-          value={upstreamDomain}
-          onChange={(e) => setUpstreamDomain(e.target.value)}
-          placeholder="api.example.com"
+          id="upstreamBaseUrl"
+          value={upstreamBaseUrl}
+          onChange={(e) => setUpstreamBaseUrl(e.target.value)}
+          placeholder="https://api.example.com"
           required
           className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
         />
         <p className="mt-2 text-xs text-zinc-500">
-          The domain where requests will be proxied to. A random subdomain will be generated automatically.
+          The base URL where requests will be proxied to. A random subdomain will be generated automatically.
         </p>
 
         <div className="mt-6 flex gap-3">
