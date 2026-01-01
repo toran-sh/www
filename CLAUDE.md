@@ -56,6 +56,15 @@ src/
 
 ### Collections
 
+**users**
+```json
+{
+  "_id": "ObjectId",
+  "email": "user@example.com",
+  "createdAt": "Date"
+}
+```
+
 **gateways**
 ```json
 {
@@ -63,7 +72,7 @@ src/
   "subdomain": "abc123xyz",
   "upstreamBaseUrl": "https://api.example.com",
   "cacheTtl": 300,
-  "user_id": "user@example.com",
+  "user_id": "ObjectId string (references users._id)",
   "createdAt": "Date",
   "updatedAt": "Date"
 }
@@ -78,6 +87,7 @@ src/
   "request": { "method": "GET", "path": "/", "query": {}, "headers": {}, "body": null },
   "response": { "status": 200, "headers": {}, "bodySize": 123 },
   "duration": 45,
+  "cacheStatus": "HIT | MISS",
   "createdAt": "Date"
 }
 ```
@@ -91,11 +101,11 @@ src/
 }
 ```
 
-**sessions** (TTL: 7 days)
+**sessions** (TTL: 7 days, sliding)
 ```json
 {
   "token": "uuid",
-  "email": "user@example.com",
+  "userId": "ObjectId string (references users._id)",
   "expiresAt": "Date"
 }
 ```
@@ -110,8 +120,8 @@ src/
 - Response: `{ upstreamBaseUrl, cacheTtl }`
 
 **POST /api/[subdomain]/log**
-- Stores request/response logs from proxy
-- Request body: `{ timestamp, request, response, duration }`
+- Stores request/response logs from proxy (fire-and-forget, doesn't await MongoDB insert)
+- Request body: `{ timestamp, request, response, duration, cacheStatus? }`
 
 ### Gateway Management (dashboard)
 
@@ -150,9 +160,11 @@ Each gateway has:
 ## Key Implementation Details
 
 - **Magic link auth**: Passwordless via Resend email service
-- **Multi-tenant**: Gateways scoped by user_id (email)
+- **User management**: findOrCreateUser creates user on first login, returns ObjectId
+- **Multi-tenant**: Gateways scoped by user_id (ObjectId string)
 - **Subdomain routing**: Unique subdomain per gateway
 - **Cache-Control**: Config endpoint returns 60s cache header for proxy
+- **Async logging**: Log endpoint doesn't await MongoDB insert (fire-and-forget)
 - **camelCase consistency**: API and DB both use camelCase (cacheTtl, not cache_ttl)
 
 ## Tech Stack
