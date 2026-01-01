@@ -23,14 +23,14 @@ export async function POST(
       createdAt: new Date(),
     };
 
-    const result = await db.collection("logs").insertOne(logEntry);
-
-    return NextResponse.json({
-      success: true,
-      id: result.insertedId,
+    // Fire-and-forget: don't await MongoDB insert
+    db.collection("logs").insertOne(logEntry).catch((error) => {
+      console.error("Log insert error:", error);
     });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Log insert error:", error);
+    console.error("Log request error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
