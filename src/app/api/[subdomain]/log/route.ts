@@ -7,6 +7,7 @@ export async function POST(
 ) {
   try {
     const { subdomain } = await params;
+    console.log("Log received for subdomain:", subdomain);
 
     if (!subdomain) {
       return NextResponse.json(
@@ -16,6 +17,7 @@ export async function POST(
     }
 
     const body = await request.json();
+    console.log("Log body:", JSON.stringify(body).slice(0, 200));
 
     const logEntry = {
       subdomain,
@@ -23,10 +25,9 @@ export async function POST(
       createdAt: new Date(),
     };
 
-    // Fire-and-forget: return immediately, insert in background
-    db.collection("logs").insertOne(logEntry).catch((error) => {
-      console.error("Log insert error:", error);
-    });
+    // Await insert to catch errors
+    const result = await db.collection("logs").insertOne(logEntry);
+    console.log("Log inserted:", result.insertedId);
 
     return NextResponse.json({ success: true });
   } catch (error) {
