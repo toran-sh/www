@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/tokens";
 import { LoginForm } from "./login-form";
 
 interface Props {
@@ -7,6 +9,12 @@ interface Props {
 
 export default async function LoginPage({ searchParams }: Props) {
   const { error } = await searchParams;
+
+  // If already logged in with valid session, redirect to dashboard
+  const userId = await getSession();
+  if (userId) {
+    redirect("/dashboard");
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-4">
