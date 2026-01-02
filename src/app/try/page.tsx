@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/tokens";
+import { getSession, getTrialToken, generateToken, setTrialTokenCookie } from "@/lib/tokens";
 import { CreateTrialForm } from "./create-trial-form";
 
 export default async function TryPage() {
@@ -8,6 +8,14 @@ export default async function TryPage() {
   const userId = await getSession();
   if (userId) {
     redirect("/dashboard");
+  }
+
+  // Initialize trial token on page load to prevent race conditions
+  // when creating torans in multiple tabs
+  let trialToken = await getTrialToken();
+  if (!trialToken) {
+    trialToken = generateToken();
+    await setTrialTokenCookie(trialToken);
   }
 
   return (
