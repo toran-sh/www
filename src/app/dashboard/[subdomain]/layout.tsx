@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { db } from "@/lib/mongodb";
 import { LogoutButton } from "../logout-button";
-import { GatewaySidebar } from "@/components/gateway-sidebar";
+import { ToranSidebar } from "@/components/toran-sidebar";
 import { SessionExpired } from "../session-expired";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default async function GatewayLayout({ params, children }: Props) {
+export default async function ToranLayout({ params, children }: Props) {
   const userId = await getSession();
 
   if (!userId) {
@@ -21,13 +21,13 @@ export default async function GatewayLayout({ params, children }: Props) {
 
   const { subdomain } = await params;
 
-  // Verify gateway belongs to user
-  const gateway = await db.collection("gateways").findOne({
+  // Verify toran belongs to user
+  const toran = await db.collection("gateways").findOne({
     subdomain,
     user_id: userId,
   });
 
-  if (!gateway) {
+  if (!toran) {
     notFound();
   }
 
@@ -49,7 +49,7 @@ export default async function GatewayLayout({ params, children }: Props) {
               href="/dashboard"
               className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
             >
-              Gateways
+              torans
             </Link>
             <span className="text-zinc-400 dark:text-zinc-600">/</span>
             <code className="text-sm font-mono text-cyan-600 dark:text-cyan-400">
@@ -62,7 +62,7 @@ export default async function GatewayLayout({ params, children }: Props) {
 
       {/* Main Content with Sidebar */}
       <div className="flex">
-        <GatewaySidebar subdomain={subdomain} />
+        <ToranSidebar subdomain={subdomain} />
         <main className="flex-1 p-6">{children}</main>
       </div>
     </div>

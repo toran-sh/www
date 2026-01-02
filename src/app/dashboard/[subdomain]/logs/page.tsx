@@ -105,7 +105,7 @@ export default function LogsPage() {
     setError(null);
     try {
       const res = await fetch(
-        `/api/gateways/by-subdomain/${subdomain}/logs?page=${page}&limit=50`
+        `/api/torans/by-subdomain/${subdomain}/logs?page=${page}&limit=50`
       );
       if (!res.ok) {
         throw new Error("Failed to fetch logs");
@@ -140,7 +140,7 @@ export default function LogsPage() {
 
     try {
       const res = await fetch(
-        `/api/gateways/by-subdomain/${subdomain}/logs?since=${latestIdRef.current}`
+        `/api/torans/by-subdomain/${subdomain}/logs?since=${latestIdRef.current}`
       );
       if (!res.ok) return;
 

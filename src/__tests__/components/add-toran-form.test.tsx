@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { AddGatewayForm } from "@/app/dashboard/add-gateway-form";
+import { AddToranForm } from "@/app/dashboard/add-toran-form";
 
-describe("AddGatewayForm", () => {
+describe("AddToranForm", () => {
   const mockOnSuccess = vi.fn();
   const mockOnCancel = vi.fn();
 
@@ -12,16 +12,16 @@ describe("AddGatewayForm", () => {
   });
 
   it("should render the form with required fields", () => {
-    render(<AddGatewayForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
+    render(<AddToranForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
 
-    expect(screen.getByText("Create New Gateway")).toBeInTheDocument();
+    expect(screen.getByText("Create new toran")).toBeInTheDocument();
     expect(screen.getByLabelText(/Upstream Base URL/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Create Gateway/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Create toran/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Cancel/i })).toBeInTheDocument();
   });
 
   it("should call onCancel when cancel button is clicked", () => {
-    render(<AddGatewayForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
+    render(<AddToranForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
 
     fireEvent.click(screen.getByRole("button", { name: /Cancel/i }));
 
@@ -29,7 +29,7 @@ describe("AddGatewayForm", () => {
   });
 
   it("should submit the form with upstream URL", async () => {
-    const mockGateway = {
+    const mockToran = {
       _id: "123",
       subdomain: "abc123xy",
       upstreamBaseUrl: "https://api.example.com",
@@ -38,44 +38,44 @@ describe("AddGatewayForm", () => {
 
     (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       ok: true,
-      json: async () => mockGateway,
+      json: async () => mockToran,
     });
 
-    render(<AddGatewayForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
+    render(<AddToranForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
 
     const input = screen.getByLabelText(/Upstream Base URL/i);
     fireEvent.change(input, { target: { value: "https://api.example.com" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /Create Gateway/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Create toran/i }));
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith("/api/gateways", {
+      expect(global.fetch).toHaveBeenCalledWith("/api/torans", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ upstreamBaseUrl: "https://api.example.com" }),
+        body: JSON.stringify({ upstreamBaseUrl: "https://api.example.com", cacheTtl: null }),
       });
     });
 
     await waitFor(() => {
-      expect(mockOnSuccess).toHaveBeenCalledWith(mockGateway);
+      expect(mockOnSuccess).toHaveBeenCalledWith(mockToran);
     });
   });
 
   it("should display error message on API failure", async () => {
     (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       ok: false,
-      json: async () => ({ error: "Failed to create gateway" }),
+      json: async () => ({ error: "Failed to create toran" }),
     });
 
-    render(<AddGatewayForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
+    render(<AddToranForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
 
     const input = screen.getByLabelText(/Upstream Base URL/i);
     fireEvent.change(input, { target: { value: "https://api.example.com" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /Create Gateway/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Create toran/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to create gateway")).toBeInTheDocument();
+      expect(screen.getByText("Failed to create toran")).toBeInTheDocument();
     });
 
     expect(mockOnSuccess).not.toHaveBeenCalled();
@@ -89,12 +89,12 @@ describe("AddGatewayForm", () => {
       }), 100))
     );
 
-    render(<AddGatewayForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
+    render(<AddToranForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
 
     const input = screen.getByLabelText(/Upstream Base URL/i);
     fireEvent.change(input, { target: { value: "https://api.example.com" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /Create Gateway/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Create toran/i }));
 
     expect(screen.getByRole("button", { name: /Creating.../i })).toBeInTheDocument();
   });

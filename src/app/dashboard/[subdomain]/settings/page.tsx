@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-interface Gateway {
+interface Toran {
   _id: string;
   subdomain: string;
   upstreamBaseUrl: string;
@@ -15,7 +15,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const subdomain = params.subdomain as string;
 
-  const [gateway, setGateway] = useState<Gateway | null>(null);
+  const [toran, setToran] = useState<Toran | null>(null);
   const [upstreamBaseUrl, setUpstreamBaseUrl] = useState("");
   const [cacheTtl, setCacheTtl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -30,37 +30,37 @@ export default function SettingsPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchGateway() {
+    async function fetchToran() {
       try {
-        const res = await fetch(`/api/gateways`);
-        if (!res.ok) throw new Error("Failed to fetch gateways");
-        const gateways = await res.json();
-        const found = gateways.find((g: Gateway) => g.subdomain === subdomain);
+        const res = await fetch(`/api/torans`);
+        if (!res.ok) throw new Error("Failed to fetch torans");
+        const torans = await res.json();
+        const found = torans.find((t: Toran) => t.subdomain === subdomain);
         if (found) {
-          setGateway(found);
+          setToran(found);
           setUpstreamBaseUrl(found.upstreamBaseUrl);
           setCacheTtl(found.cacheTtl?.toString() ?? "");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load gateway");
+        setError(err instanceof Error ? err.message : "Failed to load toran");
       } finally {
         setIsLoading(false);
       }
     }
 
-    fetchGateway();
+    fetchToran();
   }, [subdomain]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!gateway) return;
+    if (!toran) return;
 
     setIsSaving(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const response = await fetch(`/api/gateways/${gateway._id}`, {
+      const response = await fetch(`/api/torans/${toran._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,10 +72,10 @@ export default function SettingsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update gateway");
+        throw new Error(data.error || "Failed to update toran");
       }
 
-      setGateway(data);
+      setToran(data);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
@@ -86,19 +86,19 @@ export default function SettingsPage() {
   };
 
   const handleDelete = async () => {
-    if (!gateway || deleteConfirmation !== "DELETE") return;
+    if (!toran || deleteConfirmation !== "DELETE") return;
 
     setIsDeleting(true);
     setDeleteError(null);
 
     try {
-      const response = await fetch(`/api/gateways/${gateway._id}`, {
+      const response = await fetch(`/api/torans/${toran._id}`, {
         method: "DELETE",
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete gateway");
+        throw new Error(data.error || "Failed to delete toran");
       }
 
       router.push("/dashboard");
@@ -115,9 +115,9 @@ export default function SettingsPage() {
     );
   }
 
-  if (!gateway) {
+  if (!toran) {
     return (
-      <div className="text-center py-12 text-red-500">Gateway not found</div>
+      <div className="text-center py-12 text-red-500">toran not found</div>
     );
   }
 
@@ -125,13 +125,13 @@ export default function SettingsPage() {
     <div className="max-w-2xl">
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
 
-      {/* Gateway Info */}
+      {/* Toran Info */}
       <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
         <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
           Subdomain
         </div>
         <code className="text-cyan-600 dark:text-cyan-400 font-mono">
-          {gateway.subdomain}
+          {toran.subdomain}
         </code>
         <p className="mt-1 text-xs text-zinc-500">Subdomain cannot be changed</p>
       </div>
@@ -204,8 +204,8 @@ export default function SettingsPage() {
           Danger Zone
         </h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-          Deleting this gateway is permanent and cannot be undone. All associated
-          logs will remain but the gateway will no longer function.
+          Deleting this toran is permanent and cannot be undone. All associated
+          logs will remain but the toran will no longer function.
         </p>
 
         {!showDeleteConfirm ? (
@@ -213,7 +213,7 @@ export default function SettingsPage() {
             onClick={() => setShowDeleteConfirm(true)}
             className="bg-red-600 px-4 py-2 text-sm font-medium text-white rounded-md hover:bg-red-700"
           >
-            Delete Gateway
+            Delete toran
           </button>
         ) : (
           <div className="p-4 bg-red-50 dark:bg-red-950 rounded-md">

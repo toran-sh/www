@@ -2,47 +2,47 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AddGatewayForm } from "./add-gateway-form";
+import { AddToranForm } from "./add-toran-form";
 
-interface Gateway {
+interface Toran {
   _id: string;
   subdomain: string;
   upstreamBaseUrl: string;
   createdAt: string;
 }
 
-export function GatewayList() {
-  const [gateways, setGateways] = useState<Gateway[]>([]);
+export function ToranList() {
+  const [torans, setTorans] = useState<Toran[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const fetchGateways = async () => {
+  const fetchTorans = async () => {
     try {
-      const response = await fetch("/api/gateways");
+      const response = await fetch("/api/torans");
       if (response.ok) {
         const data = await response.json();
-        setGateways(data);
+        setTorans(data);
       }
     } catch (error) {
-      console.error("Failed to fetch gateways:", error);
+      console.error("Failed to fetch torans:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchGateways();
+    fetchTorans();
   }, []);
 
-  const handleGatewayAdded = (gateway: Gateway) => {
-    setGateways([gateway, ...gateways]);
+  const handleToranAdded = (toran: Toran) => {
+    setTorans([toran, ...torans]);
     setShowAddForm(false);
   };
 
   if (isLoading) {
     return (
       <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-12 text-center text-zinc-500">
-        Loading gateways...
+        Loading torans...
       </div>
     );
   }
@@ -50,11 +50,11 @@ export function GatewayList() {
   return (
     <div className="mt-6">
       {showAddForm ? (
-        <AddGatewayForm
-          onSuccess={handleGatewayAdded}
+        <AddToranForm
+          onSuccess={handleToranAdded}
           onCancel={() => setShowAddForm(false)}
         />
-      ) : gateways.length === 0 ? (
+      ) : torans.length === 0 ? (
         <div className="border border-dashed border-zinc-300 dark:border-zinc-700 p-12 text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center border border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400">
             <svg
@@ -71,15 +71,15 @@ export function GatewayList() {
               />
             </svg>
           </div>
-          <h3 className="font-medium">No gateways yet</h3>
+          <h3 className="font-medium">No torans yet</h3>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Create your first gateway to start routing API requests
+            Create your first toran to start routing API requests
           </p>
           <button
             onClick={() => setShowAddForm(true)}
             className="mt-6 bg-cyan-600 dark:bg-cyan-500 px-6 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
           >
-            Create Gateway
+            Create toran
           </button>
         </div>
       ) : (
@@ -89,7 +89,7 @@ export function GatewayList() {
               onClick={() => setShowAddForm(true)}
               className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
             >
-              + Add Gateway
+              + Add toran
             </button>
           </div>
           <div className="border border-zinc-200 dark:border-zinc-800">
@@ -102,24 +102,24 @@ export function GatewayList() {
                 </tr>
               </thead>
               <tbody>
-                {gateways.map((gateway) => (
+                {torans.map((toran) => (
                   <tr
-                    key={gateway._id}
+                    key={toran._id}
                     className="border-b border-zinc-200 dark:border-zinc-800 last:border-b-0 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                   >
                     <td className="px-4 py-3">
                       <Link
-                        href={`/dashboard/${gateway.subdomain}`}
+                        href={`/dashboard/${toran.subdomain}`}
                         className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:underline font-mono"
                       >
-                        {gateway.subdomain}
+                        {toran.subdomain}
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                      {gateway.upstreamBaseUrl}
+                      {toran.upstreamBaseUrl}
                     </td>
                     <td className="px-4 py-3 text-zinc-500">
-                      {new Date(gateway.createdAt).toLocaleDateString()}
+                      {new Date(toran.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
                 ))}

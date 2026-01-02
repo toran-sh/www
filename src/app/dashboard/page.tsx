@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getSession } from "@/lib/tokens";
 import { LogoutButton } from "./logout-button";
-import { GatewayList } from "./gateway-list";
+import { ToranList } from "./toran-list";
 import { SessionExpired } from "./session-expired";
 
 export default async function DashboardPage() {
@@ -32,13 +32,13 @@ export default async function DashboardPage() {
       <main className="container mx-auto px-6 py-12">
         <div className="mb-8">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">Manage your API gateways</p>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">Manage your torans</p>
         </div>
 
-        {/* Gateways Section */}
+        {/* Torans Section */}
         <div>
-          <h2 className="text-lg font-semibold">Your Gateways</h2>
-          <GatewayList />
+          <h2 className="text-lg font-semibold">Your torans</h2>
+          <ToranList />
         </div>
       </main>
     </div>

@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-interface GatewaySidebarProps {
+interface ToranSidebarProps {
   subdomain: string;
 }
 
-export function GatewaySidebar({ subdomain }: GatewaySidebarProps) {
+export function ToranSidebar({ subdomain }: ToranSidebarProps) {
   const pathname = usePathname();
   const basePath = `/dashboard/${subdomain}`;
 

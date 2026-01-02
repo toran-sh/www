@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-interface Gateway {
+interface Toran {
   _id: string;
   subdomain: string;
   upstreamBaseUrl: string;
@@ -10,12 +10,12 @@ interface Gateway {
   createdAt: string;
 }
 
-interface AddGatewayFormProps {
-  onSuccess: (gateway: Gateway) => void;
+interface AddToranFormProps {
+  onSuccess: (toran: Toran) => void;
   onCancel: () => void;
 }
 
-export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
+export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
   const [upstreamBaseUrl, setUpstreamBaseUrl] = useState("");
   const [cacheTtl, setCacheTtl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
     setError(null);
 
     try {
-      const response = await fetch("/api/gateways", {
+      const response = await fetch("/api/torans", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -39,7 +39,7 @@ export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to create gateway");
+        throw new Error(data.error || "Failed to create toran");
       }
 
       onSuccess(data);
@@ -52,7 +52,7 @@ export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
 
   return (
     <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-      <h3 className="text-lg font-semibold mb-4">Create New Gateway</h3>
+      <h3 className="text-lg font-semibold mb-4">Create new toran</h3>
 
       {error && (
         <div className="mb-4 border border-red-500 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
@@ -105,7 +105,7 @@ export function AddGatewayForm({ onSuccess, onCancel }: AddGatewayFormProps) {
             disabled={isLoading}
             className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
           >
-            {isLoading ? "Creating..." : "Create Gateway"}
+            {isLoading ? "Creating..." : "Create toran"}
           </button>
           <button
             type="button"

@@ -33,7 +33,7 @@ interface MetricsData {
 
 type TimeRange = "hour" | "day";
 
-export default function GatewayDashboardPage() {
+export default function ToranDashboardPage() {
   const params = useParams();
   const subdomain = params.subdomain as string;
   const [range, setRange] = useState<TimeRange>("hour");
@@ -47,7 +47,7 @@ export default function GatewayDashboardPage() {
       setError(null);
       try {
         const res = await fetch(
-          `/api/gateways/by-subdomain/${subdomain}/metrics?range=${range}`
+          `/api/torans/by-subdomain/${subdomain}/metrics?range=${range}`
         );
         if (!res.ok) {
           throw new Error("Failed to fetch metrics");

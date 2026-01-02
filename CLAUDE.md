@@ -29,21 +29,30 @@ src/
 │   │   ├── auth/
 │   │   │   ├── send-magic-link/route.ts
 │   │   │   ├── verify/route.ts
+│   │   │   ├── clear-session/route.ts
 │   │   │   └── logout/route.ts
-│   │   └── gateways/
-│   │       ├── route.ts                # GET/POST gateways list
-│   │       └── [id]/route.ts           # GET/PUT/DELETE single gateway
+│   │   └── torans/
+│   │       ├── route.ts                # GET/POST torans list
+│   │       ├── [id]/route.ts           # GET/PUT/DELETE single toran
+│   │       └── by-subdomain/[subdomain]/
+│   │           ├── logs/route.ts       # GET paginated logs
+│   │           └── metrics/route.ts    # GET aggregated metrics
 │   ├── dashboard/
-│   │   ├── page.tsx                    # Dashboard with gateway management
-│   │   ├── gateway-list.tsx
-│   │   ├── add-gateway-form.tsx
-│   │   ├── edit-gateway-modal.tsx
-│   │   ├── delete-confirm-modal.tsx
-│   │   └── logout-button.tsx
+│   │   ├── page.tsx                    # Dashboard with toran list
+│   │   ├── toran-list.tsx
+│   │   ├── add-toran-form.tsx
+│   │   ├── logout-button.tsx
+│   │   ├── session-expired.tsx
+│   │   └── [subdomain]/
+│   │       ├── layout.tsx              # Toran detail layout with sidebar
+│   │       ├── page.tsx                # Metrics dashboard with charts
+│   │       ├── logs/page.tsx           # Request logs with streaming
+│   │       └── settings/page.tsx       # Settings + delete
 │   ├── login/page.tsx                  # Magic link login
 │   ├── layout.tsx
 │   └── page.tsx                        # Marketing homepage
 ├── components/
+│   ├── toran-sidebar.tsx               # Left nav (Dashboard, Logs, Settings)
 │   ├── theme-provider.tsx
 │   └── theme-switcher.tsx
 └── lib/
@@ -65,7 +74,7 @@ src/
 }
 ```
 
-**gateways**
+**gateways** (stores torans)
 ```json
 {
   "_id": "ObjectId",
@@ -87,6 +96,7 @@ src/
   "request": { "method": "GET", "path": "/", "query": {}, "headers": {}, "body": null },
   "response": { "status": 200, "headers": {}, "bodySize": 123 },
   "duration": 45,
+  "upstreamMetrics": { "ttfb": 30, "transfer": 10, "total": 45 },
   "cacheStatus": "HIT | MISS",
   "createdAt": "Date"
 }
@@ -115,32 +125,39 @@ src/
 ### Proxy Endpoints (called by toran-proxy)
 
 **GET /api/[subdomain]/configuration**
-- Returns gateway config for proxy
+- Returns toran config for proxy
 - Cache-Control: public, max-age=60
 - Response: `{ upstreamBaseUrl, cacheTtl }`
 
 **POST /api/[subdomain]/log**
 - Stores request/response logs from proxy (fire-and-forget, doesn't await MongoDB insert)
-- Request body: `{ timestamp, request, response, duration, cacheStatus? }`
+- Request body: `{ timestamp, request, response, duration, upstreamMetrics?, cacheStatus? }`
 
-### Gateway Management (dashboard)
+### Toran Management (dashboard)
 
-**GET /api/gateways** - List user's gateways
-**POST /api/gateways** - Create gateway
+**GET /api/torans** - List user's torans
+**POST /api/torans** - Create toran
 - Body: `{ upstreamBaseUrl, cacheTtl? }`
 - Auto-generates subdomain
 
-**GET /api/gateways/[id]** - Get single gateway
-**PUT /api/gateways/[id]** - Update gateway
+**GET /api/torans/[id]** - Get single toran
+**PUT /api/torans/[id]** - Update toran
 - Body: `{ upstreamBaseUrl, cacheTtl? }`
 
-**DELETE /api/gateways/[id]** - Delete gateway
+**DELETE /api/torans/[id]** - Delete toran
+
+**GET /api/torans/by-subdomain/[subdomain]/logs** - Get paginated logs
+- Query params: `page`, `limit`, `since` (for streaming)
+
+**GET /api/torans/by-subdomain/[subdomain]/metrics** - Get aggregated metrics
+- Query params: `range` (hour|day)
 
 ### Authentication
 
 **POST /api/auth/send-magic-link** - Send login email
 **GET /api/auth/verify?token=...** - Verify magic link
 **POST /api/auth/logout** - Clear session
+**GET /api/auth/clear-session** - Clear cookie and redirect to login
 
 ## Environment Variables
 
@@ -150,9 +167,9 @@ src/
 | `RESEND_API_KEY` | Yes | Resend API key for magic link emails |
 | `NEXT_PUBLIC_APP_URL` | Yes | App URL for magic link generation |
 
-## Gateway Configuration
+## Toran Configuration
 
-Each gateway has:
+Each toran has:
 - **subdomain**: Auto-generated unique identifier (8-10 alphanumeric)
 - **upstreamBaseUrl**: Target API URL to proxy to
 - **cacheTtl**: Optional, seconds to cache upstream responses (null = no caching)
@@ -161,11 +178,14 @@ Each gateway has:
 
 - **Magic link auth**: Passwordless via Resend email service
 - **User management**: findOrCreateUser creates user on first login, returns ObjectId
-- **Multi-tenant**: Gateways scoped by user_id (ObjectId string)
-- **Subdomain routing**: Unique subdomain per gateway
+- **Multi-tenant**: Torans scoped by user_id (ObjectId string)
+- **Subdomain routing**: Unique subdomain per toran
 - **Cache-Control**: Config endpoint returns 60s cache header for proxy
 - **Async logging**: Log endpoint doesn't await MongoDB insert (fire-and-forget)
 - **camelCase consistency**: API and DB both use camelCase (cacheTtl, not cache_ttl)
+- **Streaming logs**: Logs page auto-refreshes with `since` param for efficiency
+- **Session handling**: SessionExpired component redirects to clear-session route
+- **Metrics dashboard**: Uses Recharts for time-series visualization
 
 ## Tech Stack
 
@@ -174,5 +194,6 @@ Each gateway has:
 - TypeScript
 - MongoDB
 - Tailwind CSS 4
+- Recharts (charts)
 - Resend (email)
 - Vitest (testing)
