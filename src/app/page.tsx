@@ -17,9 +17,9 @@ const features = [
       "Instantly spot failed requests with status codes and error classification.",
   },
   {
-    title: "Smart Filters",
+    title: "Response Timing",
     description:
-      "Filter by status (ok / errors), slow calls (>100ms), HTTP method, and more.",
+      "See exactly how long each call took. Identify slow responses at a glance.",
   },
 ];
 
@@ -29,10 +29,13 @@ export default function Home() {
       {/* Header */}
       <header className="container mx-auto px-6 py-6">
         <nav className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-2xl font-bold text-cyan-600 dark:text-cyan-400">
-            <img src="/logo.png" alt="toran" className="h-8 w-8" />
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
+          >
+            <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
-          </div>
+          </Link>
           <Link
             href="/try"
             className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
@@ -211,7 +214,7 @@ export default function Home() {
                 Pricing
               </Link>
               <Link
-                href="/coming-soon"
+                href="/roadmap"
                 className="hover:text-zinc-700 dark:hover:text-zinc-300"
               >
                 Roadmap

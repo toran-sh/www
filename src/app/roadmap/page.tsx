@@ -42,7 +42,7 @@ const nonGoals = [
   "A traffic controller",
 ];
 
-export default function ComingSoonPage() {
+export default function RoadmapPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
       {/* Header */}
@@ -50,9 +50,9 @@ export default function ComingSoonPage() {
         <nav className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3 text-2xl font-bold text-cyan-600 dark:text-cyan-400"
+            className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
           >
-            <img src="/logo.png" alt="toran" className="h-8 w-8" />
+            <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
           </Link>
           <Link
@@ -138,25 +138,39 @@ export default function ComingSoonPage() {
       </main>
 
       {/* Footer */}
-      <footer className="container mx-auto mt-20 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="text-sm text-zinc-500">
-            Live outbound API inspector — see, search, and understand calls
-            without SDKs.
-          </div>
-          <div className="flex gap-4 text-sm text-zinc-500">
-            <a
-              href="/privacy"
-              className="hover:text-zinc-700 dark:hover:text-zinc-300"
-            >
-              Privacy
-            </a>
-            <a
-              href="/terms"
-              className="hover:text-zinc-700 dark:hover:text-zinc-300"
-            >
-              Terms
-            </a>
+      <footer className="container mx-auto mt-32 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="text-sm text-zinc-500">
+              Live outbound API inspector — see, search, and understand calls
+              without SDKs.
+            </div>
+            <div className="flex gap-4 text-sm text-zinc-500">
+              <Link
+                href="/pricing"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/roadmap"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Roadmap
+              </Link>
+              <a
+                href="/privacy"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Privacy
+              </a>
+              <a
+                href="/terms"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Terms
+              </a>
+            </div>
           </div>
         </div>
       </footer>
