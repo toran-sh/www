@@ -46,8 +46,8 @@ export default function RoadmapPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
       {/* Header */}
-      <header className="container mx-auto px-6 py-6">
-        <nav className="flex items-center justify-between">
+      <header className="border-b border-zinc-200 dark:border-zinc-800">
+        <nav className="container mx-auto flex items-center justify-between px-6 py-4">
           <Link
             href="/"
             className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
