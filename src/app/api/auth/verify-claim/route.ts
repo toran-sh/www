@@ -38,9 +38,10 @@ export async function GET(request: NextRequest) {
     // Find or create user
     const userId = await findOrCreateUser(email);
 
-    // Update the toran to link it to the user
-    await db.collection("gateways").updateOne(
-      { _id: gateway._id },
+    // Update ALL torans with the same trial_token to link them to the user
+    // This handles the case where a user created multiple torans in the same trial session
+    await db.collection("gateways").updateMany(
+      { trial_token: trialToken },
       {
         $set: {
           user_id: userId,

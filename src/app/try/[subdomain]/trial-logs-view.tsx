@@ -1,10 +1,37 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import Link from "next/link";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { ClaimForm } from "./claim-form";
+import { EditToranCard } from "./edit-toran-card";
 
 type MethodFilter = "ALL" | "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type CacheFilter = "ALL" | "HIT" | "MISS";
+
+interface MetricsData {
+  summary: {
+    totalCalls: number;
+    cacheHits: number;
+    cacheMisses: number;
+    avgDuration: number;
+  };
+  timeSeries: {
+    timestamp: string;
+    calls: number;
+    cacheHits: number;
+    cacheMisses: number;
+    avgDuration: number;
+  }[];
+}
 
 interface Filters {
   slow: boolean;
@@ -113,8 +140,10 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
     method: "ALL",
     cache: "ALL",
   });
+  const [metrics, setMetrics] = useState<MetricsData | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const metricsIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const latestIdRef = useRef<string | null>(null);
 
   const filteredLogs = useMemo(() => {
@@ -185,15 +214,34 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
     }
   }, [subdomain, resetIdleTimer]);
 
+  const fetchMetrics = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/trial/${subdomain}/metrics?range=hour`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setMetrics(data);
+    } catch {
+      // Silently fail on metrics errors
+    }
+  }, [subdomain]);
+
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
   useEffect(() => {
     fetchLogs();
-  }, [fetchLogs]);
+    fetchMetrics();
+  }, [fetchLogs, fetchMetrics]);
 
   useEffect(() => {
     if (isStreaming && page === 1) {
       // Fetch immediately when streaming starts/resumes
       fetchNewLogs();
+      fetchMetrics();
       intervalRef.current = setInterval(fetchNewLogs, POLL_INTERVAL);
+      metricsIntervalRef.current = setInterval(fetchMetrics, 10000); // Refresh metrics every 10s
       resetIdleTimer();
     }
 
@@ -202,12 +250,16 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      if (metricsIntervalRef.current) {
+        clearInterval(metricsIntervalRef.current);
+        metricsIntervalRef.current = null;
+      }
       if (idleTimeoutRef.current) {
         clearTimeout(idleTimeoutRef.current);
         idleTimeoutRef.current = null;
       }
     };
-  }, [isStreaming, page, fetchNewLogs, resetIdleTimer]);
+  }, [isStreaming, page, fetchNewLogs, fetchMetrics, resetIdleTimer]);
 
   const toggleStreaming = () => {
     setIsStreaming(!isStreaming);
@@ -215,27 +267,43 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+      {/* Header */}
+      <header className="container mx-auto px-6 py-6">
+        <nav className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
+          >
+            <img src="/logo.png" alt="toran" className="h-10 w-10" />
+            toran
+          </Link>
+          <Link
+            href="/try"
+            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+          >
+            Create another
+          </Link>
+        </nav>
+      </header>
+
       {/* Trial Banner */}
       <div className="bg-gradient-to-r from-cyan-600 to-cyan-500 text-white px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <div className="container mx-auto flex items-center justify-between">
           <div>
             <span className="font-medium">Trial toran</span>
             <span className="mx-2 opacity-50">|</span>
             <code className="text-cyan-100">{subdomain}</code>
           </div>
-          <a href="/try" className="text-sm text-cyan-100 hover:text-white">
-            Create another
-          </a>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="container mx-auto px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content - Logs */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">Logs</h1>
+              <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">Dashboard</h1>
               <button
                 onClick={toggleStreaming}
                 className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border transition-colors ${
@@ -260,6 +328,55 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                 )}
               </button>
             </div>
+
+            {/* Metrics Chart */}
+            {metrics && metrics.timeSeries.length > 0 && (
+              <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    Requests Over Time (Last Hour)
+                  </h3>
+                  <div className="flex gap-4 text-xs text-zinc-500">
+                    <span>{metrics.summary.totalCalls} requests</span>
+                    <span>{metrics.summary.avgDuration}ms avg</span>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={150}>
+                  <LineChart data={metrics.timeSeries}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis
+                      dataKey="timestamp"
+                      tickFormatter={formatTime}
+                      stroke="#6b7280"
+                      fontSize={11}
+                    />
+                    <YAxis stroke="#6b7280" fontSize={11} width={30} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#18181b",
+                        border: "1px solid #3f3f46",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                      }}
+                      labelFormatter={(label) =>
+                        new Date(label).toLocaleString()
+                      }
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="calls"
+                      stroke="#06b6d4"
+                      strokeWidth={2}
+                      dot={false}
+                      name="Requests"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Logs Header */}
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Logs</h2>
 
             {/* Filters */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -464,9 +581,52 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                 Send requests to this URL to proxy them through your toran.
               </p>
             </div>
+
+            {/* Edit Toran Card */}
+            <div className="mt-6">
+              <EditToranCard subdomain={subdomain} />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="container mx-auto mt-16 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="text-sm text-zinc-500">
+              Live outbound API inspector — see, search, and understand calls
+              without SDKs.
+            </div>
+            <div className="flex gap-4 text-sm text-zinc-500">
+              <Link
+                href="/pricing"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/roadmap"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Roadmap
+              </Link>
+              <a
+                href="/privacy"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Privacy
+              </a>
+              <a
+                href="/terms"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Terms
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
