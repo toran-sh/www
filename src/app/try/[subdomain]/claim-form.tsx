@@ -63,6 +63,15 @@ export function ClaimForm({ subdomain }: ClaimFormProps) {
           We sent a link to <strong>{email}</strong>. Click it to claim this
           toran and create your account.
         </p>
+        <button
+          onClick={() => {
+            setIsSubmitted(false);
+            setEmail("");
+          }}
+          className="mt-4 text-sm text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100 underline"
+        >
+          Use a different email
+        </button>
       </div>
     );
   }
