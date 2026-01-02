@@ -206,6 +206,8 @@ export default function LogsPage() {
   // Polling for streaming (only on page 1)
   useEffect(() => {
     if (isStreaming && page === 1) {
+      // Fetch immediately when streaming starts/resumes
+      fetchNewLogs();
       intervalRef.current = setInterval(fetchNewLogs, POLL_INTERVAL);
       // Start idle timer
       resetIdleTimer();
