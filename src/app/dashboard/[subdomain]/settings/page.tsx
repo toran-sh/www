@@ -3,12 +3,35 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+interface LogFilter {
+  field: string;
+  location: "header" | "query" | "body";
+  action: "mask" | "exclude";
+}
+
+interface LogFilters {
+  request: LogFilter[];
+  response: LogFilter[];
+}
+
 interface Toran {
   _id: string;
   subdomain: string;
   upstreamBaseUrl: string;
   cacheTtl: number | null;
+  logFilters?: LogFilters;
 }
+
+const DEFAULT_LOG_FILTERS: LogFilters = {
+  request: [
+    { field: "authorization", location: "header", action: "mask" },
+    { field: "x-api-key", location: "header", action: "mask" },
+    { field: "api-key", location: "header", action: "mask" },
+    { field: "x-auth-token", location: "header", action: "mask" },
+    { field: "cookie", location: "header", action: "mask" },
+  ],
+  response: [{ field: "set-cookie", location: "header", action: "mask" }],
+};
 
 export default function SettingsPage() {
   const params = useParams();
@@ -18,10 +41,23 @@ export default function SettingsPage() {
   const [toran, setToran] = useState<Toran | null>(null);
   const [upstreamBaseUrl, setUpstreamBaseUrl] = useState("");
   const [cacheTtl, setCacheTtl] = useState("");
+  const [logFilters, setLogFilters] = useState<LogFilters>(DEFAULT_LOG_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  // New filter form state
+  const [newFilterType, setNewFilterType] = useState<"request" | "response">(
+    "request"
+  );
+  const [newFilterField, setNewFilterField] = useState("");
+  const [newFilterLocation, setNewFilterLocation] = useState<
+    "header" | "query" | "body"
+  >("header");
+  const [newFilterAction, setNewFilterAction] = useState<"mask" | "exclude">(
+    "mask"
+  );
 
   // Delete state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -40,6 +76,7 @@ export default function SettingsPage() {
           setToran(found);
           setUpstreamBaseUrl(found.upstreamBaseUrl);
           setCacheTtl(found.cacheTtl?.toString() ?? "");
+          setLogFilters(found.logFilters ?? DEFAULT_LOG_FILTERS);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load toran");
@@ -66,6 +103,7 @@ export default function SettingsPage() {
         body: JSON.stringify({
           upstreamBaseUrl,
           cacheTtl: cacheTtl ? parseInt(cacheTtl, 10) : null,
+          logFilters,
         }),
       });
 
@@ -83,6 +121,30 @@ export default function SettingsPage() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const addFilter = () => {
+    if (!newFilterField.trim()) return;
+
+    const newFilter: LogFilter = {
+      field: newFilterField.trim().toLowerCase(),
+      location: newFilterLocation,
+      action: newFilterAction,
+    };
+
+    setLogFilters((prev) => ({
+      ...prev,
+      [newFilterType]: [...prev[newFilterType], newFilter],
+    }));
+
+    setNewFilterField("");
+  };
+
+  const removeFilter = (type: "request" | "response", index: number) => {
+    setLogFilters((prev) => ({
+      ...prev,
+      [type]: prev[type].filter((_, i) => i !== index),
+    }));
   };
 
   const handleDelete = async () => {
@@ -103,7 +165,9 @@ export default function SettingsPage() {
 
       router.push("/dashboard");
     } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : "Something went wrong");
+      setDeleteError(
+        err instanceof Error ? err.message : "Something went wrong"
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -133,7 +197,9 @@ export default function SettingsPage() {
         <code className="text-cyan-600 dark:text-cyan-400 font-mono">
           {toran.subdomain}
         </code>
-        <p className="mt-1 text-xs text-zinc-500">Subdomain cannot be changed</p>
+        <p className="mt-1 text-xs text-zinc-500">
+          Subdomain cannot be changed
+        </p>
       </div>
 
       {/* Settings Form */}
@@ -185,8 +251,169 @@ export default function SettingsPage() {
             className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 rounded-md text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
           />
           <p className="mt-2 text-xs text-zinc-500">
-            How long to cache upstream responses. Leave empty to disable caching.
+            How long to cache upstream responses. Leave empty to disable
+            caching.
           </p>
+        </div>
+
+        {/* Log Filters Section */}
+        <div className="mb-6 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
+          <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-4">
+            Log Filters
+          </h3>
+          <p className="text-xs text-zinc-500 mb-4">
+            Control what data is logged. Masked values show first 4 characters.
+            Excluded fields are not logged at all.
+          </p>
+
+          {/* Request Filters */}
+          <div className="mb-4">
+            <h4 className="text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wide">
+              Request Filters
+            </h4>
+            {logFilters.request.length === 0 ? (
+              <p className="text-xs text-zinc-500 italic">No request filters</p>
+            ) : (
+              <div className="space-y-2">
+                {logFilters.request.map((filter, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 text-sm bg-zinc-50 dark:bg-zinc-900 px-3 py-2 rounded"
+                  >
+                    <code className="text-cyan-600 dark:text-cyan-400">
+                      {filter.field}
+                    </code>
+                    <span className="text-zinc-400">in</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">
+                      {filter.location}
+                    </span>
+                    <span className="text-zinc-400">→</span>
+                    <span
+                      className={
+                        filter.action === "mask"
+                          ? "text-yellow-600 dark:text-yellow-400"
+                          : "text-red-600 dark:text-red-400"
+                      }
+                    >
+                      {filter.action}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeFilter("request", index)}
+                      className="ml-auto text-zinc-400 hover:text-red-500"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Response Filters */}
+          <div className="mb-4">
+            <h4 className="text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wide">
+              Response Filters
+            </h4>
+            {logFilters.response.length === 0 ? (
+              <p className="text-xs text-zinc-500 italic">
+                No response filters
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {logFilters.response.map((filter, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 text-sm bg-zinc-50 dark:bg-zinc-900 px-3 py-2 rounded"
+                  >
+                    <code className="text-cyan-600 dark:text-cyan-400">
+                      {filter.field}
+                    </code>
+                    <span className="text-zinc-400">in</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">
+                      {filter.location}
+                    </span>
+                    <span className="text-zinc-400">→</span>
+                    <span
+                      className={
+                        filter.action === "mask"
+                          ? "text-yellow-600 dark:text-yellow-400"
+                          : "text-red-600 dark:text-red-400"
+                      }
+                    >
+                      {filter.action}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeFilter("response", index)}
+                      className="ml-auto text-zinc-400 hover:text-red-500"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Add New Filter */}
+          <div className="border-t border-zinc-200 dark:border-zinc-700 pt-4 mt-4">
+            <h4 className="text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-3">
+              Add Filter
+            </h4>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <select
+                value={newFilterType}
+                onChange={(e) =>
+                  setNewFilterType(e.target.value as "request" | "response")
+                }
+                className="border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 rounded text-sm text-zinc-900 dark:text-white"
+              >
+                <option value="request">Request</option>
+                <option value="response">Response</option>
+              </select>
+              <select
+                value={newFilterLocation}
+                onChange={(e) =>
+                  setNewFilterLocation(
+                    e.target.value as "header" | "query" | "body"
+                  )
+                }
+                className="border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 rounded text-sm text-zinc-900 dark:text-white"
+              >
+                <option value="header">Header</option>
+                <option value="query">Query Param</option>
+                <option value="body">Body Field</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <input
+                type="text"
+                value={newFilterField}
+                onChange={(e) => setNewFilterField(e.target.value)}
+                placeholder="Field name (e.g. authorization)"
+                className="border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 rounded text-sm text-zinc-900 dark:text-white placeholder-zinc-400"
+              />
+              <select
+                value={newFilterAction}
+                onChange={(e) =>
+                  setNewFilterAction(e.target.value as "mask" | "exclude")
+                }
+                className="border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 rounded text-sm text-zinc-900 dark:text-white"
+              >
+                <option value="mask">Mask (show first 4 chars)</option>
+                <option value="exclude">Exclude (don&apos;t log)</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={addFilter}
+              disabled={!newFilterField.trim()}
+              className="text-sm text-cyan-600 dark:text-cyan-400 hover:underline disabled:opacity-50 disabled:no-underline"
+            >
+              + Add filter
+            </button>
+          </div>
         </div>
 
         <button

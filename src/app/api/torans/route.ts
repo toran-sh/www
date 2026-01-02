@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/mongodb";
 import { getSession } from "@/lib/tokens";
 import { generateSubdomain } from "@/lib/subdomain";
+import { DEFAULT_LOG_FILTERS } from "@/lib/log-filters";
 
 export async function GET() {
   try {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { upstreamBaseUrl, cacheTtl } = body;
+    const { upstreamBaseUrl, cacheTtl, logFilters } = body;
 
     if (!upstreamBaseUrl) {
       return NextResponse.json(
@@ -55,6 +56,7 @@ export async function POST(request: NextRequest) {
       subdomain,
       upstreamBaseUrl,
       cacheTtl: cacheTtl ?? null,
+      logFilters: logFilters ?? DEFAULT_LOG_FILTERS,
       user_id: userId,
       createdAt: new Date(),
       updatedAt: new Date(),

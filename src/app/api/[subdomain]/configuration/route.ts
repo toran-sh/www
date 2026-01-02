@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/mongodb";
+import { DEFAULT_LOG_FILTERS } from "@/lib/log-filters";
 
 export async function GET(
   request: NextRequest,
@@ -28,6 +29,7 @@ export async function GET(
       {
         upstreamBaseUrl: gateway.upstreamBaseUrl,
         cacheTtl: gateway.cacheTtl,
+        logFilters: gateway.logFilters ?? DEFAULT_LOG_FILTERS,
       },
       {
         headers: {

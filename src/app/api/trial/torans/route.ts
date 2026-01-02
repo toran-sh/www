@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/mongodb";
 import { generateToken, getTrialToken, setTrialTokenCookie } from "@/lib/tokens";
 import { generateSubdomain } from "@/lib/subdomain";
+import { DEFAULT_LOG_FILTERS } from "@/lib/log-filters";
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
       subdomain,
       upstreamBaseUrl,
       cacheTtl: cacheTtl ?? null,
+      logFilters: DEFAULT_LOG_FILTERS,
       user_id: null, // No user yet - trial toran
       trial_token: trialToken,
       createdAt: new Date(),
