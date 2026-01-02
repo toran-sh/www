@@ -39,7 +39,6 @@ export default function SettingsPage() {
   const subdomain = params.subdomain as string;
 
   const [toran, setToran] = useState<Toran | null>(null);
-  const [upstreamBaseUrl, setUpstreamBaseUrl] = useState("");
   const [cacheTtl, setCacheTtl] = useState("");
   const [logFilters, setLogFilters] = useState<LogFilters>(DEFAULT_LOG_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,7 +73,6 @@ export default function SettingsPage() {
         const found = torans.find((t: Toran) => t.subdomain === subdomain);
         if (found) {
           setToran(found);
-          setUpstreamBaseUrl(found.upstreamBaseUrl);
           setCacheTtl(found.cacheTtl?.toString() ?? "");
           setLogFilters(found.logFilters ?? DEFAULT_LOG_FILTERS);
         }
@@ -101,7 +99,6 @@ export default function SettingsPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          upstreamBaseUrl,
           cacheTtl: cacheTtl ? parseInt(cacheTtl, 10) : null,
           logFilters,
         }),
@@ -191,14 +188,26 @@ export default function SettingsPage() {
 
       {/* Toran Info */}
       <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-        <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
-          Subdomain
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
+              Subdomain
+            </div>
+            <code className="text-cyan-600 dark:text-cyan-400 font-mono">
+              {toran.subdomain}
+            </code>
+          </div>
+          <div>
+            <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
+              Upstream Base URL
+            </div>
+            <code className="text-cyan-600 dark:text-cyan-400 font-mono text-sm break-all">
+              {toran.upstreamBaseUrl}
+            </code>
+          </div>
         </div>
-        <code className="text-cyan-600 dark:text-cyan-400 font-mono">
-          {toran.subdomain}
-        </code>
-        <p className="mt-1 text-xs text-zinc-500">
-          Subdomain cannot be changed
+        <p className="mt-3 text-xs text-zinc-500">
+          Subdomain and upstream URL cannot be changed after creation.
         </p>
       </div>
 
@@ -215,24 +224,6 @@ export default function SettingsPage() {
             Settings saved successfully
           </div>
         )}
-
-        <div className="mb-4">
-          <label
-            htmlFor="upstreamBaseUrl"
-            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2"
-          >
-            Upstream Base URL <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="upstreamBaseUrl"
-            value={upstreamBaseUrl}
-            onChange={(e) => setUpstreamBaseUrl(e.target.value)}
-            placeholder="https://api.example.com"
-            required
-            className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 rounded-md text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
-          />
-        </div>
 
         <div className="mb-6">
           <label

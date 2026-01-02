@@ -195,18 +195,31 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
   }, []);
 
   const fetchNewLogs = useCallback(async () => {
-    if (!latestIdRef.current) return;
-
     try {
-      const res = await fetch(
-        `/api/trial/${subdomain}/logs?since=${latestIdRef.current}`
-      );
+      const hadPreviousLogs = !!latestIdRef.current;
+
+      // If we don't have any logs yet, fetch from the beginning
+      const url = hadPreviousLogs
+        ? `/api/trial/${subdomain}/logs?since=${latestIdRef.current}`
+        : `/api/trial/${subdomain}/logs?page=1&limit=50`;
+
+      const res = await fetch(url);
       if (!res.ok) return;
 
       const result: LogsResponse = await res.json();
       if (result.logs.length > 0) {
         latestIdRef.current = result.logs[0]._id;
-        setLogs((prev) => [...result.logs, ...prev].slice(0, MAX_LOGS));
+        if (hadPreviousLogs) {
+          // Streaming update - prepend new logs
+          setLogs((prev) => {
+            const existingIds = new Set(prev.map(l => l._id));
+            const newLogs = result.logs.filter(l => !existingIds.has(l._id));
+            return [...newLogs, ...prev].slice(0, MAX_LOGS);
+          });
+        } else {
+          // Initial load
+          setLogs(result.logs);
+        }
         resetIdleTimer();
       }
     } catch {
@@ -330,17 +343,19 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
             </div>
 
             {/* Metrics Chart */}
-            {metrics && metrics.timeSeries.length > 0 && (
-              <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                    Requests Over Time (Last Hour)
-                  </h3>
+            <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                  Requests Over Time (Last Hour)
+                </h3>
+                {metrics && (
                   <div className="flex gap-4 text-xs text-zinc-500">
                     <span>{metrics.summary.totalCalls} requests</span>
                     <span>{metrics.summary.avgDuration}ms avg</span>
                   </div>
-                </div>
+                )}
+              </div>
+              {metrics && metrics.timeSeries.length > 0 ? (
                 <ResponsiveContainer width="100%" height={150}>
                   <LineChart data={metrics.timeSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -372,8 +387,12 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              </div>
-            )}
+              ) : (
+                <div className="h-[150px] flex items-center justify-center text-sm text-zinc-400">
+                  No requests yet. Make a request to your toran endpoint to see metrics.
+                </div>
+              )}
+            </div>
 
             {/* Logs Header */}
             <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Logs</h2>

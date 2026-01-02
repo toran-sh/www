@@ -50,21 +50,13 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { upstreamBaseUrl, cacheTtl, logFilters } = body;
+    const { cacheTtl, logFilters } = body;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid gateway ID" }, { status: 400 });
     }
 
-    if (!upstreamBaseUrl) {
-      return NextResponse.json(
-        { error: "Upstream base URL is required" },
-        { status: 400 }
-      );
-    }
-
     const updateFields: Record<string, unknown> = {
-      upstreamBaseUrl,
       cacheTtl: cacheTtl ?? null,
       updatedAt: new Date(),
     };

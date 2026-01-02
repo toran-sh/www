@@ -63,17 +63,9 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { upstreamBaseUrl, cacheTtl, logFilters } = body;
-
-    if (!upstreamBaseUrl) {
-      return NextResponse.json(
-        { error: "Upstream base URL is required" },
-        { status: 400 }
-      );
-    }
+    const { cacheTtl, logFilters } = body;
 
     const updateFields: Record<string, unknown> = {
-      upstreamBaseUrl,
       cacheTtl: cacheTtl ?? null,
       updatedAt: new Date(),
     };

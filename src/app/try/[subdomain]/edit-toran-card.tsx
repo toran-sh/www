@@ -40,7 +40,6 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const [upstreamBaseUrl, setUpstreamBaseUrl] = useState("");
   const [cacheTtl, setCacheTtl] = useState("");
   const [logFilters, setLogFilters] = useState<LogFilters>(DEFAULT_LOG_FILTERS);
 
@@ -62,7 +61,6 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
         const res = await fetch(`/api/trial/${subdomain}`);
         if (!res.ok) throw new Error("Failed to fetch toran");
         const data: ToranData = await res.json();
-        setUpstreamBaseUrl(data.upstreamBaseUrl);
         setCacheTtl(data.cacheTtl?.toString() ?? "");
         setLogFilters(data.logFilters ?? DEFAULT_LOG_FILTERS);
       } catch (err) {
@@ -86,7 +84,6 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          upstreamBaseUrl,
           cacheTtl: cacheTtl ? parseInt(cacheTtl, 10) : null,
           logFilters,
         }),
@@ -158,21 +155,6 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
             all edge nodes.
           </div>
         )}
-
-        {/* Upstream URL */}
-        <div className="mb-3">
-          <label className="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">
-            Upstream Base URL
-          </label>
-          <input
-            type="text"
-            value={upstreamBaseUrl}
-            onChange={(e) => setUpstreamBaseUrl(e.target.value)}
-            placeholder="https://api.example.com"
-            required
-            className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 rounded text-sm text-zinc-900 dark:text-white placeholder-zinc-400"
-          />
-        </div>
 
         {/* Cache TTL */}
         <div className="mb-4">
