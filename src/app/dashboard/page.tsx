@@ -1,15 +1,15 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { LogoutButton } from "./logout-button";
 import { GatewayList } from "./gateway-list";
+import { SessionExpired } from "./session-expired";
 
 export default async function DashboardPage() {
   const userId = await getSession();
 
   if (!userId) {
-    // Redirect to clear-session route which clears cookie and redirects to login
-    redirect("/api/auth/clear-session");
+    // Render client component that will redirect to clear session
+    return <SessionExpired />;
   }
 
   return (

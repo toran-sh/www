@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { db } from "@/lib/mongodb";
 import { LogoutButton } from "../logout-button";
 import { GatewaySidebar } from "@/components/gateway-sidebar";
+import { SessionExpired } from "../session-expired";
 
 interface Props {
   params: Promise<{ subdomain: string }>;
@@ -14,8 +15,8 @@ export default async function GatewayLayout({ params, children }: Props) {
   const userId = await getSession();
 
   if (!userId) {
-    // Redirect to clear-session route which clears cookie and redirects to login
-    redirect("/api/auth/clear-session");
+    // Render client component that will redirect to clear session
+    return <SessionExpired />;
   }
 
   const { subdomain } = await params;
