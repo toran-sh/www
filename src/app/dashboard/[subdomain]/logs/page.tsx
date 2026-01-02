@@ -83,6 +83,7 @@ function formatRelativeTime(dateStr: string): string {
 
 const POLL_INTERVAL = 2000; // 2 seconds
 const MAX_LOGS = 200; // Cap logs in memory
+const IDLE_TIMEOUT = 30000; // 30 seconds
 
 export default function LogsPage() {
   const params = useParams();
@@ -93,7 +94,9 @@ export default function LogsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(true);
+  const [isPausedByIdle, setIsPausedByIdle] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const idleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const latestIdRef = useRef<string | null>(null);
 
   // Initial fetch (full page load)
@@ -120,6 +123,17 @@ export default function LogsPage() {
     }
   }, [subdomain, page]);
 
+  // Reset idle timer
+  const resetIdleTimer = useCallback(() => {
+    if (idleTimeoutRef.current) {
+      clearTimeout(idleTimeoutRef.current);
+    }
+    idleTimeoutRef.current = setTimeout(() => {
+      setIsStreaming(false);
+      setIsPausedByIdle(true);
+    }, IDLE_TIMEOUT);
+  }, []);
+
   // Streaming fetch (only new logs)
   const fetchNewLogs = useCallback(async () => {
     if (!latestIdRef.current) return;
@@ -136,11 +150,13 @@ export default function LogsPage() {
         latestIdRef.current = result.logs[0]._id;
         // Prepend new logs and cap total
         setLogs((prev) => [...result.logs, ...prev].slice(0, MAX_LOGS));
+        // Reset idle timer on new activity
+        resetIdleTimer();
       }
     } catch {
       // Silently fail on streaming errors
     }
-  }, [subdomain]);
+  }, [subdomain, resetIdleTimer]);
 
   // Initial fetch
   useEffect(() => {
@@ -151,6 +167,8 @@ export default function LogsPage() {
   useEffect(() => {
     if (isStreaming && page === 1) {
       intervalRef.current = setInterval(fetchNewLogs, POLL_INTERVAL);
+      // Start idle timer
+      resetIdleTimer();
     }
 
     return () => {
@@ -158,15 +176,25 @@ export default function LogsPage() {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      if (idleTimeoutRef.current) {
+        clearTimeout(idleTimeoutRef.current);
+        idleTimeoutRef.current = null;
+      }
     };
-  }, [isStreaming, page, fetchNewLogs]);
+  }, [isStreaming, page, fetchNewLogs, resetIdleTimer]);
+
+  // Handle manual toggle
+  const toggleStreaming = () => {
+    setIsStreaming(!isStreaming);
+    setIsPausedByIdle(false);
+  };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Logs</h1>
         <button
-          onClick={() => setIsStreaming(!isStreaming)}
+          onClick={toggleStreaming}
           className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border transition-colors ${
             isStreaming
               ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300"
@@ -184,7 +212,7 @@ export default function LogsPage() {
           ) : (
             <>
               <span className="h-2 w-2 rounded-full bg-zinc-400"></span>
-              Paused
+              {isPausedByIdle ? "Paused (idle)" : "Paused"}
             </>
           )}
         </button>
