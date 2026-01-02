@@ -29,8 +29,8 @@ export default function Home() {
       {/* Header */}
       <header className="container mx-auto px-6 py-6">
         <nav className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xl font-bold text-cyan-600 dark:text-cyan-400">
-            <img src="/logo.png" alt="toran" className="h-6 w-6" />
+          <div className="flex items-center gap-3 text-2xl font-bold text-cyan-600 dark:text-cyan-400">
+            <img src="/logo.png" alt="toran" className="h-8 w-8" />
             toran
           </div>
           <Link
@@ -197,18 +197,38 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="container mx-auto mt-32 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="text-sm text-zinc-500">
-            Live outbound API inspector — see, search, and understand calls
-            without SDKs.
-          </div>
-          <div className="flex gap-4 text-sm text-zinc-500">
-            <a href="/privacy" className="hover:text-zinc-700 dark:hover:text-zinc-300">
-              Privacy
-            </a>
-            <a href="/terms" className="hover:text-zinc-700 dark:hover:text-zinc-300">
-              Terms
-            </a>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="text-sm text-zinc-500">
+              Live outbound API inspector — see, search, and understand calls
+              without SDKs.
+            </div>
+            <div className="flex gap-4 text-sm text-zinc-500">
+              <Link
+                href="/pricing"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/coming-soon"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Roadmap
+              </Link>
+              <a
+                href="/privacy"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Privacy
+              </a>
+              <a
+                href="/terms"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Terms
+              </a>
+            </div>
           </div>
         </div>
       </footer>

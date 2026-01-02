@@ -68,9 +68,9 @@ export default function PricingPage() {
         <nav className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-xl font-bold text-cyan-600 dark:text-cyan-400"
+            className="flex items-center gap-3 text-2xl font-bold text-cyan-600 dark:text-cyan-400"
           >
-            <img src="/logo.png" alt="toran" className="h-6 w-6" />
+            <img src="/logo.png" alt="toran" className="h-8 w-8" />
             toran
           </Link>
           <Link
