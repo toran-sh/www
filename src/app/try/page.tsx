@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { CreateTrialForm } from "./create-trial-form";
@@ -10,29 +11,90 @@ export default async function TryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">
-            Try toran
-          </h1>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            No signup required. Create a toran and start proxying requests instantly.
-          </p>
-        </div>
-
-        <CreateTrialForm />
-
-        <p className="mt-6 text-center text-sm text-zinc-500">
-          Already have an account?{" "}
-          <a
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+      {/* Header */}
+      <header className="container mx-auto px-6 py-6">
+        <nav className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
+          >
+            <img src="/logo.png" alt="toran" className="h-10 w-10" />
+            toran
+          </Link>
+          <Link
             href="/login"
-            className="text-cyan-600 dark:text-cyan-400 hover:underline"
+            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
           >
             Sign in
-          </a>
-        </p>
-      </div>
+          </Link>
+        </nav>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-6 py-20">
+        <div className="mx-auto max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">
+              Try toran
+            </h1>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              No signup required. Create a toran and start inspecting requests
+              instantly.
+            </p>
+          </div>
+
+          <CreateTrialForm />
+
+          <p className="mt-6 text-center text-sm text-zinc-500">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-cyan-600 dark:text-cyan-400 hover:underline"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="container mx-auto mt-32 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="text-sm text-zinc-500">
+              Live outbound API inspector — see, search, and understand calls
+              without SDKs.
+            </div>
+            <div className="flex gap-4 text-sm text-zinc-500">
+              <Link
+                href="/pricing"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/roadmap"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Roadmap
+              </Link>
+              <a
+                href="/privacy"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Privacy
+              </a>
+              <a
+                href="/terms"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Terms
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
