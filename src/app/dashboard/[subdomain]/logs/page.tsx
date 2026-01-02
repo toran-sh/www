@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 
+interface NetworkMetrics {
+  ttfb: number;
+  transfer: number;
+  total: number;
+}
+
 interface LogEntry {
   _id: string;
   timestamp?: string;
@@ -16,6 +22,7 @@ interface LogEntry {
     bodySize: number;
   };
   duration: number;
+  networkMetrics?: NetworkMetrics;
   cacheStatus: "HIT" | "MISS" | null;
   createdAt: string;
 }
@@ -122,7 +129,9 @@ export default function LogsPage() {
                   <th className="px-4 py-3 font-medium">Method</th>
                   <th className="px-4 py-3 font-medium">Path</th>
                   <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Duration</th>
+                  <th className="px-4 py-3 font-medium">TTFB</th>
+                  <th className="px-4 py-3 font-medium">Transfer</th>
+                  <th className="px-4 py-3 font-medium">Total</th>
                   <th className="px-4 py-3 font-medium">Cache</th>
                 </tr>
               </thead>
@@ -149,6 +158,12 @@ export default function LogsPage() {
                     </td>
                     <td className={`px-4 py-3 text-sm font-medium ${getStatusColor(log.response.status)}`}>
                       {log.response.status}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                      {log.networkMetrics ? `${log.networkMetrics.ttfb}ms` : "-"}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                      {log.networkMetrics ? `${log.networkMetrics.transfer}ms` : "-"}
                     </td>
                     <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
                       {log.duration}ms
