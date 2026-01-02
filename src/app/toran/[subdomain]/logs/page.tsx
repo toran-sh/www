@@ -116,11 +116,12 @@ export default function LogsPage() {
     cache: "ALL",
   });
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const latestIdRef = useRef<string | null>(null);
 
-  // Filter logs based on current filters
+  // Filter logs based on current filters and search query
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
       // Slow filter: >100ms
@@ -138,11 +139,30 @@ export default function LogsPage() {
         if (filters.cache === "MISS" && log.cacheStatus !== "MISS") return false;
       }
 
+      // Search filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const searchableFields = [
+          log.request.path,
+          log.request.method,
+          JSON.stringify(log.request.query || {}),
+          JSON.stringify(log.request.headers || {}),
+          JSON.stringify(log.request.body || ""),
+          String(log.response.status),
+          JSON.stringify(log.response.headers || {}),
+          JSON.stringify(log.response.body || ""),
+        ];
+        const matches = searchableFields.some(field =>
+          field.toLowerCase().includes(query)
+        );
+        if (!matches) return false;
+      }
+
       return true;
     });
-  }, [logs, filters]);
+  }, [logs, filters, searchQuery]);
 
-  const hasActiveFilters = filters.slow || filters.errors || filters.method !== "ALL" || filters.cache !== "ALL";
+  const hasActiveFilters = filters.slow || filters.errors || filters.method !== "ALL" || filters.cache !== "ALL" || searchQuery.trim() !== "";
 
   // Initial fetch (full page load)
   const fetchLogs = useCallback(async () => {
@@ -329,7 +349,10 @@ export default function LogsPage() {
         {/* Clear filters */}
         {hasActiveFilters && (
           <button
-            onClick={() => setFilters({ slow: false, errors: false, method: "ALL", cache: "ALL" })}
+            onClick={() => {
+              setFilters({ slow: false, errors: false, method: "ALL", cache: "ALL" });
+              setSearchQuery("");
+            }}
             className="px-3 py-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
           >
             Clear all
@@ -342,6 +365,17 @@ export default function LogsPage() {
             {filteredLogs.length} of {logs.length} logs
           </span>
         )}
+      </div>
+
+      {/* Search */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search path, headers, body..."
+          className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+        />
       </div>
 
       {isLoading ? (
