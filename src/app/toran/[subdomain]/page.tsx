@@ -1,19 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams } from "next/navigation";
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
+
+// Types
+type MethodFilter = "ALL" | "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type CacheFilter = "ALL" | "HIT" | "MISS";
+type TimeRange = "hour" | "day";
+
+interface Filters {
+  slow: boolean;
+  errors: boolean;
+  method: MethodFilter;
+  cache: CacheFilter;
+}
 
 interface MetricsData {
   summary: {
@@ -31,190 +40,685 @@ interface MetricsData {
   }[];
 }
 
-type TimeRange = "hour" | "day";
+interface UpstreamMetrics {
+  ttfb: number;
+  transfer: number;
+  total: number;
+}
+
+interface LogEntry {
+  _id: string;
+  timestamp?: string;
+  request: {
+    method: string;
+    path: string;
+    query?: Record<string, string>;
+    headers?: Record<string, string>;
+    body?: unknown;
+  };
+  response: {
+    status: number;
+    headers?: Record<string, string>;
+    bodySize?: number;
+    body?: unknown;
+  };
+  duration: number;
+  upstreamMetrics?: UpstreamMetrics;
+  cacheStatus: "HIT" | "MISS" | null;
+  createdAt: string;
+}
+
+interface LogsResponse {
+  logs: LogEntry[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+// Helper functions
+function getMethodColor(method: string): string {
+  switch (method.toUpperCase()) {
+    case "GET":
+      return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+    case "POST":
+      return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
+    case "PUT":
+      return "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300";
+    case "PATCH":
+      return "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300";
+    case "DELETE":
+      return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
+    default:
+      return "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
+  }
+}
+
+function getStatusColor(status: number): string {
+  if (status >= 200 && status < 300) {
+    return "text-green-600 dark:text-green-400";
+  } else if (status >= 400 && status < 500) {
+    return "text-amber-600 dark:text-amber-400";
+  } else if (status >= 500) {
+    return "text-red-600 dark:text-red-400";
+  }
+  return "text-zinc-600 dark:text-zinc-400";
+}
+
+function formatRelativeTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffHour < 24) return `${diffHour}h ago`;
+  return `${diffDay}d ago`;
+}
+
+const POLL_INTERVAL = 2000;
+const METRICS_POLL_INTERVAL = 10000;
+const MAX_LOGS = 200;
+const IDLE_TIMEOUT = 30000;
 
 export default function ToranDashboardPage() {
   const params = useParams();
   const subdomain = params.subdomain as string;
+
+  // Metrics state
   const [range, setRange] = useState<TimeRange>("hour");
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [metricsLoading, setMetricsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchMetrics() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(
-          `/api/torans/by-subdomain/${subdomain}/metrics?range=${range}`
-        );
-        if (!res.ok) {
-          throw new Error("Failed to fetch metrics");
-        }
+  // Logs state
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [pagination, setPagination] = useState<LogsResponse["pagination"]>();
+  const [page, setPage] = useState(1);
+  const [logsLoading, setLogsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isStreaming, setIsStreaming] = useState(true);
+  const [isPausedByIdle, setIsPausedByIdle] = useState(false);
+  const [filters, setFilters] = useState<Filters>({
+    slow: false,
+    errors: false,
+    method: "ALL",
+    cache: "ALL",
+  });
+  const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const metricsIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const idleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const latestIdRef = useRef<string | null>(null);
+
+  // Filtered logs
+  const filteredLogs = useMemo(() => {
+    return logs.filter((log) => {
+      if (filters.slow && log.duration <= 100) return false;
+      if (filters.errors && log.response.status >= 200 && log.response.status < 300) return false;
+      if (filters.method !== "ALL" && log.request.method.toUpperCase() !== filters.method) return false;
+      if (filters.cache !== "ALL") {
+        if (filters.cache === "HIT" && log.cacheStatus !== "HIT") return false;
+        if (filters.cache === "MISS" && log.cacheStatus !== "MISS") return false;
+      }
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const searchableFields = [
+          log.request.path,
+          log.request.method,
+          JSON.stringify(log.request.query || {}),
+          JSON.stringify(log.request.headers || {}),
+          JSON.stringify(log.request.body || ""),
+          String(log.response.status),
+          JSON.stringify(log.response.headers || {}),
+          JSON.stringify(log.response.body || ""),
+        ];
+        const matches = searchableFields.some(field => field.toLowerCase().includes(query));
+        if (!matches) return false;
+      }
+      return true;
+    });
+  }, [logs, filters, searchQuery]);
+
+  const hasActiveFilters = filters.slow || filters.errors || filters.method !== "ALL" || filters.cache !== "ALL" || searchQuery.trim() !== "";
+
+  // Fetch metrics
+  const fetchMetrics = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/torans/by-subdomain/${subdomain}/metrics?range=${range}`);
+      if (res.ok) {
         const data = await res.json();
         setMetrics(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch metrics");
-      } finally {
-        setIsLoading(false);
       }
+    } catch {
+      // Silently fail
+    } finally {
+      setMetricsLoading(false);
     }
-
-    fetchMetrics();
   }, [subdomain, range]);
+
+  // Fetch logs
+  const fetchLogs = useCallback(async () => {
+    setLogsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/torans/by-subdomain/${subdomain}/logs?page=${page}&limit=50`);
+      if (!res.ok) throw new Error("Failed to fetch logs");
+      const result: LogsResponse = await res.json();
+      setLogs(result.logs);
+      setPagination(result.pagination);
+      if (result.logs.length > 0) {
+        latestIdRef.current = result.logs[0]._id;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch logs");
+    } finally {
+      setLogsLoading(false);
+    }
+  }, [subdomain, page]);
+
+  // Reset idle timer
+  const resetIdleTimer = useCallback(() => {
+    if (idleTimeoutRef.current) clearTimeout(idleTimeoutRef.current);
+    idleTimeoutRef.current = setTimeout(() => {
+      setIsStreaming(false);
+      setIsPausedByIdle(true);
+    }, IDLE_TIMEOUT);
+  }, []);
+
+  // Fetch new logs (streaming)
+  const fetchNewLogs = useCallback(async () => {
+    try {
+      const hadPreviousLogs = !!latestIdRef.current;
+      const url = hadPreviousLogs
+        ? `/api/torans/by-subdomain/${subdomain}/logs?since=${latestIdRef.current}`
+        : `/api/torans/by-subdomain/${subdomain}/logs?page=1&limit=50`;
+
+      const res = await fetch(url);
+      if (!res.ok) return;
+
+      const result: LogsResponse = await res.json();
+      if (result.logs.length > 0) {
+        latestIdRef.current = result.logs[0]._id;
+        if (hadPreviousLogs) {
+          setLogs((prev) => {
+            const existingIds = new Set(prev.map(l => l._id));
+            const newLogs = result.logs.filter(l => !existingIds.has(l._id));
+            return [...newLogs, ...prev].slice(0, MAX_LOGS);
+          });
+        } else {
+          setLogs(result.logs);
+          setPagination(result.pagination);
+        }
+        resetIdleTimer();
+      }
+    } catch {
+      // Silently fail
+    }
+  }, [subdomain, resetIdleTimer]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchMetrics();
+    fetchLogs();
+  }, [fetchMetrics, fetchLogs]);
+
+  // Metrics polling
+  useEffect(() => {
+    if (isStreaming) {
+      metricsIntervalRef.current = setInterval(fetchMetrics, METRICS_POLL_INTERVAL);
+    }
+    return () => {
+      if (metricsIntervalRef.current) {
+        clearInterval(metricsIntervalRef.current);
+        metricsIntervalRef.current = null;
+      }
+    };
+  }, [isStreaming, fetchMetrics]);
+
+  // Logs polling
+  useEffect(() => {
+    if (isStreaming && page === 1) {
+      fetchNewLogs();
+      intervalRef.current = setInterval(fetchNewLogs, POLL_INTERVAL);
+      resetIdleTimer();
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      if (idleTimeoutRef.current) {
+        clearTimeout(idleTimeoutRef.current);
+        idleTimeoutRef.current = null;
+      }
+    };
+  }, [isStreaming, page, fetchNewLogs, resetIdleTimer]);
+
+  const toggleStreaming = () => {
+    setIsStreaming(!isStreaming);
+    setIsPausedByIdle(false);
+  };
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
-    if (range === "hour") {
-      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    }
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  const cacheHitRate =
-    metrics && metrics.summary.totalCalls > 0
-      ? Math.round(
-          (metrics.summary.cacheHits / metrics.summary.totalCalls) * 100
-        )
-      : 0;
+  const cacheHitRate = metrics && metrics.summary.totalCalls > 0
+    ? Math.round((metrics.summary.cacheHits / metrics.summary.totalCalls) * 100)
+    : 0;
 
   return (
     <div>
-      {/* Header with time range selector */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <select
-          value={range}
-          onChange={(e) => setRange(e.target.value as TimeRange)}
-          className="px-3 py-2 border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
-        >
-          <option value="hour">Last Hour</option>
-          <option value="day">Last 24 Hours</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <select
+            value={range}
+            onChange={(e) => setRange(e.target.value as TimeRange)}
+            className="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          >
+            <option value="hour">Last Hour</option>
+            <option value="day">Last 24 Hours</option>
+          </select>
+          <button
+            onClick={toggleStreaming}
+            className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border transition-colors ${
+              isStreaming
+                ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300"
+                : "border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            }`}
+          >
+            {isStreaming ? (
+              <>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                Streaming
+              </>
+            ) : (
+              <>
+                <span className="h-2 w-2 rounded-full bg-zinc-400"></span>
+                {isPausedByIdle ? "Paused (idle)" : "Paused"}
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      {isLoading ? (
-        <div className="text-center py-12 text-zinc-500">Loading metrics...</div>
-      ) : error ? (
-        <div className="text-center py-12 text-red-500">{error}</div>
-      ) : metrics ? (
-        <>
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-              <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                Total Requests
-              </div>
-              <div className="text-2xl font-bold mt-1">
-                {metrics.summary.totalCalls.toLocaleString()}
-              </div>
-            </div>
-            <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-              <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                Cache Hit Rate
-              </div>
-              <div className="text-2xl font-bold mt-1">
-                {cacheHitRate}%
-              </div>
-            </div>
-            <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-              <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                Cache Hits
-              </div>
-              <div className="text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
-                {metrics.summary.cacheHits.toLocaleString()}
-              </div>
-            </div>
-            <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-              <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                Avg Response Time
-              </div>
-              <div className="text-2xl font-bold mt-1">
-                {metrics.summary.avgDuration}ms
-              </div>
-            </div>
-          </div>
-
-          {/* Charts */}
-          {metrics.timeSeries.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Requests Over Time */}
+      {/* Metrics Section */}
+      <div className="mb-8">
+        {metricsLoading ? (
+          <div className="text-center py-8 text-zinc-500">Loading metrics...</div>
+        ) : metrics ? (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-4">
-                  Requests Over Time
-                </h3>
-                <ResponsiveContainer width="100%" height={250}>
+                <div className="text-sm text-zinc-500 dark:text-zinc-400">Total Requests</div>
+                <div className="text-2xl font-bold mt-1">{metrics.summary.totalCalls.toLocaleString()}</div>
+              </div>
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                <div className="text-sm text-zinc-500 dark:text-zinc-400">Cache Hit Rate</div>
+                <div className="text-2xl font-bold mt-1">{cacheHitRate}%</div>
+              </div>
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                <div className="text-sm text-zinc-500 dark:text-zinc-400">Cache Hits</div>
+                <div className="text-2xl font-bold mt-1 text-green-600 dark:text-green-400">{metrics.summary.cacheHits.toLocaleString()}</div>
+              </div>
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                <div className="text-sm text-zinc-500 dark:text-zinc-400">Avg Response Time</div>
+                <div className="text-2xl font-bold mt-1">{metrics.summary.avgDuration}ms</div>
+              </div>
+            </div>
+
+            {/* Chart */}
+            {metrics.timeSeries.length > 0 ? (
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-4">Requests Over Time</h3>
+                <ResponsiveContainer width="100%" height={200}>
                   <LineChart data={metrics.timeSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis
-                      dataKey="timestamp"
-                      tickFormatter={formatTime}
-                      stroke="#6b7280"
-                      fontSize={12}
-                    />
+                    <XAxis dataKey="timestamp" tickFormatter={formatTime} stroke="#6b7280" fontSize={12} />
                     <YAxis stroke="#6b7280" fontSize={12} />
                     <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#18181b",
-                        border: "1px solid #3f3f46",
-                        borderRadius: "6px",
-                      }}
-                      labelFormatter={(label) =>
-                        new Date(label).toLocaleString()
-                      }
+                      contentStyle={{ backgroundColor: "#18181b", border: "1px solid #3f3f46", borderRadius: "6px" }}
+                      labelFormatter={(label) => new Date(label).toLocaleString()}
                     />
-                    <Line
-                      type="monotone"
-                      dataKey="calls"
-                      stroke="#06b6d4"
-                      strokeWidth={2}
-                      dot={false}
-                      name="Requests"
-                    />
+                    <Line type="monotone" dataKey="calls" stroke="#06b6d4" strokeWidth={2} dot={false} name="Requests" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-
-              {/* Cache Hit/Miss */}
-              <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-4">
-                  Cache Performance
-                </h3>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={metrics.timeSeries}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis
-                      dataKey="timestamp"
-                      tickFormatter={formatTime}
-                      stroke="#6b7280"
-                      fontSize={12}
-                    />
-                    <YAxis stroke="#6b7280" fontSize={12} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#18181b",
-                        border: "1px solid #3f3f46",
-                        borderRadius: "6px",
-                      }}
-                      labelFormatter={(label) =>
-                        new Date(label).toLocaleString()
-                      }
-                    />
-                    <Legend />
-                    <Bar dataKey="cacheHits" fill="#22c55e" name="Cache Hits" stackId="cache" />
-                    <Bar dataKey="cacheMisses" fill="#6b7280" name="Cache Misses" stackId="cache" />
-                  </BarChart>
-                </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-8 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg">
+                No data available for the selected time range
               </div>
-            </div>
-          ) : (
-            <div className="text-center py-12 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg">
-              No data available for the selected time range
-            </div>
+            )}
+          </>
+        ) : null}
+      </div>
+
+      {/* Logs Section */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Logs</h2>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <span className="text-sm text-zinc-500 dark:text-zinc-400 mr-1">Filters:</span>
+          <button
+            onClick={() => setFilters((f) => ({ ...f, slow: !f.slow }))}
+            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+              filters.slow
+                ? "border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300"
+                : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            }`}
+          >
+            Slow (&gt;100ms)
+          </button>
+          <button
+            onClick={() => setFilters((f) => ({ ...f, errors: !f.errors }))}
+            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+              filters.errors
+                ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300"
+                : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            }`}
+          >
+            Errors
+          </button>
+          <select
+            value={filters.method}
+            onChange={(e) => setFilters((f) => ({ ...f, method: e.target.value as MethodFilter }))}
+            className={`px-3 py-1 text-xs rounded-full border transition-colors outline-none ${
+              filters.method !== "ALL"
+                ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
+                : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400"
+            }`}
+          >
+            <option value="ALL">All Methods</option>
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+          <select
+            value={filters.cache}
+            onChange={(e) => setFilters((f) => ({ ...f, cache: e.target.value as CacheFilter }))}
+            className={`px-3 py-1 text-xs rounded-full border transition-colors outline-none ${
+              filters.cache !== "ALL"
+                ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300"
+                : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400"
+            }`}
+          >
+            <option value="ALL">All Cache</option>
+            <option value="HIT">Cache HIT</option>
+            <option value="MISS">Cache MISS</option>
+          </select>
+          {hasActiveFilters && (
+            <button
+              onClick={() => {
+                setFilters({ slow: false, errors: false, method: "ALL", cache: "ALL" });
+                setSearchQuery("");
+              }}
+              className="px-3 py-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+            >
+              Clear all
+            </button>
           )}
-        </>
-      ) : null}
+          {hasActiveFilters && (
+            <span className="text-xs text-zinc-500 dark:text-zinc-400 ml-auto">
+              {filteredLogs.length} of {logs.length} logs
+            </span>
+          )}
+        </div>
+
+        {/* Search */}
+        <div className="mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search path, headers, body..."
+            className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+          />
+        </div>
+
+        {/* Logs Table */}
+        {logsLoading ? (
+          <div className="text-center py-12 text-zinc-500">Loading logs...</div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-500">{error}</div>
+        ) : logs.length > 0 ? (
+          <>
+            {filteredLogs.length === 0 ? (
+              <div className="text-center py-12 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg">
+                No logs match the current filters
+              </div>
+            ) : (
+              <>
+                <div className={`overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded-lg ${selectedLog ? "max-h-64 overflow-y-auto" : ""}`}>
+                  <table className="w-full">
+                    <thead className="bg-zinc-50 dark:bg-zinc-900 sticky top-0">
+                      <tr className="text-left text-sm text-zinc-500 dark:text-zinc-400">
+                        <th className="px-4 py-3 font-medium">Time</th>
+                        <th className="px-4 py-3 font-medium">Method</th>
+                        <th className="px-4 py-3 font-medium">Path</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Duration</th>
+                        <th className="px-4 py-3 font-medium">Cache</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                      {filteredLogs.map((log) => (
+                        <tr
+                          key={log._id}
+                          onClick={() => setSelectedLog(selectedLog?._id === log._id ? null : log)}
+                          className={`cursor-pointer transition-colors ${
+                            selectedLog?._id === log._id
+                              ? "bg-cyan-50 dark:bg-cyan-950 hover:bg-cyan-50 dark:hover:bg-cyan-950"
+                              : "hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                          }`}
+                        >
+                          <td className="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                            {formatRelativeTime(log.createdAt)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${getMethodColor(log.request.method)}`}>
+                              {log.request.method}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm font-mono max-w-xs truncate">{log.request.path}</td>
+                          <td className={`px-4 py-3 text-sm font-medium ${getStatusColor(log.response.status)}`}>
+                            {log.response.status}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">{log.duration}ms</td>
+                          <td className="px-4 py-3">
+                            {log.cacheStatus ? (
+                              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${
+                                log.cacheStatus === "HIT"
+                                  ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                                  : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                              }`}>
+                                {log.cacheStatus}
+                              </span>
+                            ) : (
+                              <span className="text-zinc-400 dark:text-zinc-600">-</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {pagination && pagination.totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                      Showing {(page - 1) * pagination.limit + 1} to {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} logs
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="px-3 py-1 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                        disabled={page >= pagination.totalPages}
+                        className="px-3 py-1 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Log Detail Panel */}
+                {selectedLog && (
+                  <div className="mt-4 border border-cyan-200 dark:border-cyan-800 rounded-lg bg-white dark:bg-zinc-900 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800">
+                      <div className="flex items-center gap-3">
+                        <span className={`px-2 py-0.5 text-xs font-medium rounded ${getMethodColor(selectedLog.request.method)}`}>
+                          {selectedLog.request.method}
+                        </span>
+                        <code className="text-sm font-mono text-zinc-900 dark:text-zinc-100">{selectedLog.request.path}</code>
+                        <span className={`text-sm font-medium ${getStatusColor(selectedLog.response.status)}`}>
+                          {selectedLog.response.status}
+                        </span>
+                      </div>
+                      <button onClick={() => setSelectedLog(null)} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">×</button>
+                    </div>
+
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Request Section */}
+                      <div>
+                        <h4 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">Request</h4>
+                        {selectedLog.request.query && Object.keys(selectedLog.request.query).length > 0 && (
+                          <div className="mb-3">
+                            <div className="text-xs text-zinc-500 mb-1">Query Parameters</div>
+                            <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto">
+                              {Object.entries(selectedLog.request.query as Record<string, string>).map(([key, value]) => (
+                                <div key={key}>
+                                  <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                  <span className="text-zinc-400">=</span>
+                                  <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {selectedLog.request.headers && Object.keys(selectedLog.request.headers).length > 0 && (
+                          <div className="mb-3">
+                            <div className="text-xs text-zinc-500 mb-1">Headers</div>
+                            <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
+                              {Object.entries(selectedLog.request.headers as Record<string, string>).map(([key, value]) => (
+                                <div key={key} className="break-all">
+                                  <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                  <span className="text-zinc-400">: </span>
+                                  <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {selectedLog.request.body !== undefined && selectedLog.request.body !== null && (
+                          <div className="mb-3">
+                            <div className="text-xs text-zinc-500 mb-1">Body</div>
+                            <pre className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
+                              {typeof selectedLog.request.body === "string" ? String(selectedLog.request.body) : JSON.stringify(selectedLog.request.body, null, 2)}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Response Section */}
+                      <div>
+                        <h4 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">Response</h4>
+                        {selectedLog.response.headers && Object.keys(selectedLog.response.headers).length > 0 && (
+                          <div className="mb-3">
+                            <div className="text-xs text-zinc-500 mb-1">Headers</div>
+                            <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
+                              {Object.entries(selectedLog.response.headers as Record<string, string>).map(([key, value]) => (
+                                <div key={key} className="break-all">
+                                  <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                  <span className="text-zinc-400">: </span>
+                                  <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {selectedLog.response.body != null && (
+                          <div className="mb-3">
+                            <div className="text-xs text-zinc-500 mb-1">Body</div>
+                            <pre className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
+                              {typeof selectedLog.response.body === "string" ? selectedLog.response.body : JSON.stringify(selectedLog.response.body, null, 2)}
+                            </pre>
+                          </div>
+                        )}
+                        {selectedLog.response.bodySize !== undefined && (
+                          <div className="text-xs text-zinc-500">Body size: {selectedLog.response.bodySize} bytes</div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Timing Section */}
+                    <div className="px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700">
+                      <div className="flex flex-wrap gap-4 text-xs">
+                        <div>
+                          <span className="text-zinc-500">Time: </span>
+                          <span className="text-zinc-700 dark:text-zinc-300">{new Date(selectedLog.createdAt).toLocaleString()}</span>
+                        </div>
+                        <div>
+                          <span className="text-zinc-500">Duration: </span>
+                          <span className="text-zinc-700 dark:text-zinc-300">{selectedLog.duration}ms</span>
+                        </div>
+                        {selectedLog.upstreamMetrics && (
+                          <>
+                            <div>
+                              <span className="text-zinc-500">TTFB: </span>
+                              <span className="text-zinc-700 dark:text-zinc-300">{selectedLog.upstreamMetrics.ttfb}ms</span>
+                            </div>
+                            <div>
+                              <span className="text-zinc-500">Transfer: </span>
+                              <span className="text-zinc-700 dark:text-zinc-300">{selectedLog.upstreamMetrics.transfer}ms</span>
+                            </div>
+                          </>
+                        )}
+                        {selectedLog.cacheStatus && (
+                          <div>
+                            <span className="text-zinc-500">Cache: </span>
+                            <span className={selectedLog.cacheStatus === "HIT" ? "text-green-600 dark:text-green-400" : "text-zinc-700 dark:text-zinc-300"}>
+                              {selectedLog.cacheStatus}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg">
+            No logs yet. Send some requests to your toran to see them here.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
