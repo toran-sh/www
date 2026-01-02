@@ -2,18 +2,20 @@ import Link from "next/link";
 
 const tiers = [
   {
-    name: "Trial",
-    label: "Trial (not signed in)",
+    name: "Anonymous",
+    label: "Anonymous (no account)",
     price: "$0",
     period: "",
-    description: "Try toran instantly, no account required.",
+    description: "Live inspection in minutes. No account.",
     features: [
-      "1h log retention",
-      "Metadata + headers (authorization redacted)",
-      "1 toran",
-      "Live view only",
+      "Live streaming",
+      "Latest 1,000 logs per toran (rolling)",
+      "Expires unless claimed",
+      "Default logging rules only",
+      "Request and response payloads are not logged",
+      "See what an agent or tool actually sent to this API",
     ],
-    cta: "Try Now",
+    cta: "Create a toran",
     ctaHref: "/try",
     highlighted: false,
   },
@@ -22,16 +24,16 @@ const tiers = [
     label: "Free (signed in)",
     price: "$0",
     period: "",
-    description: "A real, usable tier for development and debugging.",
+    description: "More history for day-to-day debugging.",
     features: [
-      "24h log retention",
-      "Metadata + headers (authorization redacted)",
-      "1–3 torans",
-      "Live + historical view",
-      "Reasonable request caps",
+      "Latest 2,500 logs per toran (rolling)",
+      "Up to 5 torans",
+      "Configure your own rules for request and payload logging",
+      "Reasonable usage caps",
+      "Debug agent tool calls without inspecting prompts",
     ],
-    cta: "Create a toran",
-    ctaHref: "/try",
+    cta: "Get Started",
+    ctaHref: "/login",
     highlighted: false,
   },
   {
@@ -39,14 +41,14 @@ const tiers = [
     label: "Pro",
     price: "$29",
     period: "/ month",
-    description:
-      "When something breaks, you can always figure out what happened.",
+    description: "Longer history for when issues surface later.",
     features: [
-      "7–30 day log retention",
-      "Time-limited payload capture",
-      "Unlimited torans (soft limits)",
-      "Higher request caps",
-      "Log export (JSON)",
+      "Latest 25,000 logs per toran (rolling)",
+      "Up to 20 torans",
+      "Higher usage caps",
+      "Log export",
+      "Keep enough history for intermittent agent failures",
+      "Email support",
     ],
     cta: "Upgrade to Pro",
     ctaHref: "/login",
@@ -57,12 +59,14 @@ const tiers = [
     label: "Pro Plus",
     price: "$99",
     period: "/ month",
-    description: "For production traffic where continuity matters.",
+    description: "For production continuity and locality.",
     features: [
-      "30–90 day log retention",
-      "Very high request caps",
+      "Latest 250,000 logs per toran (rolling)",
+      "Up to 100 torans",
+      "Very high usage caps",
       "Multi-region edge selection",
-      "Priority support",
+      "Long-running production agents need continuity",
+      "Priority email support",
     ],
     cta: "Upgrade to Pro Plus",
     ctaHref: "/login",
@@ -74,7 +78,8 @@ const rules = [
   "No per-request billing",
   "No surprise overages",
   "Hard caps with graceful degradation",
-  "Downgrade or cancel anytime",
+  "Cancel anytime",
+  "Sensitive headers and query values are redacted by default",
 ];
 
 export default function PricingPage() {
@@ -94,7 +99,7 @@ export default function PricingPage() {
             href="/try"
             className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
           >
-            Try Now
+            Create a toran
           </Link>
         </nav>
       </header>
@@ -103,11 +108,13 @@ export default function PricingPage() {
       <main className="container mx-auto px-6 py-20">
         <div className="mx-auto max-w-4xl">
           <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-            Pay for how long you want to remember what happened
+            Pay for how much history you want
           </h1>
           <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-            toran charges for retention and continuity - not requests, not
-            performance.
+            toran charges for history depth and continuity - not requests, not performance. No surprise overages.
+          </p>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            Each paid tier includes everything in the tiers below it, plus more.
           </p>
         </div>
 
@@ -163,7 +170,7 @@ export default function PricingPage() {
 
         {/* Pricing Rules */}
         <section className="mt-20">
-          <h2 className="text-xl font-bold">How billing works</h2>
+          <h2 className="text-xl font-bold">Pricing rules</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {rules.map((rule) => (
               <div
@@ -177,14 +184,6 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* Footer Note */}
-        <section className="mt-20">
-          <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-            <p className="text-zinc-600 dark:text-zinc-400">
-              You can remove toran at any time by changing your base URL back.
-            </p>
-          </div>
-        </section>
       </main>
 
       {/* Footer */}
@@ -192,8 +191,7 @@ export default function PricingPage() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-sm text-zinc-500">
-              Live outbound API inspector - see, search, and understand calls
-              without SDKs.
+              Live outbound API inspector - see what your code and AI agents actually sent, and why it failed.
             </div>
             <div className="flex gap-4 text-sm text-zinc-500">
               <Link

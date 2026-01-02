@@ -9,7 +9,7 @@ const features = [
   {
     title: "Headers & Metadata",
     description:
-      "Inspect request and response headers with automatic redaction of authorization tokens.",
+      "Inspect request and response headers with automatic redaction of authorization and cookie headers.",
   },
   {
     title: "Error Detection",
@@ -77,7 +77,7 @@ export default function Home() {
         <section id="features" className="mt-20">
           <h2 className="text-2xl font-bold">What you get</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Everything you need to understand your API traffic
+            Everything you need to understand requests to a specific API
           </p>
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
@@ -121,7 +121,7 @@ export default function Home() {
         <section className="mt-16">
           <h2 className="text-2xl font-bold">How it works</h2>
           <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-6">
-            <ol className="space-y-4 text-zinc-600 dark:text-zinc-400">
+            <ol className="space-y-4 text-zinc-600 dark:text-zinc-400 list-none">
               <li className="flex gap-3">
                 <span className="font-mono text-cyan-600 dark:text-cyan-400">
                   1.
@@ -138,12 +138,14 @@ export default function Home() {
                 <span className="font-mono text-cyan-600 dark:text-cyan-400">
                   3.
                 </span>
-                Run your app or tests and watch requests stream in
+                Run your app, tests, or agent and watch requests stream in
               </li>
             </ol>
             <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-500">
-              Requests sent through toran are routed through our proxy for live
-              inspection. Authorization headers are redacted by default.
+              Requests sent through toran are routed through toran for live inspection. Authorization headers are redacted by default.
+            </p>
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-500">
+              Each toran is bound to one upstream base URL.
             </p>
           </div>
         </section>
@@ -185,8 +187,8 @@ export default function Home() {
           <div className="border border-cyan-200 dark:border-cyan-800 bg-cyan-50 dark:bg-cyan-950 p-6">
             <h2 className="text-lg font-semibold">Want more?</h2>
             <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-              Sign up for free to keep your torans forever. Upgrade to Pro for
-              longer log retention and payload capture.
+              Sign up for free to keep your torans long-term. Upgrade to Pro for
+              longer log retention and payload capture. Sign in to enable retention; upgrade for longer history.
             </p>
             <Link
               href="/login"
