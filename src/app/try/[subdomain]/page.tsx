@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ClaimForm } from "./claim-form";
 
 type MethodFilter = "ALL" | "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -98,6 +98,7 @@ const IDLE_TIMEOUT = 30000;
 
 export default function TrialLogsPage() {
   const params = useParams();
+  const router = useRouter();
   const subdomain = params.subdomain as string;
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [pagination, setPagination] = useState<LogsResponse["pagination"]>();
@@ -139,6 +140,11 @@ export default function TrialLogsPage() {
         `/api/trial/${subdomain}/logs?page=${page}&limit=50`
       );
       if (!res.ok) {
+        // Redirect to /try if unauthorized or not found
+        if (res.status === 401 || res.status === 404) {
+          router.replace("/try");
+          return;
+        }
         throw new Error("Failed to fetch logs");
       }
       const result: LogsResponse = await res.json();
@@ -152,7 +158,7 @@ export default function TrialLogsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [subdomain, page]);
+  }, [subdomain, page, router]);
 
   const resetIdleTimer = useCallback(() => {
     if (idleTimeoutRef.current) {
