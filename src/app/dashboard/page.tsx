@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { LogoutButton } from "./logout-button";
 import { ToranList } from "./toran-list";
+import { DashboardMetrics } from "./dashboard-metrics";
 
 export default async function DashboardPage() {
   const userId = await getSession();
@@ -33,6 +34,9 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">Manage your torans</p>
         </div>
+
+        {/* Metrics Section */}
+        <DashboardMetrics />
 
         {/* Torans Section */}
         <div>
