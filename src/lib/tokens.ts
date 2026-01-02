@@ -45,8 +45,13 @@ export async function ensureIndexes(): Promise<void> {
     { expiresAt: 1 },
     { expireAfterSeconds: 0 }
   );
+  await db.collection("claim_tokens").createIndex(
+    { expiresAt: 1 },
+    { expireAfterSeconds: 0 }
+  );
   await magicLinksCollection().createIndex({ token: 1 }, { unique: true });
   await sessionsCollection().createIndex({ token: 1 }, { unique: true });
+  await db.collection("claim_tokens").createIndex({ token: 1 }, { unique: true });
   await usersCollection().createIndex({ email: 1 }, { unique: true });
 }
 
@@ -144,4 +149,69 @@ export async function deleteSession(): Promise<void> {
   }
 
   cookieStore.delete("session");
+}
+
+// Trial token management for anonymous users
+export async function getTrialToken(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return cookieStore.get("trial_session")?.value || null;
+}
+
+export async function setTrialTokenCookie(token: string): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set("trial_session", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  });
+}
+
+export async function clearTrialToken(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete("trial_session");
+}
+
+// Claim token for linking trial torans to users
+interface ClaimTokenDoc {
+  token: string;
+  email: string;
+  subdomain: string;
+  trialToken: string;
+  expiresAt: Date;
+}
+
+const claimTokensCollection = () => db.collection<ClaimTokenDoc>("claim_tokens");
+
+export async function storeClaimToken(
+  token: string,
+  email: string,
+  subdomain: string,
+  trialToken: string
+): Promise<void> {
+  await claimTokensCollection().insertOne({
+    token,
+    email,
+    subdomain,
+    trialToken,
+    expiresAt: new Date(Date.now() + MAGIC_LINK_TTL_MS),
+  });
+}
+
+export async function verifyClaimToken(
+  token: string
+): Promise<{ email: string; subdomain: string; trialToken: string } | null> {
+  const doc = await claimTokensCollection().findOneAndDelete({
+    token,
+    expiresAt: { $gt: new Date() },
+  });
+
+  if (!doc) return null;
+
+  return {
+    email: doc.email,
+    subdomain: doc.subdomain,
+    trialToken: doc.trialToken,
+  };
 }

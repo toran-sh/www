@@ -29,8 +29,13 @@ src/
 │   │   ├── auth/
 │   │   │   ├── send-magic-link/route.ts
 │   │   │   ├── verify/route.ts
+│   │   │   ├── verify-claim/route.ts   # Verify claim + link toran to user
 │   │   │   ├── clear-session/route.ts
 │   │   │   └── logout/route.ts
+│   │   ├── trial/
+│   │   │   ├── torans/route.ts         # POST - create trial toran
+│   │   │   ├── [subdomain]/logs/route.ts # GET - trial logs
+│   │   │   └── claim/route.ts          # POST - send claim email
 │   │   └── torans/
 │   │       ├── route.ts                # GET/POST torans list
 │   │       ├── [id]/route.ts           # GET/PUT/DELETE single toran
@@ -49,6 +54,12 @@ src/
 │   │       ├── logs/page.tsx           # Request logs with streaming
 │   │       └── settings/page.tsx       # Settings + delete
 │   ├── login/page.tsx                  # Magic link login
+│   ├── try/
+│   │   ├── page.tsx                    # Trial landing (redirects if logged in)
+│   │   ├── create-trial-form.tsx
+│   │   └── [subdomain]/
+│   │       ├── page.tsx                # Trial logs view with claim CTA
+│   │       └── claim-form.tsx
 │   ├── layout.tsx
 │   └── page.tsx                        # Marketing homepage
 ├── components/
@@ -81,9 +92,21 @@ src/
   "subdomain": "abc123xyz",
   "upstreamBaseUrl": "https://api.example.com",
   "cacheTtl": 300,
-  "user_id": "ObjectId string (references users._id)",
+  "user_id": "ObjectId string | null",
+  "trial_token": "string | null",
   "createdAt": "Date",
   "updatedAt": "Date"
+}
+```
+
+**claim_tokens** (TTL: 15 min)
+```json
+{
+  "token": "uuid",
+  "email": "user@example.com",
+  "subdomain": "abc123xyz",
+  "trialToken": "string",
+  "expiresAt": "Date"
 }
 ```
 
@@ -156,8 +179,25 @@ src/
 
 **POST /api/auth/send-magic-link** - Send login email
 **GET /api/auth/verify?token=...** - Verify magic link
+**GET /api/auth/verify-claim?token=...** - Verify claim, link toran to user, create session
 **POST /api/auth/logout** - Clear session
 **GET /api/auth/clear-session** - Clear cookie and redirect to login
+
+### Trial (anonymous users)
+
+**POST /api/trial/torans** - Create trial toran (no auth)
+- Body: `{ upstreamBaseUrl, cacheTtl? }`
+- Sets trial_session cookie
+- Creates toran with user_id=null, trial_token set
+
+**GET /api/trial/[subdomain]/logs** - Get logs for trial toran
+- Requires trial_session cookie matching toran's trial_token
+- Query params: `page`, `limit`, `since`
+
+**POST /api/trial/claim** - Send claim email
+- Body: `{ email, subdomain }`
+- Requires trial_session cookie
+- Sends email with claim link
 
 ## Environment Variables
 
@@ -186,6 +226,7 @@ Each toran has:
 - **Streaming logs**: Logs page auto-refreshes with `since` param for efficiency
 - **Session handling**: SessionExpired component redirects to clear-session route
 - **Metrics dashboard**: Uses Recharts for time-series visualization
+- **Trial flow**: Anonymous users can create torans via /try, claim them via email to link to account
 
 ## Tech Stack
 
