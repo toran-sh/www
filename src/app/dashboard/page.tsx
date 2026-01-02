@@ -39,10 +39,7 @@ export default async function DashboardPage() {
         <DashboardMetrics />
 
         {/* Torans Section */}
-        <div>
-          <h2 className="text-lg font-semibold mb-3">Your torans</h2>
-          <ToranList />
-        </div>
+        <ToranList />
       </main>
     </div>
   );

@@ -84,7 +84,8 @@ export function ToranList() {
         </div>
       ) : (
         <>
-          <div className="mb-4 flex justify-end">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Your torans</h2>
             <button
               onClick={() => setShowAddForm(true)}
               className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
