@@ -52,11 +52,15 @@ interface LogEntry {
   request: {
     method: string;
     path: string;
-    query: Record<string, string>;
+    query?: Record<string, string>;
+    headers?: Record<string, string>;
+    body?: unknown;
   };
   response: {
     status: number;
-    bodySize: number;
+    headers?: Record<string, string>;
+    bodySize?: number;
+    body?: unknown;
   };
   duration: number;
   upstreamMetrics?: UpstreamMetrics;
@@ -141,6 +145,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
     cache: "ALL",
   });
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
+  const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const metricsIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -493,7 +498,12 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                           {filteredLogs.map((log) => (
                             <tr
                               key={log._id}
-                              className="hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                              onClick={() => setSelectedLog(selectedLog?._id === log._id ? null : log)}
+                              className={`cursor-pointer transition-colors ${
+                                selectedLog?._id === log._id
+                                  ? "bg-cyan-50 dark:bg-cyan-950 hover:bg-cyan-50 dark:hover:bg-cyan-950"
+                                  : "hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                              }`}
                             >
                               <td className="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
                                 {formatRelativeTime(log.createdAt)}
@@ -562,6 +572,162 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                           >
                             Next
                           </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Log Detail Panel */}
+                    {selectedLog && (
+                      <div className="mt-4 border border-cyan-200 dark:border-cyan-800 rounded-lg bg-white dark:bg-zinc-900 overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-3 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800">
+                          <div className="flex items-center gap-3">
+                            <span className={`px-2 py-0.5 text-xs font-medium rounded ${getMethodColor(selectedLog.request.method)}`}>
+                              {selectedLog.request.method}
+                            </span>
+                            <code className="text-sm font-mono text-zinc-900 dark:text-zinc-100">
+                              {selectedLog.request.path}
+                            </code>
+                            <span className={`text-sm font-medium ${getStatusColor(selectedLog.response.status)}`}>
+                              {selectedLog.response.status}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setSelectedLog(null)}
+                            className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                          >
+                            ×
+                          </button>
+                        </div>
+
+                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Request Section */}
+                          <div>
+                            <h4 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">
+                              Request
+                            </h4>
+
+                            {/* Query Params */}
+                            {selectedLog.request.query && Object.keys(selectedLog.request.query).length > 0 && (
+                              <div className="mb-3">
+                                <div className="text-xs text-zinc-500 mb-1">Query Parameters</div>
+                                <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto">
+                                  {Object.entries(selectedLog.request.query as Record<string, string>).map(([key, value]) => (
+                                    <div key={key}>
+                                      <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                      <span className="text-zinc-400">=</span>
+                                      <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Request Headers */}
+                            {selectedLog.request.headers && Object.keys(selectedLog.request.headers).length > 0 && (
+                              <div className="mb-3">
+                                <div className="text-xs text-zinc-500 mb-1">Headers</div>
+                                <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
+                                  {Object.entries(selectedLog.request.headers as Record<string, string>).map(([key, value]) => (
+                                    <div key={key} className="break-all">
+                                      <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                      <span className="text-zinc-400">: </span>
+                                      <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Request Body */}
+                            {selectedLog.request.body !== undefined && selectedLog.request.body !== null && (
+                              <div className="mb-3">
+                                <div className="text-xs text-zinc-500 mb-1">Body</div>
+                                <pre className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
+                                  {typeof selectedLog.request.body === "string"
+                                    ? String(selectedLog.request.body)
+                                    : JSON.stringify(selectedLog.request.body, null, 2)}
+                                </pre>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Response Section */}
+                          <div>
+                            <h4 className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">
+                              Response
+                            </h4>
+
+                            {/* Response Headers */}
+                            {selectedLog.response.headers && Object.keys(selectedLog.response.headers).length > 0 && (
+                              <div className="mb-3">
+                                <div className="text-xs text-zinc-500 mb-1">Headers</div>
+                                <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
+                                  {Object.entries(selectedLog.response.headers as Record<string, string>).map(([key, value]) => (
+                                    <div key={key} className="break-all">
+                                      <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                      <span className="text-zinc-400">: </span>
+                                      <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Response Body */}
+                            {selectedLog.response.body != null && (
+                              <div className="mb-3">
+                                <div className="text-xs text-zinc-500 mb-1">Body</div>
+                                <pre className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
+                                  {typeof selectedLog.response.body === "string"
+                                    ? selectedLog.response.body
+                                    : JSON.stringify(selectedLog.response.body, null, 2)}
+                                </pre>
+                              </div>
+                            )}
+
+                            {/* Body Size */}
+                            {selectedLog.response.bodySize !== undefined && (
+                              <div className="text-xs text-zinc-500">
+                                Body size: {selectedLog.response.bodySize} bytes
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Timing Section */}
+                        <div className="px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700">
+                          <div className="flex flex-wrap gap-4 text-xs">
+                            <div>
+                              <span className="text-zinc-500">Time: </span>
+                              <span className="text-zinc-700 dark:text-zinc-300">
+                                {new Date(selectedLog.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-zinc-500">Duration: </span>
+                              <span className="text-zinc-700 dark:text-zinc-300">{selectedLog.duration}ms</span>
+                            </div>
+                            {selectedLog.upstreamMetrics && (
+                              <>
+                                <div>
+                                  <span className="text-zinc-500">TTFB: </span>
+                                  <span className="text-zinc-700 dark:text-zinc-300">{selectedLog.upstreamMetrics.ttfb}ms</span>
+                                </div>
+                                <div>
+                                  <span className="text-zinc-500">Transfer: </span>
+                                  <span className="text-zinc-700 dark:text-zinc-300">{selectedLog.upstreamMetrics.transfer}ms</span>
+                                </div>
+                              </>
+                            )}
+                            {selectedLog.cacheStatus && (
+                              <div>
+                                <span className="text-zinc-500">Cache: </span>
+                                <span className={selectedLog.cacheStatus === "HIT" ? "text-green-600 dark:text-green-400" : "text-zinc-700 dark:text-zinc-300"}>
+                                  {selectedLog.cacheStatus}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}

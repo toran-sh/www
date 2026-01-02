@@ -2,6 +2,22 @@ import Link from "next/link";
 
 const tiers = [
   {
+    name: "Trial",
+    label: "Trial (not signed in)",
+    price: "$0",
+    period: "",
+    description: "Try toran instantly, no account required.",
+    features: [
+      "1h log retention",
+      "Metadata + headers (authorization redacted)",
+      "1 toran",
+      "Live view only",
+    ],
+    cta: "Try Now",
+    ctaHref: "/try",
+    highlighted: false,
+  },
+  {
     name: "Free",
     label: "Free (signed in)",
     price: "$0",
@@ -96,7 +112,7 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing Tiers */}
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
+        <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {tiers.map((tier) => (
             <div
               key={tier.name}
