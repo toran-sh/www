@@ -27,14 +27,15 @@ interface LogEntry {
   createdAt: string;
 }
 
-interface LogsData {
+interface LogsResponse {
   logs: LogEntry[];
-  pagination: {
+  pagination?: {
     page: number;
     limit: number;
     total: number;
     totalPages: number;
   };
+  isStreaming?: boolean;
 }
 
 function getMethodColor(method: string): string {
@@ -81,19 +82,23 @@ function formatRelativeTime(dateStr: string): string {
 }
 
 const POLL_INTERVAL = 2000; // 2 seconds
+const MAX_LOGS = 200; // Cap logs in memory
 
 export default function LogsPage() {
   const params = useParams();
   const subdomain = params.subdomain as string;
-  const [data, setData] = useState<LogsData | null>(null);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [pagination, setPagination] = useState<LogsResponse["pagination"]>();
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const latestIdRef = useRef<string | null>(null);
 
-  const fetchLogs = useCallback(async (showLoading = false) => {
-    if (showLoading) setIsLoading(true);
+  // Initial fetch (full page load)
+  const fetchLogs = useCallback(async () => {
+    setIsLoading(true);
     setError(null);
     try {
       const res = await fetch(
@@ -102,26 +107,50 @@ export default function LogsPage() {
       if (!res.ok) {
         throw new Error("Failed to fetch logs");
       }
-      const result = await res.json();
-      setData(result);
+      const result: LogsResponse = await res.json();
+      setLogs(result.logs);
+      setPagination(result.pagination);
+      if (result.logs.length > 0) {
+        latestIdRef.current = result.logs[0]._id;
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch logs");
     } finally {
-      if (showLoading) setIsLoading(false);
+      setIsLoading(false);
     }
   }, [subdomain, page]);
 
+  // Streaming fetch (only new logs)
+  const fetchNewLogs = useCallback(async () => {
+    if (!latestIdRef.current) return;
+
+    try {
+      const res = await fetch(
+        `/api/gateways/by-subdomain/${subdomain}/logs?since=${latestIdRef.current}`
+      );
+      if (!res.ok) return;
+
+      const result: LogsResponse = await res.json();
+      if (result.logs.length > 0) {
+        // Update latest ID to the newest log
+        latestIdRef.current = result.logs[0]._id;
+        // Prepend new logs and cap total
+        setLogs((prev) => [...result.logs, ...prev].slice(0, MAX_LOGS));
+      }
+    } catch {
+      // Silently fail on streaming errors
+    }
+  }, [subdomain]);
+
   // Initial fetch
   useEffect(() => {
-    fetchLogs(true);
+    fetchLogs();
   }, [fetchLogs]);
 
   // Polling for streaming (only on page 1)
   useEffect(() => {
     if (isStreaming && page === 1) {
-      intervalRef.current = setInterval(() => {
-        fetchLogs(false);
-      }, POLL_INTERVAL);
+      intervalRef.current = setInterval(fetchNewLogs, POLL_INTERVAL);
     }
 
     return () => {
@@ -130,7 +159,7 @@ export default function LogsPage() {
         intervalRef.current = null;
       }
     };
-  }, [isStreaming, page, fetchLogs]);
+  }, [isStreaming, page, fetchNewLogs]);
 
   return (
     <div>
@@ -165,7 +194,7 @@ export default function LogsPage() {
         <div className="text-center py-12 text-zinc-500">Loading logs...</div>
       ) : error ? (
         <div className="text-center py-12 text-red-500">{error}</div>
-      ) : data && data.logs.length > 0 ? (
+      ) : logs.length > 0 ? (
         <>
           <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded-lg">
             <table className="w-full">
@@ -182,7 +211,7 @@ export default function LogsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {data.logs.map((log) => (
+                {logs.map((log) => (
                   <tr
                     key={log._id}
                     className="hover:bg-zinc-50 dark:hover:bg-zinc-900"
@@ -236,12 +265,12 @@ export default function LogsPage() {
           </div>
 
           {/* Pagination */}
-          {data.pagination.totalPages > 1 && (
+          {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                Showing {(page - 1) * data.pagination.limit + 1} to{" "}
-                {Math.min(page * data.pagination.limit, data.pagination.total)}{" "}
-                of {data.pagination.total} logs
+                Showing {(page - 1) * pagination.limit + 1} to{" "}
+                {Math.min(page * pagination.limit, pagination.total)}{" "}
+                of {pagination.total} logs
               </div>
               <div className="flex gap-2">
                 <button
@@ -252,8 +281,8 @@ export default function LogsPage() {
                   Previous
                 </button>
                 <button
-                  onClick={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
-                  disabled={page >= data.pagination.totalPages}
+                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  disabled={page >= pagination.totalPages}
                   className="px-3 py-1 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
                   Next

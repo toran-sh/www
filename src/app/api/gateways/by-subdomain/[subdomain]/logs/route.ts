@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
 import { db } from "@/lib/mongodb";
 import { getSession } from "@/lib/tokens";
 
@@ -16,6 +17,7 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "50", 10)));
+    const since = searchParams.get("since"); // Last log ID for streaming
 
     // Verify gateway belongs to user
     const gateway = await db.collection("gateways").findOne({
@@ -25,6 +27,36 @@ export async function GET(
 
     if (!gateway) {
       return NextResponse.json({ error: "Gateway not found" }, { status: 404 });
+    }
+
+    // If streaming (since provided), only get new logs after that ID
+    if (since) {
+      try {
+        const sinceId = new ObjectId(since);
+        const newLogs = await db
+          .collection("logs")
+          .find({
+            subdomain,
+            _id: { $gt: sinceId },
+          })
+          .sort({ createdAt: -1 })
+          .limit(100) // Cap at 100 new logs per poll
+          .project({
+            _id: 1,
+            timestamp: 1,
+            request: { method: 1, path: 1, query: 1 },
+            response: { status: 1, bodySize: 1 },
+            duration: 1,
+            upstreamMetrics: 1,
+            cacheStatus: 1,
+            createdAt: 1,
+          })
+          .toArray();
+
+        return NextResponse.json({ logs: newLogs, isStreaming: true });
+      } catch {
+        // Invalid ObjectId, fall through to normal pagination
+      }
     }
 
     const skip = (page - 1) * limit;
@@ -42,16 +74,10 @@ export async function GET(
       .project({
         _id: 1,
         timestamp: 1,
-        request: {
-          method: 1,
-          path: 1,
-          query: 1,
-        },
-        response: {
-          status: 1,
-          bodySize: 1,
-        },
+        request: { method: 1, path: 1, query: 1 },
+        response: { status: 1, bodySize: 1 },
         duration: 1,
+        upstreamMetrics: 1,
         cacheStatus: 1,
         createdAt: 1,
       })
