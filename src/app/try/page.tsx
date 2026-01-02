@@ -42,7 +42,7 @@ export default async function TryPage() {
               Try toran
             </h1>
             <p className="text-zinc-600 dark:text-zinc-400">
-              No signup required. Create a toran, point your tool or client at it, and inspect requests instantly.
+              No signup required. Create a toran, point your tool, client or agent at it, and inspect requests instantly.
             </p>
           </div>
 
@@ -74,12 +74,6 @@ export default async function TryPage() {
                 className="hover:text-zinc-700 dark:hover:text-zinc-300"
               >
                 Pricing
-              </Link>
-              <Link
-                href="/roadmap"
-                className="hover:text-zinc-700 dark:hover:text-zinc-300"
-              >
-                Roadmap
               </Link>
               <a
                 href="/privacy"

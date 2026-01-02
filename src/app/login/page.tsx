@@ -86,12 +86,6 @@ export default async function LoginPage({ searchParams }: Props) {
               >
                 Pricing
               </Link>
-              <Link
-                href="/roadmap"
-                className="hover:text-zinc-700 dark:hover:text-zinc-300"
-              >
-                Roadmap
-              </Link>
               <a
                 href="/privacy"
                 className="hover:text-zinc-700 dark:hover:text-zinc-300"

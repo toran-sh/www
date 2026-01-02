@@ -27,6 +27,7 @@ const tiers = [
     description: "More history for day-to-day debugging.",
     features: [
       "Latest 2,500 logs per toran (rolling)",
+      "Saved response replay (up to 5 snapshots per toran)",
       "Up to 5 torans",
       "Configure your own rules for payload logging",
       "Reasonable usage caps",
@@ -44,6 +45,7 @@ const tiers = [
     description: "Longer history for when issues surface later.",
     features: [
       "Latest 25,000 logs per toran (rolling)",
+      "Saved response replay (up to 50 snapshots per toran)",
       "Up to 20 torans",
       "Higher usage caps",
       "Log export",
@@ -62,6 +64,7 @@ const tiers = [
     description: "For production continuity and locality.",
     features: [
       "Latest 250,000 logs per toran (rolling)",
+      "Saved response replay (up to 500 snapshots per toran)",
       "Up to 100 torans",
       "Very high usage caps",
       "Multi-region edge selection",
@@ -80,6 +83,7 @@ const rules = [
   "Hard caps with graceful degradation",
   "Cancel anytime",
   "Sensitive headers and query values are redacted by default",
+  "Saved response replay is explicit and out-of-band - toran never serves cached responses on live traffic",
 ];
 
 export default function PricingPage() {
@@ -199,12 +203,6 @@ export default function PricingPage() {
                 className="hover:text-zinc-700 dark:hover:text-zinc-300"
               >
                 Pricing
-              </Link>
-              <Link
-                href="/roadmap"
-                className="hover:text-zinc-700 dark:hover:text-zinc-300"
-              >
-                Roadmap
               </Link>
               <a
                 href="/privacy"

@@ -98,7 +98,7 @@ export default function Home() {
         {/* Trust Section */}
         <section className="mt-16">
           <h2 className="text-2xl font-bold">Safe by design</h2>
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
+          <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
               <h3 className="font-semibold">Read-only inspection</h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -118,13 +118,17 @@ export default function Home() {
                 Each toran is bound to a single upstream API. Use one toran per tool to inspect behavior independently.
               </p>
             </div>
+            <div className="border border-zinc-200 dark:border-zinc-800 p-6">
+              <h3 className="font-semibold">Saved response replay</h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Replay a captured request using a saved response snapshot. No upstream call is made, and live traffic is never affected.
+              </p>
+            </div>
           </div>
           <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
             toran does not inspect prompts, model internals, or agent reasoning. By default, request and response payloads are not logged - payload logging is controlled by rules.
           </p>
         </section>
-
-        
 
         {/* How It Works Section */}
         <section className="mt-16">
@@ -159,13 +163,33 @@ export default function Home() {
           </div>
         </section>
 
-
-        
-
-        
+        {/* Still Not Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold">What toran is not</h2>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            toran is intentionally narrow. It helps you understand API behavior without becoming part of your system.
+          </p>
+          <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-6">
+            <ul className="space-y-3 text-zinc-600 dark:text-zinc-400 list-none">
+              {[
+                "An API gateway or proxy that changes behavior",
+                "A full observability or APM platform",
+                "Required production infrastructure",
+                "A traffic controller that retries, caches, or rate-limits",
+              ].map((goal) => (
+                <li key={goal} className="flex gap-3">
+                  <span className="font-mono text-cyan-600 dark:text-cyan-400">
+                    -
+                  </span>
+                  {goal}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
         {/* CTA Section */}
-        <section className="mt-16">
+        <section className="mt-16 text-center">
           <h2 className="text-2xl font-bold">Ready to see your API traffic?</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             No sign-up required. Create a toran in seconds.
@@ -192,12 +216,6 @@ export default function Home() {
                 className="hover:text-zinc-700 dark:hover:text-zinc-300"
               >
                 Pricing
-              </Link>
-              <Link
-                href="/roadmap"
-                className="hover:text-zinc-700 dark:hover:text-zinc-300"
-              >
-                Roadmap
               </Link>
               <a
                 href="/privacy"
