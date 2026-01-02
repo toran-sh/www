@@ -28,12 +28,6 @@ export default async function LoginPage({ searchParams }: Props) {
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
           </Link>
-          <Link
-            href="/try"
-            className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
-          >
-            Try Now
-          </Link>
         </nav>
       </header>
 
@@ -54,7 +48,7 @@ export default async function LoginPage({ searchParams }: Props) {
           </div>
 
           <p className="mt-6 text-center text-sm text-zinc-500">
-            Don&apos;t have an account?{" "}
+            Don&apos;t want to create an account?{" "}
             <Link
               href="/try"
               className="text-cyan-600 dark:text-cyan-400 hover:underline"
