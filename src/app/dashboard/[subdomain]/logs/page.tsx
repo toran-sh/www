@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 
 interface UpstreamMetrics {
@@ -80,6 +80,8 @@ function formatRelativeTime(dateStr: string): string {
   return `${diffDay}d ago`;
 }
 
+const POLL_INTERVAL = 2000; // 2 seconds
+
 export default function LogsPage() {
   const params = useParams();
   const subdomain = params.subdomain as string;
@@ -87,33 +89,77 @@ export default function LogsPage() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isStreaming, setIsStreaming] = useState(true);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    async function fetchLogs() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(
-          `/api/gateways/by-subdomain/${subdomain}/logs?page=${page}&limit=50`
-        );
-        if (!res.ok) {
-          throw new Error("Failed to fetch logs");
-        }
-        const result = await res.json();
-        setData(result);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch logs");
-      } finally {
-        setIsLoading(false);
+  const fetchLogs = useCallback(async (showLoading = false) => {
+    if (showLoading) setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/gateways/by-subdomain/${subdomain}/logs?page=${page}&limit=50`
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch logs");
       }
+      const result = await res.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch logs");
+    } finally {
+      if (showLoading) setIsLoading(false);
+    }
+  }, [subdomain, page]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchLogs(true);
+  }, [fetchLogs]);
+
+  // Polling for streaming (only on page 1)
+  useEffect(() => {
+    if (isStreaming && page === 1) {
+      intervalRef.current = setInterval(() => {
+        fetchLogs(false);
+      }, POLL_INTERVAL);
     }
 
-    fetchLogs();
-  }, [subdomain, page]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isStreaming, page, fetchLogs]);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Logs</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Logs</h1>
+        <button
+          onClick={() => setIsStreaming(!isStreaming)}
+          className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border transition-colors ${
+            isStreaming
+              ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300"
+              : "border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          }`}
+        >
+          {isStreaming ? (
+            <>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Streaming
+            </>
+          ) : (
+            <>
+              <span className="h-2 w-2 rounded-full bg-zinc-400"></span>
+              Paused
+            </>
+          )}
+        </button>
+      </div>
 
       {isLoading ? (
         <div className="text-center py-12 text-zinc-500">Loading logs...</div>
