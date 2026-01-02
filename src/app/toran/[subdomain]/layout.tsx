@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { db } from "@/lib/mongodb";
-import { LogoutButton } from "../logout-button";
+import { LogoutButton } from "@/app/dashboard/logout-button";
 import { ToranSidebar } from "@/components/toran-sidebar";
 
 interface Props {

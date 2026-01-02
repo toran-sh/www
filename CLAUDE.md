@@ -47,7 +47,8 @@ src/
 │   │   ├── toran-list.tsx
 │   │   ├── add-toran-form.tsx
 │   │   ├── logout-button.tsx
-│   │   ├── session-expired.tsx
+│   │   └── session-expired.tsx
+│   ├── toran/
 │   │   └── [subdomain]/
 │   │       ├── layout.tsx              # Toran detail layout with sidebar
 │   │       ├── page.tsx                # Metrics dashboard with charts

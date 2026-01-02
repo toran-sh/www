@@ -9,7 +9,7 @@ interface ToranSidebarProps {
 
 export function ToranSidebar({ subdomain }: ToranSidebarProps) {
   const pathname = usePathname();
-  const basePath = `/dashboard/${subdomain}`;
+  const basePath = `/toran/${subdomain}`;
 
   const links = [
     {

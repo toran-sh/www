@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     await clearTrialToken();
 
     // Redirect to the toran's logs page
-    return NextResponse.redirect(new URL(`/dashboard/${subdomain}/logs`, request.url));
+    return NextResponse.redirect(new URL(`/toran/${subdomain}/logs`, request.url));
   } catch (error) {
     console.error("Error during claim verification:", error);
     return NextResponse.json(

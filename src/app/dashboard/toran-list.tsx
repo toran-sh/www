@@ -109,7 +109,7 @@ export function ToranList() {
                   >
                     <td className="px-4 py-3">
                       <Link
-                        href={`/dashboard/${toran.subdomain}`}
+                        href={`/toran/${toran.subdomain}`}
                         className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:underline font-mono"
                       >
                         {toran.subdomain}
