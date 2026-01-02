@@ -38,10 +38,10 @@ export default function Home() {
             toran
           </div>
           <Link
-            href="/login"
-            className="border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
+            href="/try"
+            className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
           >
-            Get Started
+            Try Now
           </Link>
         </nav>
       </header>
