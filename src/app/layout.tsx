@@ -10,8 +10,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "toran - API Acceleration & Debugger",
-  description: "Accelerate, Transform, Debug your API requests. Globally distributed edge performance.",
+  title: "toran - See Your Outbound API Calls Live",
+  description: "Watch outbound API calls in real time. toran is a read-only, reversible API inspector for debugging integrations and AI agents—no SDKs, agents, or logging setup required.",
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
