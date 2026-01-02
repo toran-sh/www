@@ -481,9 +481,9 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                   </div>
                 ) : (
                   <>
-                    <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900">
+                    <div className={`overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900 ${selectedLog ? "max-h-64 overflow-y-auto" : ""}`}>
                       <table className="w-full">
-                        <thead className="bg-zinc-50 dark:bg-zinc-800">
+                        <thead className="bg-zinc-50 dark:bg-zinc-800 sticky top-0">
                           <tr className="text-left text-sm text-zinc-500 dark:text-zinc-400">
                             <th className="px-4 py-3 font-medium">Time</th>
                             <th className="px-4 py-3 font-medium">Method</th>
