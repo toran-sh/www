@@ -29,10 +29,10 @@ export default async function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-12">
-        <div className="mb-8">
+      <main className="container mx-auto px-6 py-6">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">Manage your torans</p>
+          <p className="mt-1 text-zinc-600 dark:text-zinc-400">Manage your torans</p>
         </div>
 
         {/* Metrics Section */}
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
 
         {/* Torans Section */}
         <div>
-          <h2 className="text-lg font-semibold">Your torans</h2>
+          <h2 className="text-lg font-semibold mb-3">Your torans</h2>
           <ToranList />
         </div>
       </main>

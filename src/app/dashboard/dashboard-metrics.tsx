@@ -91,7 +91,7 @@ export function DashboardMetrics() {
   }
 
   return (
-    <div className="mb-8">
+    <div className="mb-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Account Overview</h2>
@@ -131,43 +131,29 @@ export function DashboardMetrics() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500 dark:text-zinc-400">
-            Total Requests
-          </div>
-          <div className="text-2xl font-bold mt-1">
-            {metrics.summary.totalCalls.toLocaleString()}
-          </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <div className="text-sm text-zinc-500 dark:text-zinc-400">Total Requests</div>
+          <div className="text-2xl font-bold">{metrics.summary.totalCalls.toLocaleString()}</div>
         </div>
-        <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500 dark:text-zinc-400">
-            Cache Hit Rate
-          </div>
-          <div className="text-2xl font-bold mt-1">{cacheHitRate}%</div>
+        <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <div className="text-sm text-zinc-500 dark:text-zinc-400">Cache Hit Rate</div>
+          <div className="text-2xl font-bold">{cacheHitRate}%</div>
         </div>
-        <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500 dark:text-zinc-400">
-            Cache Hits
-          </div>
-          <div className="text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
-            {metrics.summary.cacheHits.toLocaleString()}
-          </div>
+        <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <div className="text-sm text-zinc-500 dark:text-zinc-400">Cache Hits</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{metrics.summary.cacheHits.toLocaleString()}</div>
         </div>
-        <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500 dark:text-zinc-400">
-            Avg Response Time
-          </div>
-          <div className="text-2xl font-bold mt-1">
-            {metrics.summary.avgDuration}ms
-          </div>
+        <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <div className="text-sm text-zinc-500 dark:text-zinc-400">Avg Response Time</div>
+          <div className="text-2xl font-bold">{metrics.summary.avgDuration}ms</div>
         </div>
       </div>
 
       {/* Chart */}
       {metrics.timeSeries.length > 0 ? (
-        <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-4">
+        <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-3">
             Requests Over Time
           </h3>
           <ResponsiveContainer width="100%" height={200}>
