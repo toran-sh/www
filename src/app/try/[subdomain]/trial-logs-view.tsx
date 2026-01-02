@@ -291,32 +291,26 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
           </Link>
-          <Link
+          <a
             href="/try"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
           >
             Create another
-          </Link>
+          </a>
         </nav>
       </header>
-
-      {/* Trial Banner */}
-      <div className="bg-gradient-to-r from-cyan-600 to-cyan-500 text-white px-4 py-3">
-        <div className="container mx-auto flex items-center justify-between">
-          <div>
-            <span className="font-medium">Trial toran</span>
-            <span className="mx-2 opacity-50">|</span>
-            <code className="text-cyan-100">{subdomain}</code>
-          </div>
-        </div>
-      </div>
 
       <div className="container mx-auto px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content - Logs */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">Dashboard</h1>
+              <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
+                Trial toran <span className="text-zinc-400 dark:text-zinc-500">|</span>{" "}
+                <code className="text-cyan-600 dark:text-cyan-400 font-mono">{subdomain}</code>
+              </h1>
               <button
                 onClick={toggleStreaming}
                 className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md border transition-colors ${

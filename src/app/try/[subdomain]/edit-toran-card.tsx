@@ -40,6 +40,7 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const [upstreamBaseUrl, setUpstreamBaseUrl] = useState("");
   const [cacheTtl, setCacheTtl] = useState("");
   const [logFilters, setLogFilters] = useState<LogFilters>(DEFAULT_LOG_FILTERS);
 
@@ -61,6 +62,7 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
         const res = await fetch(`/api/trial/${subdomain}`);
         if (!res.ok) throw new Error("Failed to fetch toran");
         const data: ToranData = await res.json();
+        setUpstreamBaseUrl(data.upstreamBaseUrl);
         setCacheTtl(data.cacheTtl?.toString() ?? "");
         setLogFilters(data.logFilters ?? DEFAULT_LOG_FILTERS);
       } catch (err) {
@@ -155,6 +157,19 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
             all edge nodes.
           </div>
         )}
+
+        {/* Upstream URL (readonly) */}
+        <div className="mb-4">
+          <label className="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">
+            Upstream Base URL
+          </label>
+          <div className="w-full border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 rounded text-sm text-zinc-600 dark:text-zinc-400 break-all">
+            {upstreamBaseUrl}
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">
+            Cannot be changed after creation.
+          </p>
+        </div>
 
         {/* Cache TTL */}
         <div className="mb-4">
