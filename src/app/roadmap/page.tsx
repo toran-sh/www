@@ -4,17 +4,17 @@ const sections = [
   {
     title: "Deeper inspection",
     items: [
-      "Time-limited request and response bodies",
+      "Time-limited request and response payloads",
       "Explicit debug sessions with countdown timers",
-      "Still opt-in, still reversible",
+      "Explicitly enabled and reversible by design",
     ],
   },
   {
     title: "Read-only replay",
     items: [
       "Re-run captured requests out of band",
-      "Never on the live traffic path",
-      "Clearly labeled as replay",
+      "Does not affect live traffic",
+      "Clearly separated from live requests",
     ],
   },
   {
@@ -28,9 +28,9 @@ const sections = [
   {
     title: "Longer memory",
     items: [
-      "Extended retention windows",
+      "Deeper history",
       "Exportable logs",
-      "Still not observability",
+      "Focused on inspection, not observability",
     ],
   },
 ];
@@ -70,9 +70,6 @@ export default function RoadmapPage() {
           <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">
             What&apos;s coming next
           </h1>
-          <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-            Only after Phase 1 is proven in real usage.
-          </p>
         </div>
 
         {/* Feature Sections */}
@@ -116,11 +113,9 @@ export default function RoadmapPage() {
 
         {/* Closing */}
         <section className="mt-20">
-          <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-            <p className="text-zinc-700 dark:text-zinc-300">
-              toran will only add power when it does not reduce trust.
-            </p>
-          </div>
+          <p className="text-sm italic text-zinc-600 dark:text-zinc-400">
+            toran will only add power when it does not reduce trust.
+          </p>
         </section>
 
         {/* Feedback Link */}
@@ -142,8 +137,7 @@ export default function RoadmapPage() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-sm text-zinc-500">
-              Live outbound API inspector - see, search, and understand calls
-              without SDKs.
+              Live outbound API inspector - see what your code and AI agents actually sent, and why it failed.
             </div>
             <div className="flex gap-4 text-sm text-zinc-500">
               <Link

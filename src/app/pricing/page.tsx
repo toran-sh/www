@@ -12,7 +12,7 @@ const tiers = [
       "Latest 1,000 logs per toran (rolling)",
       "Expires unless claimed",
       "Default logging rules only",
-      "Request and response payloads are not logged",
+      "Payloads are not logged",
       "See what an agent or tool actually sent to this API",
     ],
     cta: "Create a toran",
@@ -28,7 +28,7 @@ const tiers = [
     features: [
       "Latest 2,500 logs per toran (rolling)",
       "Up to 5 torans",
-      "Configure your own rules for request and payload logging",
+      "Configure your own rules for payload logging",
       "Reasonable usage caps",
       "Debug agent tool calls without inspecting prompts",
     ],

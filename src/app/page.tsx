@@ -2,14 +2,14 @@ import Link from "next/link";
 
 const features = [
   {
+    title: "Agent Tool Visibility",
+    description:
+      "Understand what an AI agent or tool actually sent to an upstream API, and how the API responded.",
+  },
+  {
     title: "Live Request Logs",
     description:
       "Watch API calls as they happen. See method, path, status code, and timing in real-time.",
-  },
-  {
-    title: "Headers & Metadata",
-    description:
-      "Inspect request and response headers with automatic redaction of authorization and cookie headers.",
   },
   {
     title: "Error Detection",
@@ -17,9 +17,9 @@ const features = [
       "Instantly spot failed requests with status codes and error classification.",
   },
   {
-    title: "Response Timing",
+    title: "Requests & Headers",
     description:
-      "See exactly how long each call took. Identify slow responses at a glance.",
+      "See method, path + query, status, and headers. Sensitive headers and query values are redacted by default.",
   },
 ];
 
@@ -95,27 +95,36 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Examples Section */}
+        {/* Trust Section */}
         <section className="mt-16">
-          <h2 className="text-2xl font-bold">Try it with any API</h2>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Replace a tool or client base URL and see requests instantly
-          </p>
-          <div className="mt-6 space-y-4">
+          <h2 className="text-2xl font-bold">Safe by design</h2>
+          <div className="mt-6 grid gap-6 md:grid-cols-3">
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 className="font-semibold">Example tool: GitHub API</h3>
-              <code className="mt-3 block bg-zinc-100 dark:bg-zinc-900 p-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto">
-                curl https://&lt;your-toran&gt;.toran.sh/repos/octocat/hello-world
-              </code>
+              <h3 className="font-semibold">Read-only inspection</h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                toran is read-only by design - no request or response mutation, no hidden behavior, and no production dependency.
+              </p>
             </div>
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 className="font-semibold">Example tool: OpenAI API</h3>
-              <code className="mt-3 block bg-zinc-100 dark:bg-zinc-900 p-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto">
-                https://&lt;your-toran&gt;.toran.sh/v1/chat/completions
-              </code>
+              <h3 className="font-semibold">Remove anytime</h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Change your base URL back to the original and toran is out of
+                the picture.
+              </p>
+            </div>
+            <div className="border border-zinc-200 dark:border-zinc-800 p-6">
+              <h3 className="font-semibold">One toran per tool</h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Each toran is bound to a single upstream API. Use one toran per tool to inspect behavior independently.
+              </p>
             </div>
           </div>
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+            toran does not inspect prompts, model internals, or agent reasoning. By default, request and response payloads are not logged - payload logging is controlled by rules.
+          </p>
         </section>
+
+        
 
         {/* How It Works Section */}
         <section className="mt-16">
@@ -142,7 +151,7 @@ export default function Home() {
               </li>
             </ol>
             <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-500">
-              Requests sent through toran are routed through toran for live inspection. Authorization headers are redacted by default.
+              Requests sent through toran are routed through toran for live inspection. Sensitive headers and query values are redacted by default.
             </p>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-500">
               Each toran is bound to one upstream base URL.
@@ -150,54 +159,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-16">
-          <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-            <h2 className="text-xl font-semibold">Pattern: one toran per tool</h2>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              AI agents often use multiple tools (GitHub, OpenAI, internal APIs). Create one toran per tool API to see each tool’s real behavior independently.
-            </p>
-          </div>
-        </section>
 
-        {/* Trust Section */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold">Safe by design</h2>
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
-            <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 className="font-semibold">Read-only inspection</h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                toran is read-only by design - no request or response mutation, no hidden behavior, and no production dependency.
-              </p>
-            </div>
-            <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 className="font-semibold">Remove anytime</h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Change your base URL back to the original and toran is out of
-                the picture.
-              </p>
-            </div>
-          </div>
-          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-            toran does not inspect prompts, model internals, or agent reasoning. It shows HTTP calls to external APIs.
-          </p>
-        </section>
+        
 
-        {/* Upgrade Teaser */}
-        <section className="mt-16">
-          <div className="border border-cyan-200 dark:border-cyan-800 bg-cyan-50 dark:bg-cyan-950 p-6">
-            <h2 className="text-lg font-semibold">Want more?</h2>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-              Sign up for free to keep your torans long-term. Upgrade to Pro for
-              longer log retention and payload capture. Sign in to enable retention; upgrade for longer history.
-            </p>
-            <Link
-              href="/login"
-              className="mt-4 inline-block text-sm text-cyan-600 dark:text-cyan-400 hover:underline"
-            >
-              Create a free account
-            </Link>
-          </div>
-        </section>
+        
 
         {/* CTA Section */}
         <section className="mt-16">
