@@ -25,13 +25,13 @@ export default function NotFound() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-20 flex-1 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-6xl font-bold text-zinc-300 dark:text-zinc-700 mb-4">
+          <h1 className="text-8xl font-bold text-cyan-600 dark:text-cyan-400 mb-2">
             404
           </h1>
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">
             Page not found
           </h2>
-          <p className="text-zinc-600 dark:text-zinc-400 mb-8">
+          <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8 max-w-md mx-auto">
             The page you're looking for doesn't exist or has been moved.
           </p>
           <Link
