@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 
-interface NetworkMetrics {
+interface UpstreamMetrics {
   ttfb: number;
   transfer: number;
   total: number;
@@ -22,7 +22,7 @@ interface LogEntry {
     bodySize: number;
   };
   duration: number;
-  networkMetrics?: NetworkMetrics;
+  upstreamMetrics?: UpstreamMetrics;
   cacheStatus: "HIT" | "MISS" | null;
   createdAt: string;
 }
@@ -160,10 +160,10 @@ export default function LogsPage() {
                       {log.response.status}
                     </td>
                     <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
-                      {log.networkMetrics ? `${log.networkMetrics.ttfb}ms` : "-"}
+                      {log.upstreamMetrics ? `${log.upstreamMetrics.ttfb}ms` : "-"}
                     </td>
                     <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
-                      {log.networkMetrics ? `${log.networkMetrics.transfer}ms` : "-"}
+                      {log.upstreamMetrics ? `${log.upstreamMetrics.transfer}ms` : "-"}
                     </td>
                     <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
                       {log.duration}ms
