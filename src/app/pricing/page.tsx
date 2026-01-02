@@ -106,7 +106,7 @@ export default function PricingPage() {
             Pay for how long you want to remember what happened
           </h1>
           <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-            toran charges for retention and continuity — not requests, not
+            toran charges for retention and continuity - not requests, not
             performance.
           </p>
         </div>
@@ -192,7 +192,7 @@ export default function PricingPage() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-sm text-zinc-500">
-              Live outbound API inspector — see, search, and understand calls
+              Live outbound API inspector - see, search, and understand calls
               without SDKs.
             </div>
             <div className="flex gap-4 text-sm text-zinc-500">

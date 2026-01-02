@@ -53,8 +53,11 @@ export default function Home() {
             <span className="text-cyan-600 dark:text-cyan-400">Live.</span>
           </h1>
           <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-            toran lets you watch real API traffic as it happens — without SDKs,
+            toran lets you watch real API traffic as it happens - without SDKs,
             agents, or logging setup.
+          </p>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            AI agents are opaque until they hit real tools. toran shows what the agent actually sent to each API - and what came back.
           </p>
           <div className="mt-8 flex items-center gap-4">
             <Link
@@ -66,8 +69,7 @@ export default function Home() {
             <span className="text-zinc-500">no sign-up required</span>
           </div>
           <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-500">
-            Replace your API base URL, run your app or tests, and see traffic
-            live in your browser.
+            Replace the base URL in your tool or client, run your app, tests, or agent, and see traffic live in your browser.
           </p>
         </div>
 
@@ -97,17 +99,17 @@ export default function Home() {
         <section className="mt-16">
           <h2 className="text-2xl font-bold">Try it with any API</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Point your requests through toran and see them instantly
+            Replace a tool or client base URL and see requests instantly
           </p>
           <div className="mt-6 space-y-4">
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 className="font-semibold">GitHub API</h3>
+              <h3 className="font-semibold">Example tool: GitHub API</h3>
               <code className="mt-3 block bg-zinc-100 dark:bg-zinc-900 p-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto">
                 curl https://&lt;your-toran&gt;.toran.sh/repos/octocat/hello-world
               </code>
             </div>
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 className="font-semibold">OpenAI API</h3>
+              <h3 className="font-semibold">Example tool: OpenAI API</h3>
               <code className="mt-3 block bg-zinc-100 dark:bg-zinc-900 p-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto">
                 https://&lt;your-toran&gt;.toran.sh/v1/chat/completions
               </code>
@@ -146,6 +148,15 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="mt-16">
+          <div className="border border-zinc-200 dark:border-zinc-800 p-6">
+            <h2 className="text-xl font-semibold">Pattern: one toran per tool</h2>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+              AI agents often use multiple tools (GitHub, OpenAI, internal APIs). Create one toran per tool API to see each tool’s real behavior independently.
+            </p>
+          </div>
+        </section>
+
         {/* Trust Section */}
         <section className="mt-16">
           <h2 className="text-2xl font-bold">Safe by design</h2>
@@ -153,8 +164,7 @@ export default function Home() {
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
               <h3 className="font-semibold">Read-only inspection</h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                toran is a pass-through proxy — no request mutation, no
-                production dependency.
+                toran is read-only by design - no request or response mutation, no hidden behavior, and no production dependency.
               </p>
             </div>
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
@@ -165,6 +175,9 @@ export default function Home() {
               </p>
             </div>
           </div>
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+            toran does not inspect prompts, model internals, or agent reasoning. It shows HTTP calls to external APIs.
+          </p>
         </section>
 
         {/* Upgrade Teaser */}
@@ -204,8 +217,7 @@ export default function Home() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-sm text-zinc-500">
-              Live outbound API inspector — see, search, and understand calls
-              without SDKs.
+              Live outbound API inspector - see what your code and AI agents actually sent, and why it failed.
             </div>
             <div className="flex gap-4 text-sm text-zinc-500">
               <Link

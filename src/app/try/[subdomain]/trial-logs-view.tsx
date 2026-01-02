@@ -809,7 +809,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-sm text-zinc-500">
-              Live outbound API inspector — see, search, and understand calls
+              Live outbound API inspector - see, search, and understand calls
               without SDKs.
             </div>
             <div className="flex gap-4 text-sm text-zinc-500">

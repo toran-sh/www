@@ -10,8 +10,30 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "toran - See Your Outbound API Calls Live",
-  description: "Watch outbound API calls in real time. toran is a read-only, reversible API inspector for debugging integrations and AI agents—no SDKs, agents, or logging setup required.",
+  title: {
+    default: "toran - See Your Outbound API Calls Live",
+    template: "%s - toran",
+  },
+  description:
+    "Watch outbound API calls in real time. toran is a read-only, reversible API inspector for debugging integrations and AI agents-no SDKs, agents, or logging setup required.",
+  metadataBase: new URL("https://toran.sh"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://toran.sh/",
+    siteName: "toran",
+    title: "toran - See Your Outbound API Calls Live",
+    description:
+      "Watch outbound API calls in real time. toran is a read-only, reversible API inspector for debugging integrations and AI agents-no SDKs, agents, or logging setup required.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "toran - See Your Outbound API Calls Live",
+    description:
+      "Watch outbound API calls in real time. toran is a read-only, reversible API inspector for debugging integrations and AI agents-no SDKs, agents, or logging setup required.",
+  },
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
