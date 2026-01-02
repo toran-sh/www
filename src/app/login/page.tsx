@@ -17,36 +17,103 @@ export default async function LoginPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-4">
-      <div className="w-full max-w-md">
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+      {/* Header */}
+      <header className="container mx-auto px-6 py-6">
+        <nav className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Back to home
-        </Link>
+            <img src="/logo.png" alt="toran" className="h-10 w-10" />
+            toran
+          </Link>
+          <Link
+            href="/try"
+            className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
+          >
+            Try Now
+          </Link>
+        </nav>
+      </header>
 
-        <div className="border border-zinc-200 dark:border-zinc-800 p-8">
-          <LoginForm urlError={error} />
+      {/* Main Content */}
+      <main className="container mx-auto px-6 py-20">
+        <div className="mx-auto max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">
+              Sign in
+            </h1>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Enter your email to receive a magic link
+            </p>
+          </div>
+
+          <div className="border border-zinc-200 dark:border-zinc-800 p-8">
+            <LoginForm urlError={error} />
+          </div>
+
+          <p className="mt-6 text-center text-sm text-zinc-500">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/try"
+              className="text-cyan-600 dark:text-cyan-400 hover:underline"
+            >
+              Try toran free
+            </Link>
+          </p>
+
+          <p className="mt-4 text-center text-xs text-zinc-500 dark:text-zinc-600">
+            By continuing, you agree to our{" "}
+            <a href="/terms" className="hover:underline">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="/privacy" className="hover:underline">
+              Privacy Policy
+            </a>
+            .
+          </p>
         </div>
+      </main>
 
-        <p className="mt-8 text-center text-xs text-zinc-500 dark:text-zinc-600">
-          By continuing, you agree to our Terms of Service and Privacy Policy.
-        </p>
-      </div>
+      {/* Footer */}
+      <footer className="container mx-auto mt-32 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="text-sm text-zinc-500">
+              Live outbound API inspector — see, search, and understand calls
+              without SDKs.
+            </div>
+            <div className="flex gap-4 text-sm text-zinc-500">
+              <Link
+                href="/pricing"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/roadmap"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Roadmap
+              </Link>
+              <a
+                href="/privacy"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Privacy
+              </a>
+              <a
+                href="/terms"
+                className="hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                Terms
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
