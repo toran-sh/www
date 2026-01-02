@@ -46,17 +46,17 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="container mx-auto px-6 py-20">
+      <main className="container mx-auto px-6 py-12">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl">
             See your outbound API calls.{" "}
             <span className="text-cyan-600 dark:text-cyan-400">Live.</span>
           </h1>
-          <p className="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
+          <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
             toran lets you watch real API traffic as it happens — without SDKs,
             agents, or logging setup.
           </p>
-          <div className="mt-10 flex items-center gap-4">
+          <div className="mt-8 flex items-center gap-4">
             <Link
               href="/try"
               className="bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
@@ -65,20 +65,20 @@ export default function Home() {
             </Link>
             <span className="text-zinc-500">no sign-up required</span>
           </div>
-          <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-500">
+          <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-500">
             Replace your API base URL, run your app or tests, and see traffic
             live in your browser.
           </p>
         </div>
 
         {/* Features Section */}
-        <section id="features" className="mt-32">
+        <section id="features" className="mt-20">
           <h2 className="text-2xl font-bold">What you get</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             Everything you need to understand your API traffic
           </p>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
             {features.map((feature) => (
               <div
                 key={feature.title}
@@ -94,12 +94,12 @@ export default function Home() {
         </section>
 
         {/* Examples Section */}
-        <section className="mt-32">
+        <section className="mt-16">
           <h2 className="text-2xl font-bold">Try it with any API</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             Point your requests through toran and see them instantly
           </p>
-          <div className="mt-8 space-y-6">
+          <div className="mt-6 space-y-4">
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
               <h3 className="font-semibold">GitHub API</h3>
               <code className="mt-3 block bg-zinc-100 dark:bg-zinc-900 p-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto">
@@ -116,9 +116,9 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section className="mt-32">
+        <section className="mt-16">
           <h2 className="text-2xl font-bold">How it works</h2>
-          <div className="mt-8 border border-zinc-200 dark:border-zinc-800 p-6">
+          <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-6">
             <ol className="space-y-4 text-zinc-600 dark:text-zinc-400">
               <li className="flex gap-3">
                 <span className="font-mono text-cyan-600 dark:text-cyan-400">
@@ -147,9 +147,9 @@ export default function Home() {
         </section>
 
         {/* Trust Section */}
-        <section className="mt-32">
+        <section className="mt-16">
           <h2 className="text-2xl font-bold">Safe by design</h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div className="border border-zinc-200 dark:border-zinc-800 p-6">
               <h3 className="font-semibold">Read-only inspection</h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -168,7 +168,7 @@ export default function Home() {
         </section>
 
         {/* Upgrade Teaser */}
-        <section className="mt-32">
+        <section className="mt-16">
           <div className="border border-cyan-200 dark:border-cyan-800 bg-cyan-50 dark:bg-cyan-950 p-6">
             <h2 className="text-lg font-semibold">Want more?</h2>
             <p className="mt-2 text-zinc-600 dark:text-zinc-400">
@@ -185,14 +185,14 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="mt-32">
+        <section className="mt-16">
           <h2 className="text-2xl font-bold">Ready to see your API traffic?</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             No sign-up required. Create a toran in seconds.
           </p>
           <Link
             href="/try"
-            className="mt-6 inline-block bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
+            className="mt-4 inline-block bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
           >
             Create your first toran
           </Link>
@@ -200,7 +200,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="container mx-auto mt-32 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
+      <footer className="container mx-auto mt-20 border-t border-zinc-200 dark:border-zinc-800 px-6 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-sm text-zinc-500">
