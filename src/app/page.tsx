@@ -56,13 +56,14 @@ export default function Home() {
             toran lets you watch real API traffic as it happens — without SDKs,
             agents, or logging setup.
           </p>
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-10 flex items-center gap-4">
             <Link
               href="/try"
               className="bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
             >
-              Create your first toran — no sign-up required
+              Create your first toran
             </Link>
+            <span className="text-zinc-500">no sign-up required</span>
           </div>
           <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-500">
             Replace your API base URL, run your app or tests, and see traffic
