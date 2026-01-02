@@ -1,7 +1,17 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams } from "next/navigation";
+
+type MethodFilter = "ALL" | "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type CacheFilter = "ALL" | "HIT" | "MISS";
+
+interface Filters {
+  slow: boolean;      // >100ms
+  errors: boolean;    // not 2xx
+  method: MethodFilter;
+  cache: CacheFilter;
+}
 
 interface UpstreamMetrics {
   ttfb: number;
@@ -95,9 +105,39 @@ export default function LogsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(true);
   const [isPausedByIdle, setIsPausedByIdle] = useState(false);
+  const [filters, setFilters] = useState<Filters>({
+    slow: false,
+    errors: false,
+    method: "ALL",
+    cache: "ALL",
+  });
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const latestIdRef = useRef<string | null>(null);
+
+  // Filter logs based on current filters
+  const filteredLogs = useMemo(() => {
+    return logs.filter((log) => {
+      // Slow filter: >100ms
+      if (filters.slow && log.duration <= 100) return false;
+
+      // Errors filter: not 2xx
+      if (filters.errors && log.response.status >= 200 && log.response.status < 300) return false;
+
+      // Method filter
+      if (filters.method !== "ALL" && log.request.method.toUpperCase() !== filters.method) return false;
+
+      // Cache filter
+      if (filters.cache !== "ALL") {
+        if (filters.cache === "HIT" && log.cacheStatus !== "HIT") return false;
+        if (filters.cache === "MISS" && log.cacheStatus !== "MISS") return false;
+      }
+
+      return true;
+    });
+  }, [logs, filters]);
+
+  const hasActiveFilters = filters.slow || filters.errors || filters.method !== "ALL" || filters.cache !== "ALL";
 
   // Initial fetch (full page load)
   const fetchLogs = useCallback(async () => {
@@ -218,12 +258,97 @@ export default function LogsPage() {
         </button>
       </div>
 
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <span className="text-sm text-zinc-500 dark:text-zinc-400 mr-1">Filters:</span>
+
+        {/* Slow calls filter */}
+        <button
+          onClick={() => setFilters((f) => ({ ...f, slow: !f.slow }))}
+          className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+            filters.slow
+              ? "border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300"
+              : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          }`}
+        >
+          Slow (&gt;100ms)
+        </button>
+
+        {/* Errors filter */}
+        <button
+          onClick={() => setFilters((f) => ({ ...f, errors: !f.errors }))}
+          className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+            filters.errors
+              ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300"
+              : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          }`}
+        >
+          Errors
+        </button>
+
+        {/* Method filter */}
+        <select
+          value={filters.method}
+          onChange={(e) => setFilters((f) => ({ ...f, method: e.target.value as MethodFilter }))}
+          className={`px-3 py-1 text-xs rounded-full border transition-colors outline-none ${
+            filters.method !== "ALL"
+              ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
+              : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400"
+          }`}
+        >
+          <option value="ALL">All Methods</option>
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="PATCH">PATCH</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+
+        {/* Cache filter */}
+        <select
+          value={filters.cache}
+          onChange={(e) => setFilters((f) => ({ ...f, cache: e.target.value as CacheFilter }))}
+          className={`px-3 py-1 text-xs rounded-full border transition-colors outline-none ${
+            filters.cache !== "ALL"
+              ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300"
+              : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400"
+          }`}
+        >
+          <option value="ALL">All Cache</option>
+          <option value="HIT">Cache HIT</option>
+          <option value="MISS">Cache MISS</option>
+        </select>
+
+        {/* Clear filters */}
+        {hasActiveFilters && (
+          <button
+            onClick={() => setFilters({ slow: false, errors: false, method: "ALL", cache: "ALL" })}
+            className="px-3 py-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+          >
+            Clear all
+          </button>
+        )}
+
+        {/* Filter count */}
+        {hasActiveFilters && (
+          <span className="text-xs text-zinc-500 dark:text-zinc-400 ml-auto">
+            {filteredLogs.length} of {logs.length} logs
+          </span>
+        )}
+      </div>
+
       {isLoading ? (
         <div className="text-center py-12 text-zinc-500">Loading logs...</div>
       ) : error ? (
         <div className="text-center py-12 text-red-500">{error}</div>
       ) : logs.length > 0 ? (
         <>
+          {filteredLogs.length === 0 ? (
+            <div className="text-center py-12 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg">
+              No logs match the current filters
+            </div>
+          ) : (
+          <>
           <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded-lg">
             <table className="w-full">
               <thead className="bg-zinc-50 dark:bg-zinc-900">
@@ -239,7 +364,7 @@ export default function LogsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {logs.map((log) => (
+                {filteredLogs.map((log) => (
                   <tr
                     key={log._id}
                     className="hover:bg-zinc-50 dark:hover:bg-zinc-900"
@@ -317,6 +442,8 @@ export default function LogsPage() {
                 </button>
               </div>
             </div>
+          )}
+          </>
           )}
         </>
       ) : (
