@@ -1,15 +1,14 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { LogoutButton } from "./logout-button";
 import { ToranList } from "./toran-list";
-import { SessionExpired } from "./session-expired";
 
 export default async function DashboardPage() {
   const userId = await getSession();
 
   if (!userId) {
-    // Render client component that will redirect to clear session
-    return <SessionExpired />;
+    redirect("/login");
   }
 
   return (

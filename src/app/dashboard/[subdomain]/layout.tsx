@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/tokens";
 import { db } from "@/lib/mongodb";
 import { LogoutButton } from "../logout-button";
 import { ToranSidebar } from "@/components/toran-sidebar";
-import { SessionExpired } from "../session-expired";
 
 interface Props {
   params: Promise<{ subdomain: string }>;
@@ -15,8 +14,7 @@ export default async function ToranLayout({ params, children }: Props) {
   const userId = await getSession();
 
   if (!userId) {
-    // Render client component that will redirect to clear session
-    return <SessionExpired />;
+    redirect("/login");
   }
 
   const { subdomain } = await params;
