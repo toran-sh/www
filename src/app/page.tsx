@@ -37,12 +37,20 @@ export default function Home() {
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
           </Link>
-          <Link
-            href="/login"
-            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
-          >
-            Sign in
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link
+              href="/examples"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+            >
+              Examples
+            </Link>
+            <Link
+              href="/login"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+            >
+              Sign in
+            </Link>
+          </div>
         </nav>
       </header>
 
