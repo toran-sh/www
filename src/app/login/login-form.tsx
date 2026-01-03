@@ -41,7 +41,7 @@ export function LoginForm({ urlError }: LoginFormProps) {
   if (isSent) {
     return (
       <div className="text-center">
-        <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center border border-cyan-600 dark:border-cyan-400 text-cyan-600 dark:text-cyan-400">
+        <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center border border-violet-600 dark:border-violet-400 text-violet-600 dark:text-violet-400">
           <svg
             className="h-6 w-6"
             fill="none"
@@ -108,12 +108,12 @@ export function LoginForm({ urlError }: LoginFormProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
+          className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-violet-600 dark:focus:border-violet-400"
         />
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-4 w-full bg-cyan-600 dark:bg-cyan-500 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
+          className="mt-4 w-full bg-violet-600 dark:bg-violet-500 py-3 text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400 disabled:opacity-50"
         >
           {isLoading ? "Sending..." : "Continue with Email"}
         </button>

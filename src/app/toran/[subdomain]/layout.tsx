@@ -37,7 +37,7 @@ export default async function ToranLayout({ params, children }: Props) {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
+              className="flex items-center gap-3 text-3xl font-bold text-violet-600 dark:text-violet-400"
             >
               <img src="/logo.png" alt="toran" className="h-10 w-10" />
               toran
@@ -50,7 +50,7 @@ export default async function ToranLayout({ params, children }: Props) {
               torans
             </Link>
             <span className="text-zinc-400 dark:text-zinc-600">/</span>
-            <code className="text-sm font-mono text-cyan-600 dark:text-cyan-400">
+            <code className="text-sm font-mono text-violet-600 dark:text-violet-400">
               {subdomain}
             </code>
           </div>

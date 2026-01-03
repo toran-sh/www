@@ -212,7 +212,7 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
                     key={index}
                     className="flex items-center gap-1 text-xs bg-zinc-50 dark:bg-zinc-800 px-2 py-1 rounded"
                   >
-                    <code className="text-cyan-600 dark:text-cyan-400">
+                    <code className="text-violet-600 dark:text-violet-400">
                       {filter.field}
                     </code>
                     <span className="text-zinc-400">→</span>
@@ -252,7 +252,7 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
                     key={index}
                     className="flex items-center gap-1 text-xs bg-zinc-50 dark:bg-zinc-800 px-2 py-1 rounded"
                   >
-                    <code className="text-cyan-600 dark:text-cyan-400">
+                    <code className="text-violet-600 dark:text-violet-400">
                       {filter.field}
                     </code>
                     <span className="text-zinc-400">→</span>
@@ -328,7 +328,7 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
               type="button"
               onClick={addFilter}
               disabled={!newFilterField.trim()}
-              className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline disabled:opacity-50"
+              className="text-xs text-violet-600 dark:text-violet-400 hover:underline disabled:opacity-50"
             >
               + Add filter
             </button>
@@ -338,7 +338,7 @@ export function EditToranCard({ subdomain }: EditToranCardProps) {
         <button
           type="submit"
           disabled={isSaving}
-          className="w-full bg-cyan-600 dark:bg-cyan-500 px-3 py-2 text-sm font-medium text-white dark:text-zinc-950 rounded hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
+          className="w-full bg-violet-600 dark:bg-violet-500 px-3 py-2 text-sm font-medium text-white dark:text-zinc-950 rounded hover:bg-violet-700 dark:hover:bg-violet-400 disabled:opacity-50"
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>

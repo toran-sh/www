@@ -135,7 +135,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
           onChange={(e) => setUpstreamBaseUrl(e.target.value)}
           placeholder="https://api.example.com"
           required
-          className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
+          className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-violet-600 dark:focus:border-violet-400"
         />
         <p className="mt-2 text-xs text-zinc-500">
           The base URL where requests will be proxied to. A random subdomain will be generated automatically.
@@ -145,7 +145,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="mt-4 text-sm text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
+          className="mt-4 text-sm text-violet-600 dark:text-violet-400 hover:underline flex items-center gap-1"
         >
           {showAdvanced ? "▼" : "▶"} Advanced options
         </button>
@@ -167,7 +167,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                 onChange={(e) => setCacheTtl(e.target.value)}
                 placeholder="e.g. 300"
                 min="0"
-                className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-cyan-600 dark:focus:border-cyan-400"
+                className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-violet-600 dark:focus:border-violet-400"
               />
               <p className="mt-1 text-xs text-zinc-500">
                 Optional. Cache responses for this many seconds.
@@ -197,7 +197,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                         key={index}
                         className="flex items-center gap-1 text-xs bg-zinc-50 dark:bg-zinc-800 px-2 py-1 rounded"
                       >
-                        <code className="text-cyan-600 dark:text-cyan-400">
+                        <code className="text-violet-600 dark:text-violet-400">
                           {filter.field}
                         </code>
                         <span className="text-zinc-400">→</span>
@@ -237,7 +237,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                         key={index}
                         className="flex items-center gap-1 text-xs bg-zinc-50 dark:bg-zinc-800 px-2 py-1 rounded"
                       >
-                        <code className="text-cyan-600 dark:text-cyan-400">
+                        <code className="text-violet-600 dark:text-violet-400">
                           {filter.field}
                         </code>
                         <span className="text-zinc-400">→</span>
@@ -313,7 +313,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                   type="button"
                   onClick={addFilter}
                   disabled={!newFilterField.trim()}
-                  className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline disabled:opacity-50"
+                  className="text-xs text-violet-600 dark:text-violet-400 hover:underline disabled:opacity-50"
                 >
                   + Add filter
                 </button>
@@ -326,7 +326,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
+            className="bg-violet-600 dark:bg-violet-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400 disabled:opacity-50"
           >
             {isLoading ? "Creating..." : "Create toran"}
           </button>

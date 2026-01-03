@@ -99,7 +99,7 @@ export function DashboardMetrics() {
           <select
             value={range}
             onChange={(e) => setRange(e.target.value as TimeRange)}
-            className="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
           >
             <option value="hour">Last Hour</option>
             <option value="day">Last 24 Hours</option>

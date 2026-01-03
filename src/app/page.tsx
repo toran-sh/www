@@ -74,7 +74,7 @@ export default function Home() {
         <nav className="container mx-auto flex items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
+            className="flex items-center gap-3 text-3xl font-bold text-violet-600 dark:text-violet-400"
           >
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
@@ -93,7 +93,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl">
           <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl">
             See your outbound API calls.{" "}
-            <span className="text-cyan-600 dark:text-cyan-400">Live.</span>
+            <span className="text-violet-600 dark:text-violet-400">Live.</span>
           </h1>
           <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
             toran lets you watch real API traffic as it happens - without SDKs,
@@ -105,7 +105,7 @@ export default function Home() {
           <div className="mt-8 flex items-center gap-4">
             <Link
               href="/try"
-              className="bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
+              className="bg-violet-600 dark:bg-violet-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
             >
               Create your first toran
             </Link>
@@ -180,19 +180,19 @@ export default function Home() {
           <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-6">
             <ol className="space-y-4 text-zinc-600 dark:text-zinc-400 list-none">
               <li className="flex gap-3">
-                <span className="font-mono text-cyan-600 dark:text-cyan-400">
+                <span className="font-mono text-violet-600 dark:text-violet-400">
                   1.
                 </span>
                 Enter the upstream base URL you want to inspect and get a unique toran URL
               </li>
               <li className="flex gap-3">
-                <span className="font-mono text-cyan-600 dark:text-cyan-400">
+                <span className="font-mono text-violet-600 dark:text-violet-400">
                   2.
                 </span>
                 Replace the upstream URL with toran URL in your app config, code, or agent tool settings
               </li>
               <li className="flex gap-3">
-                <span className="font-mono text-cyan-600 dark:text-cyan-400">
+                <span className="font-mono text-violet-600 dark:text-violet-400">
                   3.
                 </span>
                 Run your app, tests, or agent and watch outbound requests stream live
@@ -259,7 +259,7 @@ After:  https://<toran_id>.toran.sh`}
                 "A traffic controller that retries, caches, or rate-limits",
               ].map((goal) => (
                 <li key={goal} className="flex gap-3">
-                  <span className="font-mono text-cyan-600 dark:text-cyan-400">
+                  <span className="font-mono text-violet-600 dark:text-violet-400">
                     -
                   </span>
                   {goal}
@@ -277,7 +277,7 @@ After:  https://<toran_id>.toran.sh`}
           </p>
           <Link
             href="/try"
-            className="mt-4 inline-block bg-cyan-600 dark:bg-cyan-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
+            className="mt-4 inline-block bg-violet-600 dark:bg-violet-500 px-6 py-3 text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
           >
             Create your first toran
           </Link>

@@ -77,7 +77,7 @@ export function ToranList() {
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="mt-6 bg-cyan-600 dark:bg-cyan-500 px-6 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
+            className="mt-6 bg-violet-600 dark:bg-violet-500 px-6 py-2 text-sm text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
           >
             Create toran
           </button>
@@ -88,7 +88,7 @@ export function ToranList() {
             <h2 className="text-lg font-semibold">Your torans</h2>
             <button
               onClick={() => setShowAddForm(true)}
-              className="bg-cyan-600 dark:bg-cyan-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-cyan-700 dark:hover:bg-cyan-400"
+              className="bg-violet-600 dark:bg-violet-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
             >
               + Add toran
             </button>
@@ -111,7 +111,7 @@ export function ToranList() {
                     <td className="px-4 py-3">
                       <Link
                         href={`/toran/${toran.subdomain}`}
-                        className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:underline font-mono"
+                        className="text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 hover:underline font-mono"
                       >
                         {toran.subdomain}
                       </Link>

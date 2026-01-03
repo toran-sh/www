@@ -313,7 +313,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
         <nav className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3 text-3xl font-bold text-cyan-600 dark:text-cyan-400"
+            className="flex items-center gap-3 text-3xl font-bold text-violet-600 dark:text-violet-400"
           >
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
@@ -336,7 +336,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
                 Trial toran <span className="text-zinc-400 dark:text-zinc-500">|</span>{" "}
-                <code className="text-cyan-600 dark:text-cyan-400 font-mono">{subdomain}</code>
+                <code className="text-violet-600 dark:text-violet-400 font-mono">{subdomain}</code>
               </h1>
               <button
                 onClick={toggleStreaming}
@@ -501,7 +501,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search path, headers, body..."
-                className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               />
             </div>
 
@@ -537,7 +537,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                               onClick={() => setSelectedLog(selectedLog?._id === log._id ? null : log)}
                               className={`cursor-pointer transition-colors ${
                                 selectedLog?._id === log._id
-                                  ? "bg-cyan-50 dark:bg-cyan-950 hover:bg-cyan-50 dark:hover:bg-cyan-950"
+                                  ? "bg-violet-50 dark:bg-violet-950 hover:bg-violet-50 dark:hover:bg-violet-950"
                                   : "hover:bg-zinc-50 dark:hover:bg-zinc-800"
                               }`}
                             >
@@ -614,8 +614,8 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
 
                     {/* Log Detail Panel */}
                     {selectedLog && (
-                      <div className="mt-4 border border-cyan-200 dark:border-cyan-800 rounded-lg bg-white dark:bg-zinc-900 overflow-hidden">
-                        <div className="flex items-center justify-between px-4 py-3 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800">
+                      <div className="mt-4 border border-violet-200 dark:border-violet-800 rounded-lg bg-white dark:bg-zinc-900 overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-3 bg-violet-50 dark:bg-violet-950 border-b border-violet-200 dark:border-violet-800">
                           <div className="flex items-center gap-3">
                             <span className={`px-2 py-0.5 text-xs font-medium rounded ${getMethodColor(selectedLog.request.method)}`}>
                               {selectedLog.request.method}
@@ -649,7 +649,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                                 <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto">
                                   {Object.entries(selectedLog.request.query as Record<string, string>).map(([key, value]) => (
                                     <div key={key}>
-                                      <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                      <span className="text-violet-600 dark:text-violet-400">{key}</span>
                                       <span className="text-zinc-400">=</span>
                                       <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
                                     </div>
@@ -665,7 +665,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                                 <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
                                   {Object.entries(selectedLog.request.headers as Record<string, string>).map(([key, value]) => (
                                     <div key={key} className="break-all">
-                                      <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                      <span className="text-violet-600 dark:text-violet-400">{key}</span>
                                       <span className="text-zinc-400">: </span>
                                       <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
                                     </div>
@@ -700,7 +700,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
                                 <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
                                   {Object.entries(selectedLog.response.headers as Record<string, string>).map(([key, value]) => (
                                     <div key={key} className="break-all">
-                                      <span className="text-cyan-600 dark:text-cyan-400">{key}</span>
+                                      <span className="text-violet-600 dark:text-violet-400">{key}</span>
                                       <span className="text-zinc-400">: </span>
                                       <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
                                     </div>
@@ -789,7 +789,7 @@ export function TrialLogsView({ subdomain }: TrialLogsViewProps) {
               <h3 className="text-sm font-medium text-zinc-900 dark:text-white mb-3">
                 Your toran endpoint
               </h3>
-              <code className="block p-3 bg-zinc-100 dark:bg-zinc-800 rounded text-sm text-cyan-600 dark:text-cyan-400 break-all">
+              <code className="block p-3 bg-zinc-100 dark:bg-zinc-800 rounded text-sm text-violet-600 dark:text-violet-400 break-all">
                 https://{subdomain}.toran.sh
               </code>
               <p className="mt-3 text-xs text-zinc-500">
