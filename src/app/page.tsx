@@ -1,6 +1,48 @@
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 
+const codeExamples = [
+  {
+    language: "Node.js",
+    code: `const BASE_URL = "https://<toran_id>.toran.sh";
+
+const response = await fetch(\`\${BASE_URL}/v1/endpoint\`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ data: "..." }),
+});`,
+  },
+  {
+    language: "Python",
+    code: `import requests
+
+BASE_URL = "https://<toran_id>.toran.sh"
+
+response = requests.post(
+    f"{BASE_URL}/v1/endpoint",
+    json={"data": "..."}
+)`,
+  },
+  {
+    language: "Go",
+    code: `baseURL := "https://<toran_id>.toran.sh"
+
+resp, err := http.Post(
+    baseURL+"/v1/endpoint",
+    "application/json",
+    bytes.NewBuffer(jsonData),
+)`,
+  },
+  {
+    language: "curl",
+    code: `BASE_URL="https://<toran_id>.toran.sh"
+
+curl -X POST "$BASE_URL/v1/endpoint" \\
+  -H "Content-Type: application/json" \\
+  -d '{"data": "..."}'`,
+  },
+];
+
 const features = [
   {
     title: "Agent Tool Visibility",
@@ -37,20 +79,12 @@ export default function Home() {
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
           </Link>
-          <div className="flex items-center gap-6">
-            <Link
-              href="/examples"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
-            >
-              Examples
-            </Link>
-            <Link
-              href="/login"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
-            >
-              Sign in
-            </Link>
-          </div>
+          <Link
+            href="/login"
+            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+          >
+            Sign in
+          </Link>
         </nav>
       </header>
 
@@ -170,6 +204,43 @@ export default function Home() {
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-500">
               Each toran is bound to one upstream base URL.
             </p>
+          </div>
+        </section>
+
+        {/* Universal Pattern Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold">The universal pattern</h2>
+          <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-6">
+            <pre className="bg-zinc-100 dark:bg-zinc-900 p-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto">
+              <code>
+{`Before: https://api.vendor.com
+After:  https://<toran_id>.toran.sh`}
+              </code>
+            </pre>
+            <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+              You can make this change in app config, an SDK/client
+              configuration, or agent tool settings.
+            </p>
+          </div>
+        </section>
+
+        {/* Code Examples Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold">Code examples</h2>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            These examples only show the base URL change.
+          </p>
+          <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-6 space-y-6">
+            {codeExamples.map((example) => (
+              <div key={example.language}>
+                <h3 className="font-semibold text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+                  {example.language}
+                </h3>
+                <pre className="bg-zinc-100 dark:bg-zinc-900 p-4 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto">
+                  <code>{example.code}</code>
+                </pre>
+              </div>
+            ))}
           </div>
         </section>
 
