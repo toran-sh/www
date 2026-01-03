@@ -1,34 +1,6 @@
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 
-const popularApis = [
-  {
-    name: "Stripe",
-    description: "Swap the base URL where your Stripe client is configured.",
-    places: "Common places: environment config, HTTP client wrapper, agent tool base URL.",
-  },
-  {
-    name: "OpenAI",
-    description: "Swap the base URL in your OpenAI client/tool configuration.",
-    places: "Common places: tool definition base URL, SDK baseURL, proxy/base URL setting.",
-  },
-  {
-    name: "GitHub",
-    description: "Swap the API base URL for REST calls.",
-    places: "Common places: API client config, env var, agent tool base URL.",
-  },
-  {
-    name: "Twilio",
-    description: "Swap the base URL for outbound Twilio HTTP calls.",
-    places: "Common places: HTTP client layer, service wrapper, agent tool base URL.",
-  },
-  {
-    name: "Slack",
-    description: "Swap the Slack Web API base URL where requests are constructed.",
-    places: "Common places: HTTP client config, wrapper service, agent tool base URL.",
-  },
-];
-
 const codeExamples = [
   {
     language: "Node.js",
@@ -122,31 +94,7 @@ After:  https://<toran_id>.toran.sh`}
           </div>
         </section>
 
-        {/* Section B: Popular APIs */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold">Popular APIs</h2>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Where teams usually swap the base URL.
-          </p>
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
-            {popularApis.map((api) => (
-              <div
-                key={api.name}
-                className="border border-zinc-200 dark:border-zinc-800 p-6"
-              >
-                <h3 className="font-semibold text-lg">{api.name}</h3>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  {api.description}
-                </p>
-                <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-                  {api.places}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Section C: Popular languages */}
+        {/* Section B: Popular languages */}
         <section className="mt-16">
           <h2 className="text-2xl font-bold">Popular languages (minimal examples)</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
@@ -166,7 +114,7 @@ After:  https://<toran_id>.toran.sh`}
           </div>
         </section>
 
-        {/* Section D: Agents */}
+        {/* Section C: Agents */}
         <section className="mt-16">
           <h2 className="text-2xl font-bold">Agents and tools</h2>
           <div className="mt-6 border border-zinc-200 dark:border-zinc-800 p-6">
