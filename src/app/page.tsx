@@ -131,6 +131,7 @@ export default function Home() {
           </p>
         </section>
 
+
         {/* How It Works Section */}
         <section className="mt-16">
           <h2 className="text-2xl font-bold">How it works</h2>
@@ -140,23 +141,23 @@ export default function Home() {
                 <span className="font-mono text-cyan-600 dark:text-cyan-400">
                   1.
                 </span>
-                Enter your upstream API URL to create a toran
+                Enter the upstream base URL you want to inspect and get a unique toran URL
               </li>
               <li className="flex gap-3">
                 <span className="font-mono text-cyan-600 dark:text-cyan-400">
                   2.
                 </span>
-                Replace your API base URL with your toran URL
+                Replace the upstream URL with toran URL in your app config, code, or agent tool settings
               </li>
               <li className="flex gap-3">
                 <span className="font-mono text-cyan-600 dark:text-cyan-400">
                   3.
                 </span>
-                Run your app, tests, or agent and watch requests stream in
+                Run your app, tests, or agent and watch outbound requests stream live
               </li>
             </ol>
             <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-500">
-              Requests sent through toran are routed through toran for live inspection. Sensitive headers and query values are redacted by default.
+              Requests sent via toran pass through it transparently, allowing live inspection as they happen. Sensitive headers and query values are redacted by default.
             </p>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-500">
               Each toran is bound to one upstream base URL.
