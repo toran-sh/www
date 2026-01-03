@@ -3,11 +3,21 @@ import { db } from "@/lib/mongodb";
 import { generateToken, getTrialToken, setTrialTokenCookie } from "@/lib/tokens";
 import { generateSubdomain } from "@/lib/subdomain";
 import { DEFAULT_LOG_FILTERS } from "@/lib/log-filters";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { upstreamBaseUrl, cacheTtl } = body;
+    const { upstreamBaseUrl, cacheTtl, turnstileToken } = body;
+
+    // Verify Turnstile token
+    const isValidTurnstile = await verifyTurnstileToken(turnstileToken);
+    if (!isValidTurnstile) {
+      return NextResponse.json(
+        { error: "Verification failed. Please try again." },
+        { status: 400 }
+      );
+    }
 
     if (!upstreamBaseUrl) {
       return NextResponse.json(

@@ -207,6 +207,8 @@ src/
 | `MONGODB_URI` | Yes | MongoDB connection string |
 | `RESEND_API_KEY` | Yes | Resend API key for magic link emails |
 | `NEXT_PUBLIC_APP_URL` | Yes | App URL for magic link generation |
+| `TURNSTILE_SECRET_KEY` | Yes | Cloudflare Turnstile secret key (server-side) |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Yes | Cloudflare Turnstile site key (client-side) |
 
 ## Toran Configuration
 

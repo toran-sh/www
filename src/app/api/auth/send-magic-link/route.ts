@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { generateToken, storeToken } from "@/lib/tokens";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const { email, turnstileToken } = await request.json();
+
+    // Verify Turnstile token
+    const isValidTurnstile = await verifyTurnstileToken(turnstileToken);
+    if (!isValidTurnstile) {
+      return NextResponse.json(
+        { error: "Verification failed. Please try again." },
+        { status: 400 }
+      );
+    }
 
     if (!email || typeof email !== "string") {
       return NextResponse.json(

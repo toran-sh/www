@@ -122,6 +122,14 @@ export default function Home() {
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             Everything you need to understand requests to a specific API
           </p>
+          <p className="mt-3 text-sm">
+            <Link
+              href="/use-cases"
+              className="text-sky-600 dark:text-sky-400 hover:underline"
+            >
+              See common use cases →
+            </Link>
+          </p>
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             {features.map((feature) => (

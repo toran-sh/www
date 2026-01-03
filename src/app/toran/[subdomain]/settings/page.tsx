@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 interface LogFilter {
   field: string;
   location: "header" | "query" | "body";
-  action: "mask" | "exclude";
+  action: "redact";
 }
 
 interface LogFilters {
@@ -24,13 +24,29 @@ interface Toran {
 
 const DEFAULT_LOG_FILTERS: LogFilters = {
   request: [
-    { field: "authorization", location: "header", action: "mask" },
-    { field: "x-api-key", location: "header", action: "mask" },
-    { field: "api-key", location: "header", action: "mask" },
-    { field: "x-auth-token", location: "header", action: "mask" },
-    { field: "cookie", location: "header", action: "mask" },
+    { field: "authorization", location: "header", action: "redact" },
+    { field: "x-api-key", location: "header", action: "redact" },
+    { field: "api-key", location: "header", action: "redact" },
+    { field: "x-auth-token", location: "header", action: "redact" },
+    { field: "cookie", location: "header", action: "redact" },
+    { field: "key", location: "header", action: "redact" },
+    { field: "api_key", location: "header", action: "redact" },
+    { field: "apikey", location: "header", action: "redact" },
+    { field: "token", location: "header", action: "redact" },
+    { field: "access_token", location: "header", action: "redact" },
+    { field: "id_token", location: "header", action: "redact" },
+    { field: "refresh_token", location: "header", action: "redact" },
+    { field: "secret", location: "header", action: "redact" },
+    { field: "client_secret", location: "header", action: "redact" },
+    { field: "signature", location: "header", action: "redact" },
+    { field: "sig", location: "header", action: "redact" },
+    { field: "password", location: "header", action: "redact" },
+    { field: "passwd", location: "header", action: "redact" },
+    { field: "auth", location: "header", action: "redact" },
+    { field: "session", location: "header", action: "redact" },
+    { field: "code", location: "header", action: "redact" },
   ],
-  response: [{ field: "set-cookie", location: "header", action: "mask" }],
+  response: [{ field: "set-cookie", location: "header", action: "redact" }],
 };
 
 export default function SettingsPage() {
@@ -54,9 +70,6 @@ export default function SettingsPage() {
   const [newFilterLocation, setNewFilterLocation] = useState<
     "header" | "query" | "body"
   >("header");
-  const [newFilterAction, setNewFilterAction] = useState<"mask" | "exclude">(
-    "mask"
-  );
 
   // Delete state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -126,7 +139,7 @@ export default function SettingsPage() {
     const newFilter: LogFilter = {
       field: newFilterField.trim().toLowerCase(),
       location: newFilterLocation,
-      action: newFilterAction,
+      action: "redact",
     };
 
     setLogFilters((prev) => ({
@@ -281,12 +294,12 @@ export default function SettingsPage() {
                     <span className="text-zinc-400">→</span>
                     <span
                       className={
-                        filter.action === "mask"
+                        filter.action === "redact"
                           ? "text-yellow-600 dark:text-yellow-400"
                           : "text-red-600 dark:text-red-400"
                       }
                     >
-                      {filter.action}
+                      redact
                     </span>
                     <button
                       type="button"
@@ -327,12 +340,12 @@ export default function SettingsPage() {
                     <span className="text-zinc-400">→</span>
                     <span
                       className={
-                        filter.action === "mask"
+                        filter.action === "redact"
                           ? "text-yellow-600 dark:text-yellow-400"
                           : "text-red-600 dark:text-red-400"
                       }
                     >
-                      {filter.action}
+                      redact
                     </span>
                     <button
                       type="button"
@@ -385,16 +398,6 @@ export default function SettingsPage() {
                 placeholder="Field name (e.g. authorization)"
                 className="border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 rounded text-sm text-zinc-900 dark:text-white placeholder-zinc-400"
               />
-              <select
-                value={newFilterAction}
-                onChange={(e) =>
-                  setNewFilterAction(e.target.value as "mask" | "exclude")
-                }
-                className="border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 rounded text-sm text-zinc-900 dark:text-white"
-              >
-                <option value="mask">Mask (show first 4 chars)</option>
-                <option value="exclude">Exclude (don&apos;t log)</option>
-              </select>
             </div>
             <button
               type="button"

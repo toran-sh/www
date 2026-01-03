@@ -3,6 +3,7 @@ import { db } from "@/lib/mongodb";
 import { getSession } from "@/lib/tokens";
 import { generateSubdomain } from "@/lib/subdomain";
 import { DEFAULT_LOG_FILTERS } from "@/lib/log-filters";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function GET() {
   try {
@@ -35,7 +36,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { upstreamBaseUrl, cacheTtl, logFilters } = body;
+    const { upstreamBaseUrl, cacheTtl, logFilters, turnstileToken } = body;
+
+    // Verify Turnstile token
+    const isValidTurnstile = await verifyTurnstileToken(turnstileToken);
+    if (!isValidTurnstile) {
+      return NextResponse.json(
+        { error: "Verification failed. Please try again." },
+        { status: 400 }
+      );
+    }
 
     if (!upstreamBaseUrl) {
       return NextResponse.json(

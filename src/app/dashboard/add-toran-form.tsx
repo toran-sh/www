@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { Turnstile } from "@/components/turnstile";
 
 interface LogFilter {
   field: string;
   location: "header" | "query" | "body";
-  action: "mask" | "exclude";
+  action: "redact";
 }
 
 interface LogFilters {
@@ -15,13 +16,29 @@ interface LogFilters {
 
 const DEFAULT_LOG_FILTERS: LogFilters = {
   request: [
-    { field: "authorization", location: "header", action: "mask" },
-    { field: "x-api-key", location: "header", action: "mask" },
-    { field: "api-key", location: "header", action: "mask" },
-    { field: "x-auth-token", location: "header", action: "mask" },
-    { field: "cookie", location: "header", action: "mask" },
+    { field: "authorization", location: "header", action: "redact" },
+    { field: "x-api-key", location: "header", action: "redact" },
+    { field: "api-key", location: "header", action: "redact" },
+    { field: "x-auth-token", location: "header", action: "redact" },
+    { field: "cookie", location: "header", action: "redact" },
+    { field: "key", location: "header", action: "redact" },
+    { field: "api_key", location: "header", action: "redact" },
+    { field: "apikey", location: "header", action: "redact" },
+    { field: "token", location: "header", action: "redact" },
+    { field: "access_token", location: "header", action: "redact" },
+    { field: "id_token", location: "header", action: "redact" },
+    { field: "refresh_token", location: "header", action: "redact" },
+    { field: "secret", location: "header", action: "redact" },
+    { field: "client_secret", location: "header", action: "redact" },
+    { field: "signature", location: "header", action: "redact" },
+    { field: "sig", location: "header", action: "redact" },
+    { field: "password", location: "header", action: "redact" },
+    { field: "passwd", location: "header", action: "redact" },
+    { field: "auth", location: "header", action: "redact" },
+    { field: "session", location: "header", action: "redact" },
+    { field: "code", location: "header", action: "redact" },
   ],
-  response: [{ field: "set-cookie", location: "header", action: "mask" }],
+  response: [{ field: "set-cookie", location: "header", action: "redact" }],
 };
 
 interface Toran {
@@ -44,6 +61,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
   const [logFilters, setLogFilters] = useState<LogFilters>(DEFAULT_LOG_FILTERS);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // New filter form state
   const [newFilterType, setNewFilterType] = useState<"request" | "response">(
@@ -53,9 +71,6 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
   const [newFilterLocation, setNewFilterLocation] = useState<
     "header" | "query" | "body"
   >("header");
-  const [newFilterAction, setNewFilterAction] = useState<"mask" | "exclude">(
-    "mask"
-  );
 
   const addFilter = () => {
     if (!newFilterField.trim()) return;
@@ -63,7 +78,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
     const newFilter: LogFilter = {
       field: newFilterField.trim().toLowerCase(),
       location: newFilterLocation,
-      action: newFilterAction,
+      action: "redact",
     };
 
     setLogFilters((prev) => ({
@@ -94,6 +109,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
           upstreamBaseUrl,
           cacheTtl: cacheTtl ? parseInt(cacheTtl, 10) : null,
           logFilters,
+          turnstileToken,
         }),
       });
 
@@ -180,7 +196,7 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                 Log Filters
               </h4>
               <p className="text-xs text-zinc-500 mb-3">
-                Mask or exclude sensitive fields from logs.
+                Redact sensitive fields from logs.
               </p>
 
               {/* Request Filters */}
@@ -201,14 +217,8 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                           {filter.field}
                         </code>
                         <span className="text-zinc-400">→</span>
-                        <span
-                          className={
-                            filter.action === "mask"
-                              ? "text-yellow-600 dark:text-yellow-400"
-                              : "text-red-600 dark:text-red-400"
-                          }
-                        >
-                          {filter.action}
+                        <span className="text-yellow-600 dark:text-yellow-400">
+                          redact
                         </span>
                         <button
                           type="button"
@@ -241,14 +251,8 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                           {filter.field}
                         </code>
                         <span className="text-zinc-400">→</span>
-                        <span
-                          className={
-                            filter.action === "mask"
-                              ? "text-yellow-600 dark:text-yellow-400"
-                              : "text-red-600 dark:text-red-400"
-                          }
-                        >
-                          {filter.action}
+                        <span className="text-yellow-600 dark:text-yellow-400">
+                          redact
                         </span>
                         <button
                           type="button"
@@ -290,24 +294,14 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
                     <option value="body">Body</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-1 mb-1">
+                <div className="mb-1">
                   <input
                     type="text"
                     value={newFilterField}
                     onChange={(e) => setNewFilterField(e.target.value)}
                     placeholder="Field name"
-                    className="border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs placeholder-zinc-400"
+                    className="w-full border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs placeholder-zinc-400"
                   />
-                  <select
-                    value={newFilterAction}
-                    onChange={(e) =>
-                      setNewFilterAction(e.target.value as "mask" | "exclude")
-                    }
-                    className="border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs"
-                  >
-                    <option value="mask">Mask</option>
-                    <option value="exclude">Exclude</option>
-                  </select>
                 </div>
                 <button
                   type="button"
@@ -322,10 +316,11 @@ export function AddToranForm({ onSuccess, onCancel }: AddToranFormProps) {
           </div>
         )}
 
+        <Turnstile onVerify={setTurnstileToken} />
         <div className="mt-6 flex gap-3">
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !turnstileToken}
             className="bg-sky-600 dark:bg-sky-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-sky-700 dark:hover:bg-sky-400 disabled:opacity-50"
           >
             {isLoading ? "Creating..." : "Create toran"}

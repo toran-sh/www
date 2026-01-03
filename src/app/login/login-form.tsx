@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Turnstile } from "@/components/turnstile";
 
 interface LoginFormProps {
   urlError?: string;
@@ -11,6 +12,7 @@ export function LoginForm({ urlError }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ export function LoginForm({ urlError }: LoginFormProps) {
       const response = await fetch("/api/auth/send-magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, turnstileToken }),
       });
 
       const data = await response.json();
@@ -105,9 +107,10 @@ export function LoginForm({ urlError }: LoginFormProps) {
           required
           className="mt-2 w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-sky-600 dark:focus:border-sky-400"
         />
+        <Turnstile onVerify={setTurnstileToken} />
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !turnstileToken}
           className="mt-4 w-full bg-sky-600 dark:bg-sky-500 py-3 text-white dark:text-zinc-950 hover:bg-sky-700 dark:hover:bg-sky-400 disabled:opacity-50"
         >
           {isLoading ? "Sending..." : "Continue with Email"}

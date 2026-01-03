@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Turnstile } from "@/components/turnstile";
 
 interface LogFilter {
   field: string;
   location: "header" | "query" | "body";
-  action: "mask" | "exclude";
+  action: "redact";
 }
 
 interface LogFilters {
@@ -16,13 +17,29 @@ interface LogFilters {
 
 const DEFAULT_LOG_FILTERS: LogFilters = {
   request: [
-    { field: "authorization", location: "header", action: "mask" },
-    { field: "x-api-key", location: "header", action: "mask" },
-    { field: "api-key", location: "header", action: "mask" },
-    { field: "x-auth-token", location: "header", action: "mask" },
-    { field: "cookie", location: "header", action: "mask" },
+    { field: "authorization", location: "header", action: "redact" },
+    { field: "x-api-key", location: "header", action: "redact" },
+    { field: "api-key", location: "header", action: "redact" },
+    { field: "x-auth-token", location: "header", action: "redact" },
+    { field: "cookie", location: "header", action: "redact" },
+    { field: "key", location: "header", action: "redact" },
+    { field: "api_key", location: "header", action: "redact" },
+    { field: "apikey", location: "header", action: "redact" },
+    { field: "token", location: "header", action: "redact" },
+    { field: "access_token", location: "header", action: "redact" },
+    { field: "id_token", location: "header", action: "redact" },
+    { field: "refresh_token", location: "header", action: "redact" },
+    { field: "secret", location: "header", action: "redact" },
+    { field: "client_secret", location: "header", action: "redact" },
+    { field: "signature", location: "header", action: "redact" },
+    { field: "sig", location: "header", action: "redact" },
+    { field: "password", location: "header", action: "redact" },
+    { field: "passwd", location: "header", action: "redact" },
+    { field: "auth", location: "header", action: "redact" },
+    { field: "session", location: "header", action: "redact" },
+    { field: "code", location: "header", action: "redact" },
   ],
-  response: [{ field: "set-cookie", location: "header", action: "mask" }],
+  response: [{ field: "set-cookie", location: "header", action: "redact" }],
 };
 
 export function CreateTrialForm() {
@@ -33,6 +50,7 @@ export function CreateTrialForm() {
   const [logFilters, setLogFilters] = useState<LogFilters>(DEFAULT_LOG_FILTERS);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // New filter form state
   const [newFilterType, setNewFilterType] = useState<"request" | "response">(
@@ -42,9 +60,6 @@ export function CreateTrialForm() {
   const [newFilterLocation, setNewFilterLocation] = useState<
     "header" | "query" | "body"
   >("header");
-  const [newFilterAction, setNewFilterAction] = useState<"mask" | "exclude">(
-    "mask"
-  );
 
   const addFilter = () => {
     if (!newFilterField.trim()) return;
@@ -52,7 +67,7 @@ export function CreateTrialForm() {
     const newFilter: LogFilter = {
       field: newFilterField.trim().toLowerCase(),
       location: newFilterLocation,
-      action: newFilterAction,
+      action: "redact",
     };
 
     setLogFilters((prev) => ({
@@ -83,6 +98,7 @@ export function CreateTrialForm() {
           upstreamBaseUrl,
           cacheTtl: cacheTtl ? parseInt(cacheTtl, 10) : null,
           logFilters,
+          turnstileToken,
         }),
       });
 
@@ -190,12 +206,12 @@ export function CreateTrialForm() {
                         <span className="text-zinc-400">→</span>
                         <span
                           className={
-                            filter.action === "mask"
+                            filter.action === "redact"
                               ? "text-yellow-600 dark:text-yellow-400"
                               : "text-red-600 dark:text-red-400"
                           }
                         >
-                          {filter.action}
+                          redact
                         </span>
                         <button
                           type="button"
@@ -230,12 +246,12 @@ export function CreateTrialForm() {
                         <span className="text-zinc-400">→</span>
                         <span
                           className={
-                            filter.action === "mask"
+                            filter.action === "redact"
                               ? "text-yellow-600 dark:text-yellow-400"
                               : "text-red-600 dark:text-red-400"
                           }
                         >
-                          {filter.action}
+                          redact
                         </span>
                         <button
                           type="button"
@@ -285,16 +301,6 @@ export function CreateTrialForm() {
                     placeholder="Field name"
                     className="border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs placeholder-zinc-400"
                   />
-                  <select
-                    value={newFilterAction}
-                    onChange={(e) =>
-                      setNewFilterAction(e.target.value as "mask" | "exclude")
-                    }
-                    className="border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs"
-                  >
-                    <option value="mask">Mask</option>
-                    <option value="exclude">Exclude</option>
-                  </select>
                 </div>
                 <button
                   type="button"
@@ -309,9 +315,10 @@ export function CreateTrialForm() {
           </div>
         )}
 
+        <Turnstile onVerify={setTurnstileToken} />
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !turnstileToken}
           className="mt-6 w-full bg-sky-600 dark:bg-sky-500 px-4 py-3 text-sm font-medium text-white dark:text-zinc-950 rounded-md hover:bg-sky-700 dark:hover:bg-sky-400 disabled:opacity-50 transition-colors"
         >
           {isLoading ? "Creating..." : "Create toran"}

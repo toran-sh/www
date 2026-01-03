@@ -2,7 +2,7 @@
 export interface LogFilter {
   field: string; // Header name or parameter name (case-insensitive for headers)
   location: "header" | "query" | "body"; // Where the field is located
-  action: "mask" | "exclude"; // mask = replace value with ***, exclude = remove entirely
+  action: "redact"; // redact = replace value with [REDACTED]
 }
 
 export interface LogFilters {
@@ -10,28 +10,39 @@ export interface LogFilters {
   response: LogFilter[];
 }
 
-// Sensible defaults - mask common auth headers
+// Sensible defaults - redact common sensitive fields
 export const DEFAULT_LOG_FILTERS: LogFilters = {
   request: [
-    { field: "authorization", location: "header", action: "mask" },
-    { field: "x-api-key", location: "header", action: "mask" },
-    { field: "api-key", location: "header", action: "mask" },
-    { field: "x-auth-token", location: "header", action: "mask" },
-    { field: "cookie", location: "header", action: "mask" },
+    { field: "authorization", location: "header", action: "redact" },
+    { field: "x-api-key", location: "header", action: "redact" },
+    { field: "api-key", location: "header", action: "redact" },
+    { field: "x-auth-token", location: "header", action: "redact" },
+    { field: "cookie", location: "header", action: "redact" },
+    { field: "key", location: "header", action: "redact" },
+    { field: "api_key", location: "header", action: "redact" },
+    { field: "apikey", location: "header", action: "redact" },
+    { field: "token", location: "header", action: "redact" },
+    { field: "access_token", location: "header", action: "redact" },
+    { field: "id_token", location: "header", action: "redact" },
+    { field: "refresh_token", location: "header", action: "redact" },
+    { field: "secret", location: "header", action: "redact" },
+    { field: "client_secret", location: "header", action: "redact" },
+    { field: "signature", location: "header", action: "redact" },
+    { field: "sig", location: "header", action: "redact" },
+    { field: "password", location: "header", action: "redact" },
+    { field: "passwd", location: "header", action: "redact" },
+    { field: "auth", location: "header", action: "redact" },
+    { field: "session", location: "header", action: "redact" },
+    { field: "code", location: "header", action: "redact" },
   ],
   response: [
-    { field: "set-cookie", location: "header", action: "mask" },
+    { field: "set-cookie", location: "header", action: "redact" },
   ],
 };
 
-// Apply mask to a value
-function maskValue(value: unknown): string {
-  if (typeof value === "string") {
-    if (value.length <= 4) return "***";
-    // Show first 4 chars then mask the rest
-    return value.substring(0, 4) + "***";
-  }
-  return "***";
+// Redact a value
+function redactValue(): string {
+  return "[REDACTED]";
 }
 
 // Apply filters to headers object
@@ -51,11 +62,8 @@ export function applyHeaderFilters(
     const filter = headerFilters.find((f) => f.field.toLowerCase() === lowerKey);
 
     if (filter) {
-      if (filter.action === "exclude") {
-        // Skip this header entirely
-        continue;
-      } else if (filter.action === "mask") {
-        result[key] = maskValue(value);
+      if (filter.action === "redact") {
+        result[key] = redactValue();
       }
     } else {
       result[key] = value;
@@ -82,10 +90,8 @@ export function applyQueryFilters(
     const filter = queryFilters.find((f) => f.field.toLowerCase() === lowerKey);
 
     if (filter) {
-      if (filter.action === "exclude") {
-        continue;
-      } else if (filter.action === "mask") {
-        result[key] = maskValue(value);
+      if (filter.action === "redact") {
+        result[key] = redactValue();
       }
     } else {
       result[key] = value;
@@ -118,10 +124,8 @@ export function applyBodyFilters(
     const filter = bodyFilters.find((f) => f.field.toLowerCase() === lowerKey);
 
     if (filter) {
-      if (filter.action === "exclude") {
-        continue;
-      } else if (filter.action === "mask") {
-        result[key] = maskValue(value);
+      if (filter.action === "redact") {
+        result[key] = redactValue();
       }
     } else if (typeof value === "object" && value !== null) {
       // Recursively filter nested objects

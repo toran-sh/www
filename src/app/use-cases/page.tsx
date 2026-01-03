@@ -14,6 +14,17 @@ const useCases = [
     ],
   },
   {
+    title: "Understand MCP Tool Calls",
+    description:
+      "MCP tools abstract outbound HTTP behind agent behavior. toran shows the exact requests and responses each MCP tool produced so you can debug failures and unexpected behavior without instrumenting your agent.",
+    benefits: [
+      "See the exact HTTP requests an MCP tool made",
+      "Inspect responses, status codes, and timing",
+      "Debug vendor failures and protocol edge cases",
+      "Share precise evidence when reporting issues",
+    ],
+  },
+  {
     title: "Test API Integrations",
     description:
       "When integrating a new API, you need to see what's actually being sent and received. toran gives you instant visibility without adding logging code.",
