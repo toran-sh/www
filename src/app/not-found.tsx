@@ -9,14 +9,14 @@ export default function NotFound() {
         <nav className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3 text-3xl font-bold text-violet-600 dark:text-violet-400"
+            className="flex items-center gap-3 text-3xl font-bold text-sky-600 dark:text-sky-400"
           >
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
           </Link>
           <Link
             href="/try"
-            className="bg-violet-600 dark:bg-violet-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
+            className="bg-sky-600 dark:bg-sky-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-sky-700 dark:hover:bg-sky-400"
           >
             Try Now
           </Link>
@@ -26,7 +26,7 @@ export default function NotFound() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-20 flex-1 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-8xl font-bold text-violet-600 dark:text-violet-400 mb-2">
+          <h1 className="text-8xl font-bold text-sky-600 dark:text-sky-400 mb-2">
             404
           </h1>
           <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">
@@ -37,7 +37,7 @@ export default function NotFound() {
           </p>
           <Link
             href="/"
-            className="inline-block bg-violet-600 dark:bg-violet-500 px-6 py-3 text-sm font-medium text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
+            className="inline-block bg-sky-600 dark:bg-sky-500 px-6 py-3 text-sm font-medium text-white dark:text-zinc-950 hover:bg-sky-700 dark:hover:bg-sky-400"
           >
             Go home
           </Link>

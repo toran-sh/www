@@ -106,13 +106,13 @@ export function ClaimForm({ subdomain }: ClaimFormProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 rounded-md text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-violet-600 dark:focus:border-violet-400 focus:ring-2 focus:ring-violet-600/20"
+          className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 rounded-md text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-sky-600 dark:focus:border-sky-400 focus:ring-2 focus:ring-sky-600/20"
         />
 
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-4 w-full bg-violet-600 dark:bg-violet-500 px-4 py-3 text-sm font-medium text-white dark:text-zinc-950 rounded-md hover:bg-violet-700 dark:hover:bg-violet-400 disabled:opacity-50 transition-colors"
+          className="mt-4 w-full bg-sky-600 dark:bg-sky-500 px-4 py-3 text-sm font-medium text-white dark:text-zinc-950 rounded-md hover:bg-sky-700 dark:hover:bg-sky-400 disabled:opacity-50 transition-colors"
         >
           {isLoading ? "Sending..." : "Send claim link"}
         </button>

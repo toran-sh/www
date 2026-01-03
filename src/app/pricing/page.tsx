@@ -95,14 +95,14 @@ export default function PricingPage() {
         <nav className="container mx-auto flex items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="flex items-center gap-3 text-3xl font-bold text-violet-600 dark:text-violet-400"
+            className="flex items-center gap-3 text-3xl font-bold text-sky-600 dark:text-sky-400"
           >
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
           </Link>
           <Link
             href="/try"
-            className="bg-violet-600 dark:bg-violet-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
+            className="bg-sky-600 dark:bg-sky-500 px-4 py-2 text-sm text-white dark:text-zinc-950 hover:bg-sky-700 dark:hover:bg-sky-400"
           >
             Create a toran
           </Link>
@@ -130,7 +130,7 @@ export default function PricingPage() {
               key={tier.name}
               className={`border p-6 ${
                 tier.highlighted
-                  ? "border-violet-500 dark:border-violet-400"
+                  ? "border-sky-500 dark:border-sky-400"
                   : "border-zinc-200 dark:border-zinc-800"
               }`}
             >
@@ -154,7 +154,7 @@ export default function PricingPage() {
                     key={feature}
                     className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300"
                   >
-                    <span className="text-violet-600 dark:text-violet-400">-</span>
+                    <span className="text-sky-600 dark:text-sky-400">-</span>
                     {feature}
                   </li>
                 ))}
@@ -163,7 +163,7 @@ export default function PricingPage() {
                 href={tier.ctaHref}
                 className={`mt-8 block w-full py-2 text-center text-sm ${
                   tier.highlighted
-                    ? "bg-violet-600 dark:bg-violet-500 text-white dark:text-zinc-950 hover:bg-violet-700 dark:hover:bg-violet-400"
+                    ? "bg-sky-600 dark:bg-sky-500 text-white dark:text-zinc-950 hover:bg-sky-700 dark:hover:bg-sky-400"
                     : "border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                 }`}
               >
@@ -182,7 +182,7 @@ export default function PricingPage() {
                 key={rule}
                 className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400"
               >
-                <span className="text-violet-600 dark:text-violet-400">-</span>
+                <span className="text-sky-600 dark:text-sky-400">-</span>
                 {rule}
               </div>
             ))}

@@ -14,7 +14,7 @@ function SunIcon({ active }: { active: boolean }) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={active ? "text-amber-500" : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"}
+      className={active ? "text-sky-500" : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"}
     >
       <circle cx="12" cy="12" r="4" />
       <path d="M12 2v2" />

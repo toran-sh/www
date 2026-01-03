@@ -86,7 +86,7 @@ function getMethodColor(method: string): string {
     case "POST":
       return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
     case "PUT":
-      return "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300";
+      return "bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300";
     case "PATCH":
       return "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300";
     case "DELETE":
@@ -100,7 +100,7 @@ function getStatusColor(status: number): string {
   if (status >= 200 && status < 300) {
     return "text-green-600 dark:text-green-400";
   } else if (status >= 400 && status < 500) {
-    return "text-amber-600 dark:text-amber-400";
+    return "text-sky-600 dark:text-sky-400";
   } else if (status >= 500) {
     return "text-red-600 dark:text-red-400";
   }
@@ -325,7 +325,7 @@ export default function ToranDashboardPage() {
           <select
             value={range}
             onChange={(e) => setRange(e.target.value as TimeRange)}
-            className="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="px-3 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
           >
             <option value="hour">Last Hour</option>
             <option value="day">Last 24 Hours</option>
@@ -419,7 +419,7 @@ export default function ToranDashboardPage() {
             onClick={() => setFilters((f) => ({ ...f, slow: !f.slow }))}
             className={`px-3 py-1 text-xs rounded-full border transition-colors ${
               filters.slow
-                ? "border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300"
+                ? "border-sky-300 dark:border-sky-700 bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300"
                 : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             }`}
           >
@@ -489,7 +489,7 @@ export default function ToranDashboardPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search path, headers, body..."
-            className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+            className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
           />
         </div>
 
@@ -525,7 +525,7 @@ export default function ToranDashboardPage() {
                           onClick={() => setSelectedLog(selectedLog?._id === log._id ? null : log)}
                           className={`cursor-pointer transition-colors ${
                             selectedLog?._id === log._id
-                              ? "bg-violet-50 dark:bg-violet-950 hover:bg-violet-50 dark:hover:bg-violet-950"
+                              ? "bg-sky-50 dark:bg-sky-950 hover:bg-sky-50 dark:hover:bg-sky-950"
                               : "hover:bg-zinc-50 dark:hover:bg-zinc-900"
                           }`}
                         >
@@ -588,8 +588,8 @@ export default function ToranDashboardPage() {
 
                 {/* Log Detail Panel */}
                 {selectedLog && (
-                  <div className="mt-4 border border-violet-200 dark:border-violet-800 rounded-lg bg-white dark:bg-zinc-900 overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-3 bg-violet-50 dark:bg-violet-950 border-b border-violet-200 dark:border-violet-800">
+                  <div className="mt-4 border border-sky-200 dark:border-sky-800 rounded-lg bg-white dark:bg-zinc-900 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 bg-sky-50 dark:bg-sky-950 border-b border-sky-200 dark:border-sky-800">
                       <div className="flex items-center gap-3">
                         <span className={`px-2 py-0.5 text-xs font-medium rounded ${getMethodColor(selectedLog.request.method)}`}>
                           {selectedLog.request.method}
@@ -612,7 +612,7 @@ export default function ToranDashboardPage() {
                             <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto">
                               {Object.entries(selectedLog.request.query as Record<string, string>).map(([key, value]) => (
                                 <div key={key}>
-                                  <span className="text-violet-600 dark:text-violet-400">{key}</span>
+                                  <span className="text-sky-600 dark:text-sky-400">{key}</span>
                                   <span className="text-zinc-400">=</span>
                                   <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
                                 </div>
@@ -626,7 +626,7 @@ export default function ToranDashboardPage() {
                             <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
                               {Object.entries(selectedLog.request.headers as Record<string, string>).map(([key, value]) => (
                                 <div key={key} className="break-all">
-                                  <span className="text-violet-600 dark:text-violet-400">{key}</span>
+                                  <span className="text-sky-600 dark:text-sky-400">{key}</span>
                                   <span className="text-zinc-400">: </span>
                                   <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
                                 </div>
@@ -653,7 +653,7 @@ export default function ToranDashboardPage() {
                             <div className="bg-zinc-50 dark:bg-zinc-800 rounded p-2 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
                               {Object.entries(selectedLog.response.headers as Record<string, string>).map(([key, value]) => (
                                 <div key={key} className="break-all">
-                                  <span className="text-violet-600 dark:text-violet-400">{key}</span>
+                                  <span className="text-sky-600 dark:text-sky-400">{key}</span>
                                   <span className="text-zinc-400">: </span>
                                   <span className="text-zinc-700 dark:text-zinc-300">{String(value)}</span>
                                 </div>

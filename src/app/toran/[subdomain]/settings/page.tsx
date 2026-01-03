@@ -193,7 +193,7 @@ export default function SettingsPage() {
             <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
               Subdomain
             </div>
-            <code className="text-violet-600 dark:text-violet-400 font-mono">
+            <code className="text-sky-600 dark:text-sky-400 font-mono">
               {toran.subdomain}
             </code>
           </div>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
             <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
               Upstream Base URL
             </div>
-            <code className="text-violet-600 dark:text-violet-400 font-mono text-sm break-all">
+            <code className="text-sky-600 dark:text-sky-400 font-mono text-sm break-all">
               {toran.upstreamBaseUrl}
             </code>
           </div>
@@ -239,7 +239,7 @@ export default function SettingsPage() {
             onChange={(e) => setCacheTtl(e.target.value)}
             placeholder="e.g. 300"
             min="0"
-            className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 rounded-md text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-violet-600 dark:focus:border-violet-400"
+            className="w-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2 rounded-md text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:border-sky-600 dark:focus:border-sky-400"
           />
           <p className="mt-2 text-xs text-zinc-500">
             How long to cache upstream responses. Leave empty to disable
@@ -271,7 +271,7 @@ export default function SettingsPage() {
                     key={index}
                     className="flex items-center gap-2 text-sm bg-zinc-50 dark:bg-zinc-900 px-3 py-2 rounded"
                   >
-                    <code className="text-violet-600 dark:text-violet-400">
+                    <code className="text-sky-600 dark:text-sky-400">
                       {filter.field}
                     </code>
                     <span className="text-zinc-400">in</span>
@@ -317,7 +317,7 @@ export default function SettingsPage() {
                     key={index}
                     className="flex items-center gap-2 text-sm bg-zinc-50 dark:bg-zinc-900 px-3 py-2 rounded"
                   >
-                    <code className="text-violet-600 dark:text-violet-400">
+                    <code className="text-sky-600 dark:text-sky-400">
                       {filter.field}
                     </code>
                     <span className="text-zinc-400">in</span>
@@ -400,7 +400,7 @@ export default function SettingsPage() {
               type="button"
               onClick={addFilter}
               disabled={!newFilterField.trim()}
-              className="text-sm text-violet-600 dark:text-violet-400 hover:underline disabled:opacity-50 disabled:no-underline"
+              className="text-sm text-sky-600 dark:text-sky-400 hover:underline disabled:opacity-50 disabled:no-underline"
             >
               + Add filter
             </button>
@@ -410,7 +410,7 @@ export default function SettingsPage() {
         <button
           type="submit"
           disabled={isSaving}
-          className="bg-violet-600 dark:bg-violet-500 px-4 py-2 text-sm font-medium text-white dark:text-zinc-950 rounded-md hover:bg-violet-700 dark:hover:bg-violet-400 disabled:opacity-50"
+          className="bg-sky-600 dark:bg-sky-500 px-4 py-2 text-sm font-medium text-white dark:text-zinc-950 rounded-md hover:bg-sky-700 dark:hover:bg-sky-400 disabled:opacity-50"
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>

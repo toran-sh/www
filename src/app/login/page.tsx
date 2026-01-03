@@ -24,7 +24,7 @@ export default async function LoginPage({ searchParams }: Props) {
         <nav className="container mx-auto flex items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="flex items-center gap-3 text-3xl font-bold text-violet-600 dark:text-violet-400"
+            className="flex items-center gap-3 text-3xl font-bold text-sky-600 dark:text-sky-400"
           >
             <img src="/logo.png" alt="toran" className="h-10 w-10" />
             toran
@@ -52,7 +52,7 @@ export default async function LoginPage({ searchParams }: Props) {
             Don&apos;t want to create an account?{" "}
             <Link
               href="/try"
-              className="text-violet-600 dark:text-violet-400 hover:underline"
+              className="text-sky-600 dark:text-sky-400 hover:underline"
             >
               Try toran free
             </Link>

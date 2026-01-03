@@ -73,7 +73,7 @@ export function ToranSidebar({ subdomain }: ToranSidebarProps) {
                 href={link.href}
                 className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-violet-50 dark:bg-violet-950 text-violet-600 dark:text-violet-400"
+                    ? "bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400"
                     : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
