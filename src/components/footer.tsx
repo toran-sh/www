@@ -17,6 +17,12 @@ export function Footer({ className = "mt-20" }: FooterProps) {
           </div>
           <div className="flex gap-4 text-sm text-zinc-500">
             <Link
+              href="/use-cases"
+              className="hover:text-zinc-700 dark:hover:text-zinc-300"
+            >
+              Use Cases
+            </Link>
+            <Link
               href="/pricing"
               className="hover:text-zinc-700 dark:hover:text-zinc-300"
             >
