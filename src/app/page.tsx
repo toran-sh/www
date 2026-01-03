@@ -64,6 +64,11 @@ const features = [
     description:
       "See method, path + query, status, and headers. Sensitive headers and query values are redacted by default.",
   },
+  {
+    title: "Advanced Traffic Analysis (Pro)",
+    description:
+      "Define segments within a toran to summarize request behavior — most common paths, latency distributions, payload sizes, and error rates — based on the traffic you’ve already captured.",
+  },
 ];
 
 export default function Home() {
