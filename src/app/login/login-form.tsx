@@ -86,18 +86,13 @@ export function LoginForm({ urlError }: LoginFormProps) {
 
   return (
     <>
-      <h1 className="text-2xl font-bold">Get Started</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-        Enter your email to sign in or create an account
-      </p>
-
       {errorMessage && (
-        <div className="mt-6 border border-red-500 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-400">
+        <div className="mb-6 border border-red-500 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-400">
           {errorMessage}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-8">
+      <form onSubmit={handleSubmit}>
         <label htmlFor="email" className="block text-sm text-zinc-700 dark:text-zinc-300">
           Email address
         </label>
