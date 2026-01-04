@@ -48,7 +48,10 @@ export default function TermsPage() {
                 2. Description of Service
               </h2>
               <p className="mt-3">
-                toran is a live API traffic inspection service. It allows you to observe outbound HTTP requests from your applications by routing them through toran&apos;s proxy infrastructure. The Service logs request metadata, headers, and optionally request/response bodies for inspection purposes.
+                toran is a read-only outbound API inspection service. It allows you to observe HTTP requests sent from your software to third-party APIs by routing them through toran&apos;s proxy infrastructure.
+              </p>
+              <p className="mt-3">
+                toran does not retry, cache, block, or modify requests or responses. It does not inspect prompts, model internals, or agent reasoning. Logging of payload bodies and other sensitive fields is disabled by default and only enabled when you explicitly turn it on.
               </p>
             </section>
 
@@ -73,10 +76,19 @@ export default function TermsPage() {
                 4. Data and Privacy
               </h2>
               <p className="mt-3">
-                Traffic routed through toran is logged for inspection purposes. By using the Service, you acknowledge that request metadata, headers, and optionally payloads may be stored temporarily. See our <Link href="/privacy" className="text-sky-600 dark:text-sky-400 hover:underline">Privacy Policy</Link> for details on data handling.
+                Traffic routed through toran may be logged for inspection purposes. By using the Service, you acknowledge that request metadata, headers, and other information may be stored temporarily as described in our <Link href="/privacy" className="text-sky-600 dark:text-sky-400 hover:underline">Privacy Policy</Link>. By default, payload bodies are not logged and sensitive fields are redacted unless you explicitly enable additional logging.
               </p>
               <p className="mt-3">
                 You are responsible for ensuring you have the right to route traffic through toran and that doing so complies with applicable laws and any agreements with third parties.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                4A. Saved Response Replay
+              </h2>
+              <p className="mt-3">
+                Saved response replay lets you replay a captured request using a saved response snapshot. No upstream API call is made during replay, and live traffic is never affected.
               </p>
             </section>
 
@@ -94,7 +106,7 @@ export default function TermsPage() {
                 6. Usage Limits
               </h2>
               <p className="mt-3">
-                The Service includes usage limits that vary by plan tier. Exceeding these limits may result in temporary throttling or reduced functionality. We reserve the right to modify limits with reasonable notice.
+                The Service includes usage and retention limits that vary by plan tier. Exceeding these limits may result in temporary throttling or reduced functionality. We reserve the right to modify limits with reasonable notice.
               </p>
             </section>
 
@@ -121,6 +133,20 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                8A. What We Don&apos;t Do
+              </h2>
+              <div className="mt-3 space-y-3">
+                <p>To be clear, toran does not:</p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Sell your traffic logs or use them for advertising</li>
+                  <li>Use your traffic logs to train models</li>
+                  <li>Make decisions on your behalf (no alerts, retries, blocking, caching, or policy enforcement)</li>
+                </ul>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
                 9. Termination
               </h2>
               <p className="mt-3">
@@ -142,7 +168,7 @@ export default function TermsPage() {
                 11. Contact
               </h2>
               <p className="mt-3">
-                For questions about these terms, contact us at support@toran.sh.
+                For questions about these terms, contact us at support@toran.sh. Privacy questions should be directed to the Privacy Policy and support@toran.sh.
               </p>
             </section>
           </div>

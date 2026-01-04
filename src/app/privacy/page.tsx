@@ -39,8 +39,22 @@ export default function PrivacyPage() {
                 Overview
               </h2>
               <p className="mt-3">
-                toran is designed with privacy in mind. We collect the minimum data necessary to provide the Service and give you visibility into your API traffic.
+                toran is designed with privacy in mind. We collect the minimum data necessary to provide the Service and give you visibility into your outbound API traffic.
               </p>
+              <p className="mt-3">
+                toran is read-only by design: we do not retry, cache, block, or modify requests or responses. We do not inspect prompts, model internals, or agent reasoning.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                What We Don’t Do
+              </h2>
+              <ul className="mt-3 list-disc pl-6 space-y-2">
+                <li>We do not sell your data or use it for advertising.</li>
+                <li>We do not use your traffic logs to train models.</li>
+                <li>We do not intentionally collect sensitive personal data; you control what you route through toran.</li>
+              </ul>
             </section>
 
             <section>
@@ -51,16 +65,16 @@ export default function PrivacyPage() {
                 <div>
                   <h3 className="font-medium text-zinc-900 dark:text-zinc-100">Account Information</h3>
                   <p className="mt-1">
-                    When you sign in, we collect your email address. This is used for authentication and account-related communications.
+                    When you sign in, we collect your email address. This is used for authentication, account administration, and account-related communications.
                   </p>
                 </div>
                 <div>
                   <h3 className="font-medium text-zinc-900 dark:text-zinc-100">Traffic Logs</h3>
                   <p className="mt-1">
-                    When you route traffic through toran, we log:
+                    When you route traffic through toran, we may log:
                   </p>
                   <ul className="list-disc pl-6 mt-2 space-y-1">
-                    <li>Request method, path, and query parameters</li>
+                    <li>Request method, path, and query parameter names (values are redacted by default)</li>
                     <li>Request and response headers</li>
                     <li>Response status code</li>
                     <li>Request timing and duration</li>
@@ -69,11 +83,14 @@ export default function PrivacyPage() {
                   <p className="mt-2">
                     By default, sensitive headers (Authorization, Cookie, API keys) and query parameter values are redacted. Request and response bodies are not logged unless you explicitly enable body logging in your toran settings.
                   </p>
+                  <p className="mt-2">
+                    If you choose to log additional fields (for example, client IP headers such as <code className="font-mono text-xs">cf-connecting-ip</code> or <code className="font-mono text-xs">x-real-ip</code>), you are responsible for ensuring you have the right to collect and process that data.
+                  </p>
                 </div>
                 <div>
                   <h3 className="font-medium text-zinc-900 dark:text-zinc-100">Usage Data</h3>
                   <p className="mt-1">
-                    We collect basic usage metrics to operate and improve the Service, including request counts and feature usage patterns.
+                    We collect basic usage data to operate, secure, and improve the Service, such as request counts, feature usage, and performance metrics.
                   </p>
                 </div>
               </div>
@@ -95,6 +112,9 @@ export default function PrivacyPage() {
                 </ul>
                 <p>
                   Older logs are automatically deleted as new logs arrive. Unclaimed trial torans may be deleted after a period of inactivity.
+                </p>
+                <p>
+                  Saved response snapshots (when enabled) are retained within your plan limits and may be deleted when limits are exceeded or when a toran is deleted.
                 </p>
               </div>
             </section>
@@ -120,8 +140,9 @@ export default function PrivacyPage() {
                 We do not sell your data. We may share data with:
               </p>
               <ul className="mt-3 list-disc pl-6 space-y-2">
-                <li>Service providers who help operate toran (hosting, email delivery)</li>
-                <li>Law enforcement when required by law</li>
+                <li>Service providers who help operate toran (for example, hosting and email delivery)</li>
+                <li>Professional advisors (for example, legal, accounting) when necessary</li>
+                <li>Law enforcement or regulators when required by law</li>
               </ul>
             </section>
 
@@ -139,7 +160,16 @@ export default function PrivacyPage() {
                 Your Rights
               </h2>
               <p className="mt-3">
-                You can delete your torans and associated logs at any time through the dashboard. To delete your account entirely, contact us at support@toran.sh.
+                You can delete your torans and associated logs at any time through the dashboard. To request access to, correction of, or deletion of your account information, contact us at support@toran.sh.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                Children
+              </h2>
+              <p className="mt-3">
+                toran is not directed to children under the age of 13, and we do not knowingly collect personal information from children.
               </p>
             </section>
 
@@ -163,6 +193,15 @@ export default function PrivacyPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                International Data Transfers
+              </h2>
+              <p className="mt-3">
+                If you access toran from outside the United States, your information may be processed in the United States or other locations where our service providers operate.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
                 Changes to This Policy
               </h2>
               <p className="mt-3">
@@ -175,7 +214,7 @@ export default function PrivacyPage() {
                 Contact
               </h2>
               <p className="mt-3">
-                For questions about this Privacy Policy, contact us at support@toran.sh.
+                For questions about this Privacy Policy, or for privacy-related disputes or concerns, contact us at support@toran.sh. Our handling of disputes is described in the Terms of Service.
               </p>
             </section>
           </div>

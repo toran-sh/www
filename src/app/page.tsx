@@ -1,47 +1,47 @@
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 
-const codeExamples = [
-  {
-    language: "Node.js",
-    code: `const BASE_URL = "https://<toran_id>.toran.sh";
-
-const response = await fetch(\`\${BASE_URL}/v1/endpoint\`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ data: "..." }),
-});`,
-  },
-  {
-    language: "Python",
-    code: `import requests
-
-BASE_URL = "https://<toran_id>.toran.sh"
-
-response = requests.post(
-    f"{BASE_URL}/v1/endpoint",
-    json={"data": "..."}
-)`,
-  },
-  {
-    language: "Go",
-    code: `baseURL := "https://<toran_id>.toran.sh"
-
-resp, err := http.Post(
-    baseURL+"/v1/endpoint",
-    "application/json",
-    bytes.NewBuffer(jsonData),
-)`,
-  },
-  {
-    language: "curl",
-    code: `BASE_URL="https://<toran_id>.toran.sh"
-
-curl -X POST "$BASE_URL/v1/endpoint" \\
-  -H "Content-Type: application/json" \\
-  -d '{"data": "..."}'`,
-  },
-];
+// const codeExamples = [
+//   {
+//     language: "Node.js",
+//     code: `const BASE_URL = "https://<toran_id>.toran.sh";
+//
+// const response = await fetch(\`\${BASE_URL}/v1/endpoint\`, {
+//   method: "POST",
+//   headers: { "Content-Type": "application/json" },
+//   body: JSON.stringify({ data: "..." }),
+// });`,
+//   },
+//   {
+//     language: "Python",
+//     code: `import requests
+//
+// BASE_URL = "https://<toran_id>.toran.sh"
+//
+// response = requests.post(
+//     f"{BASE_URL}/v1/endpoint",
+//     json={"data": "..."}
+// )`,
+//   },
+//   {
+//     language: "Go",
+//     code: `baseURL := "https://<toran_id>.toran.sh"
+//
+// resp, err := http.Post(
+//     baseURL+"/v1/endpoint",
+//     "application/json",
+//     bytes.NewBuffer(jsonData),
+// )`,
+//   },
+//   {
+//     language: "curl",
+//     code: `BASE_URL="https://<toran_id>.toran.sh"
+//
+// curl -X POST "$BASE_URL/v1/endpoint" \\
+//   -H "Content-Type: application/json" \\
+//   -d '{"data": "..."}'`,
+//   },
+// ];
 
 const features = [
   {
@@ -249,7 +249,7 @@ After:  https://<toran_id>.toran.sh`}
         </section>
 
         {/* Code Examples Section */}
-        <section className="mt-16">
+        {/* <section className="mt-16">
           <h2 className="text-2xl font-bold">Code examples</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             These examples only show the base URL change.
@@ -266,7 +266,7 @@ After:  https://<toran_id>.toran.sh`}
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* Still Not Section */}
         <section className="mt-16">
