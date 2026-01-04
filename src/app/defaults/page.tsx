@@ -28,13 +28,36 @@ export default function DefaultsPage() {
       <main className="container mx-auto px-6 py-20">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-            Default Settings
+            Defaults
           </h1>
           <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-            Every toran starts with sensible defaults. These can be customized in your toran settings.
+            This page describes how toran behaves out of the box. Defaults are intentionally conservative and designed to minimize data collection while preserving debuggability.
           </p>
 
           <div className="mt-12 space-y-10">
+            {/* Read-only by default */}
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                Read-only by default
+              </h2>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                toran observes outbound HTTP traffic and does not retry, cache, block, or modify requests or responses.
+                Removing toran is always as simple as reverting your base URL.
+              </p>
+            </section>
+
+            {/* What is never logged */}
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                What is never logged
+              </h2>
+              <ul className="mt-3 list-disc pl-6 text-zinc-600 dark:text-zinc-400 space-y-2">
+                <li>Authorization headers, API keys, or tokens</li>
+                <li>Cookie values</li>
+                <li>Prompt contents, model internals, or agent reasoning</li>
+              </ul>
+            </section>
+
             {/* Log Filters Section */}
             <section>
               <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
@@ -87,6 +110,24 @@ export default function DefaultsPage() {
               </div>
             </section>
 
+            {/* Sensitive headers (off by default) */}
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                Sensitive headers (off by default)
+              </h2>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                Headers that may identify a person or device are excluded by default and only logged when you explicitly enable them.
+              </p>
+              <ul className="mt-3 list-disc pl-6 text-zinc-600 dark:text-zinc-400 space-y-2">
+                <li>Client IP and forwarded identity headers (for example, <code className="font-mono text-xs">x-forwarded-for</code>)</li>
+                <li>User, account, or device identifiers</li>
+                <li>Geo or location headers</li>
+              </ul>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                Customizing sensitive logging defaults is available on authenticated plans.
+              </p>
+            </section>
+
             {/* Query Parameters */}
             <section>
               <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
@@ -137,8 +178,21 @@ export default function DefaultsPage() {
                 <li>Add filters to redact additional fields</li>
                 <li>Remove default filters if you need to log specific fields</li>
                 <li>Enable response body logging</li>
-                <li>Configure caching behavior</li>
               </ul>
+            </section>
+
+            {/* Responsibility and control */}
+            <section>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                Responsibility and control
+              </h2>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                You control what traffic is routed through toran and which fields are logged.
+                If you enable logging of additional headers or payloads, you are responsible for ensuring that collection and processing complies with applicable laws and third-party terms.
+              </p>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                For a broader explanation of how toran processes data, see our <Link href="/privacy" className="text-sky-600 dark:text-sky-400 hover:underline">Privacy Policy</Link>.
+              </p>
             </section>
           </div>
         </div>

@@ -84,6 +84,9 @@ export default function PrivacyPage() {
                     By default, sensitive headers (Authorization, Cookie, API keys) and query parameter values are redacted. Request and response bodies are not logged unless you explicitly enable body logging in your toran settings.
                   </p>
                   <p className="mt-2">
+                    Some logging controls, including enabling sensitive fields, are only available on authenticated plans.
+                  </p>
+                  <p className="mt-2">
                     If you choose to log additional fields (for example, client IP headers such as <code className="font-mono text-xs">cf-connecting-ip</code> or <code className="font-mono text-xs">x-real-ip</code>), you are responsible for ensuring you have the right to collect and process that data.
                   </p>
                 </div>

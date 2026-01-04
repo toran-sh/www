@@ -108,6 +108,9 @@ export default function TermsPage() {
               <p className="mt-3">
                 The Service includes usage and retention limits that vary by plan tier. Exceeding these limits may result in temporary throttling or reduced functionality. We reserve the right to modify limits with reasonable notice.
               </p>
+              <p className="mt-3">
+                Certain features and configuration options, including customization of sensitive logging fields, are only available on authenticated plans.
+              </p>
             </section>
 
             <section>
