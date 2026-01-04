@@ -36,6 +36,7 @@ export async function GET(
       upstreamBaseUrl: gateway.upstreamBaseUrl,
       cacheTtl: gateway.cacheTtl,
       logFilters: gateway.logFilters,
+      logResponseBody: gateway.logResponseBody ?? false,
     });
   } catch (error) {
     console.error("Trial gateway fetch error:", error);
@@ -63,7 +64,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { cacheTtl, logFilters } = body;
+    const { cacheTtl, logFilters, logResponseBody } = body;
 
     const updateFields: Record<string, unknown> = {
       cacheTtl: cacheTtl ?? null,
@@ -72,6 +73,10 @@ export async function PUT(
 
     if (logFilters !== undefined) {
       updateFields.logFilters = logFilters;
+    }
+
+    if (logResponseBody !== undefined) {
+      updateFields.logResponseBody = logResponseBody;
     }
 
     const result = await db.collection("gateways").findOneAndUpdate(
@@ -93,6 +98,7 @@ export async function PUT(
       upstreamBaseUrl: result.upstreamBaseUrl,
       cacheTtl: result.cacheTtl,
       logFilters: result.logFilters,
+      logResponseBody: result.logResponseBody ?? false,
     });
   } catch (error) {
     console.error("Trial gateway update error:", error);

@@ -8,7 +8,7 @@ import { verifyTurnstileToken } from "@/lib/turnstile";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { upstreamBaseUrl, cacheTtl, turnstileToken } = body;
+    const { upstreamBaseUrl, cacheTtl, logResponseBody, turnstileToken } = body;
 
     // Verify Turnstile token
     const isValidTurnstile = await verifyTurnstileToken(turnstileToken);
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       upstreamBaseUrl,
       cacheTtl: cacheTtl ?? null,
       logFilters: DEFAULT_LOG_FILTERS,
+      logResponseBody: logResponseBody ?? false,
       user_id: null, // No user yet - trial toran
       trial_token: trialToken,
       createdAt: new Date(),

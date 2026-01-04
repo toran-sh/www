@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { upstreamBaseUrl, cacheTtl, logFilters, turnstileToken } = body;
+    const { upstreamBaseUrl, cacheTtl, logFilters, logResponseBody, turnstileToken } = body;
 
     // Verify Turnstile token
     const isValidTurnstile = await verifyTurnstileToken(turnstileToken);
@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
       upstreamBaseUrl,
       cacheTtl: cacheTtl ?? null,
       logFilters: logFilters ?? DEFAULT_LOG_FILTERS,
+      logResponseBody: logResponseBody ?? false,
       user_id: userId,
       createdAt: new Date(),
       updatedAt: new Date(),

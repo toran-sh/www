@@ -184,6 +184,14 @@ export default function Home() {
           <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
             toran does not inspect prompts, model internals, or agent reasoning. By default, request and response payloads are not logged - payload logging is controlled by rules.
           </p>
+          <div className="mt-4 border-l-4 border-sky-600 dark:border-sky-400 bg-sky-50 dark:bg-sky-950 p-4 text-sm text-zinc-700 dark:text-zinc-300">
+            toran never alerts, retries, blocks, or makes decisions on your behalf.
+            It observes outbound API traffic and shows you what happened — nothing more.
+          </div>
+          <div className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            <strong>Privacy-first by design.</strong> toran logs the minimum data needed for inspection.
+            Payloads and sensitive fields are excluded by default and only captured when you explicitly enable them.
+          </div>
         </section>
 
 

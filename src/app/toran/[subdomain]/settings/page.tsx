@@ -20,6 +20,7 @@ interface Toran {
   upstreamBaseUrl: string;
   cacheTtl: number | null;
   logFilters?: LogFilters;
+  logResponseBody?: boolean;
 }
 
 const DEFAULT_LOG_FILTERS: LogFilters = {
@@ -57,6 +58,7 @@ export default function SettingsPage() {
   const [toran, setToran] = useState<Toran | null>(null);
   const [cacheTtl, setCacheTtl] = useState("");
   const [logFilters, setLogFilters] = useState<LogFilters>(DEFAULT_LOG_FILTERS);
+  const [logResponseBody, setLogResponseBody] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,6 +90,7 @@ export default function SettingsPage() {
           setToran(found);
           setCacheTtl(found.cacheTtl?.toString() ?? "");
           setLogFilters(found.logFilters ?? DEFAULT_LOG_FILTERS);
+          setLogResponseBody(found.logResponseBody ?? false);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load toran");
@@ -114,6 +117,7 @@ export default function SettingsPage() {
         body: JSON.stringify({
           cacheTtl: cacheTtl ? parseInt(cacheTtl, 10) : null,
           logFilters,
+          logResponseBody,
         }),
       });
 
@@ -257,6 +261,25 @@ export default function SettingsPage() {
           <p className="mt-2 text-xs text-zinc-500">
             How long to cache upstream responses. Leave empty to disable
             caching.
+          </p>
+        </div>
+
+        {/* Log Response Body Toggle */}
+        <div className="mb-6">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={logResponseBody}
+              onChange={(e) => setLogResponseBody(e.target.checked)}
+              className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-sky-600 focus:ring-sky-500"
+            />
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Log response bodies
+            </span>
+          </label>
+          <p className="mt-2 text-xs text-zinc-500 ml-7">
+            When enabled, response bodies are captured in logs. Binary responses
+            are base64-encoded. May increase storage usage significantly.
           </p>
         </div>
 

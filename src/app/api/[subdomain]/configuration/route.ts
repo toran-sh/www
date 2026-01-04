@@ -30,6 +30,7 @@ export async function GET(
         upstreamBaseUrl: gateway.upstreamBaseUrl,
         cacheTtl: gateway.cacheTtl,
         logFilters: gateway.logFilters ?? DEFAULT_LOG_FILTERS,
+        logResponseBody: gateway.logResponseBody ?? false,
       },
       {
         headers: {

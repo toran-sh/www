@@ -50,7 +50,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { cacheTtl, logFilters } = body;
+    const { cacheTtl, logFilters, logResponseBody } = body;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid gateway ID" }, { status: 400 });
@@ -64,6 +64,11 @@ export async function PUT(
     // Only update logFilters if provided
     if (logFilters !== undefined) {
       updateFields.logFilters = logFilters;
+    }
+
+    // Only update logResponseBody if provided
+    if (logResponseBody !== undefined) {
+      updateFields.logResponseBody = logResponseBody;
     }
 
     const result = await db.collection("gateways").findOneAndUpdate(
