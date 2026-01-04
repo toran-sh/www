@@ -242,6 +242,9 @@ After:  https://<toran_id>.toran.sh`}
               You can make this change in app config, an SDK/client
               configuration, or agent tool settings.
             </p>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+              If you’re unsure where to change it, just ask Claude, Codex, Copilot, or Cursor to update the base URL for you.
+            </p>
           </div>
         </section>
 

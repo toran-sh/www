@@ -28,18 +28,18 @@ export function Footer({ className = "mt-20" }: FooterProps) {
             >
               Pricing
             </Link>
-            <a
+            <Link
               href="/privacy"
               className="hover:text-zinc-700 dark:hover:text-zinc-300"
             >
               Privacy
-            </a>
-            <a
+            </Link>
+            <Link
               href="/terms"
               className="hover:text-zinc-700 dark:hover:text-zinc-300"
             >
               Terms
-            </a>
+            </Link>
           </div>
         </div>
       </div>
