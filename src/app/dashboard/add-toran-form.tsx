@@ -2,44 +2,11 @@
 
 import { useState } from "react";
 import { Turnstile } from "@/components/turnstile";
-
-interface LogFilter {
-  field: string;
-  location: "header" | "query" | "body";
-  action: "redact";
-}
-
-interface LogFilters {
-  request: LogFilter[];
-  response: LogFilter[];
-}
-
-const DEFAULT_LOG_FILTERS: LogFilters = {
-  request: [
-    { field: "authorization", location: "header", action: "redact" },
-    { field: "x-api-key", location: "header", action: "redact" },
-    { field: "api-key", location: "header", action: "redact" },
-    { field: "x-auth-token", location: "header", action: "redact" },
-    { field: "cookie", location: "header", action: "redact" },
-    { field: "key", location: "header", action: "redact" },
-    { field: "api_key", location: "header", action: "redact" },
-    { field: "apikey", location: "header", action: "redact" },
-    { field: "token", location: "header", action: "redact" },
-    { field: "access_token", location: "header", action: "redact" },
-    { field: "id_token", location: "header", action: "redact" },
-    { field: "refresh_token", location: "header", action: "redact" },
-    { field: "secret", location: "header", action: "redact" },
-    { field: "client_secret", location: "header", action: "redact" },
-    { field: "signature", location: "header", action: "redact" },
-    { field: "sig", location: "header", action: "redact" },
-    { field: "password", location: "header", action: "redact" },
-    { field: "passwd", location: "header", action: "redact" },
-    { field: "auth", location: "header", action: "redact" },
-    { field: "session", location: "header", action: "redact" },
-    { field: "code", location: "header", action: "redact" },
-  ],
-  response: [{ field: "set-cookie", location: "header", action: "redact" }],
-};
+import {
+  DEFAULT_LOG_FILTERS,
+  type LogFilter,
+  type LogFilters,
+} from "@/lib/log-filters";
 
 interface Toran {
   _id: string;
