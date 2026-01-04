@@ -162,7 +162,10 @@ export default function DefaultsPage() {
                 By default, request and response bodies are <strong>not logged</strong>. You can enable body logging in your toran settings if needed for debugging.
               </p>
               <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-                When body logging is enabled, binary responses are automatically base64-encoded.
+                When body logging is enabled, toran attempts to decode request and response bodies as UTF-8 text (best-effort) and stores text bodies according to your plan and settings.
+              </p>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                If a body cannot be decoded as text, toran does not store it. Instead, toran stores the body size and a SHA-256 fingerprint.
               </p>
             </section>
 

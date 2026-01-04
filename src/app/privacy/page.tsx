@@ -81,7 +81,7 @@ export default function PrivacyPage() {
                     <li>Request and response body sizes</li>
                   </ul>
                   <p className="mt-2">
-                    By default, sensitive headers (Authorization, Cookie, API keys) and query parameter values are redacted. Request and response bodies are not logged unless you explicitly enable body logging in your toran settings.
+                    By default, sensitive headers (Authorization, Cookie, API keys) and query parameter values are redacted. Body logging is disabled by default. When enabled, toran stores request and response bodies only when they can be decoded as UTF-8 text (best-effort). If a body cannot be decoded as text, toran does not store it and instead stores the body size and a SHA-256 fingerprint.
                   </p>
                   <p className="mt-2">
                     Some logging controls, including enabling sensitive fields, are only available on authenticated plans.

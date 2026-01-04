@@ -25,12 +25,17 @@ export async function GET(
       );
     }
 
+    // Determine max body size based on plan (TODO: implement plan-based sizing)
+    // For now: 100KB default, can be expanded later
+    const maxResponseBodySize = 102400;
+
     return NextResponse.json(
       {
         upstreamBaseUrl: gateway.upstreamBaseUrl,
         cacheTtl: gateway.cacheTtl,
         logFilters: gateway.logFilters ?? DEFAULT_LOG_FILTERS,
         logResponseBody: gateway.logResponseBody ?? false,
+        maxResponseBodySize,
       },
       {
         headers: {
