@@ -70,7 +70,6 @@ const tiers = [
       "Saved response replay (up to 500 snapshots per toran)",
       "Up to 100 torans",
       "Very high usage caps",
-      "Multi-region edge selection",
       "Customize sensitive field logging (IP, identifiers, geo)",
       "Advanced traffic analysis: segment traffic and summarize paths, latency, size, and errors",
       "Long-running production agents need continuity",
